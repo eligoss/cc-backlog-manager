@@ -59,11 +59,6 @@ module.exports = {
     '\\.integration\\.test\\.ts$',
     '\\.e2e\\.test\\.ts$',
     '/__tests__/e2e/',
-    // Writer module lib tests - modules/writer/src/lib/ not yet implemented
-    '/commands/writer/__tests__/immutability/',
-    '/commands/writer/__tests__/context/',
-    '/commands/writer/__tests__/hashing/',
-    '/commands/writer/__tests__/token-counting/',
   ],
   collectCoverageFrom: [
     'src/**/*.ts',
