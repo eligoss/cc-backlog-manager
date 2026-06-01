@@ -9,10 +9,6 @@ capability-needs:
   - confluence-integration
 available-skills:
   - validating-markdown
-context-category-needs:
-  business: basic
-  technical: basic
-  process: basic
 variant: full
 delegates-to:
 token-budget: 3000
@@ -60,8 +56,6 @@ Manage bidirectional synchronization between local markdown files and Confluence
 ## Required Reading
 
 ### Context Files
-
-> **Registry:** Context requirements defined in `{project}/ai/registries/agents.json` under `ai-confluence-manager.context-category-needs`
 
 Load these context files for full Confluence management capability:
 
@@ -359,7 +353,6 @@ confluence/
 
 **Version:** 12.0 (Discovery-Driven Architecture)
 **Token Budget:** ~2,500 tokens (agent file only, skills auto-loaded via Discovery Engine)
-**Context Loading:** Auto-discovered via context-category-needs in agents.json
 **Last Updated:** 2025-12-15
 
 **Skills Routed To:**

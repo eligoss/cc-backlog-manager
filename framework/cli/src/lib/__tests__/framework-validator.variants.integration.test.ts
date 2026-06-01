@@ -39,8 +39,6 @@ delegates-to:
   - ai-test-agent-slim
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: advanced
 token-budget: 3000
 ---
 # Test Agent (Full Variant)
@@ -53,8 +51,6 @@ variant: slim
 parent-agent: ai-test-agent
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: basic
 token-budget: 1000
 ---
 # Test Agent (Slim Variant)
@@ -103,8 +99,6 @@ agent: ai-orphan-slim
 variant: slim
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: basic
 token-budget: 1000
 ---
 # Orphan Slim Agent
@@ -142,8 +136,6 @@ variant: slim
 parent-agent: ai-test-agent
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: basic
 token-budget: 1500
 ---
 # Large Slim Agent
@@ -181,8 +173,6 @@ delegates-to:
   - ai-ghost-slim
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: advanced
 token-budget: 3000
 ---
 # Bad Delegator Agent
@@ -219,8 +209,6 @@ agent: ai-full-agent-2
 variant: full
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: advanced
 token-budget: 3000
 ---
 # Full Agent 2
@@ -235,8 +223,6 @@ delegates-to:
   - ai-full-agent-2
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: advanced
 token-budget: 3000
 ---
 # Test Agent (Full Variant)
@@ -282,8 +268,6 @@ token-budget: 3000
 agent: ai-default-variant
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: advanced
 token-budget: 3000
 ---
 # Default Variant Agent
@@ -316,8 +300,6 @@ variant: slim
 parent-agent: ai-test-agent
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: basic
 token-budget: 800
 ---
 # Test Agent (Slim Variant 2)

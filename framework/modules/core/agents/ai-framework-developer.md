@@ -10,10 +10,6 @@ capability-needs:
 available-skills:
   - using-framework
   - using-mcp
-context-category-needs:
-  business: basic
-  technical: advanced
-  process: basic
 token-budget: 3000
 ---
 

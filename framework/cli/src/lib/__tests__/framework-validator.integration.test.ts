@@ -102,9 +102,6 @@ agent: ai-framework-manager
 capability-needs:
   - git-workflow-management
   - quality-assurance
-context-category-needs:
-  business: basic
-  technical: advanced
 token-budget: 3000
 ---
 # Framework Manager Agent
@@ -157,8 +154,6 @@ capability-needs:
   - plan-creation
   - phase-decomposition
   - git-workflow-management
-context-category-needs:
-  process: advanced
 token-budget: 3500
 ---
 # Planning Manager Agent
@@ -205,8 +200,6 @@ capability-needs:
   - code-implementation
   - quality-assurance
   - git-workflow-management
-context-category-needs:
-  technical: advanced
 token-budget: 2500
 ---
 # App Developer Agent

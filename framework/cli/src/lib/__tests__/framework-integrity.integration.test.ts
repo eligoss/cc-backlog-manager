@@ -43,38 +43,6 @@ describe('Framework Integrity (Integration)', () => {
     });
   });
 
-  describe('Context Files', () => {
-    // Note: Context files (ai/context/*.md) are deployment artifacts, not framework source files.
-    // The framework provides TEMPLATES in framework/modules/core/templates/context/.
-    // When testing framework source, we verify templates exist, not deployed context files.
-    it('should have context templates available in framework', async () => {
-      const templatesPath = path.join(FRAMEWORK_ROOT, 'modules', 'core', 'templates', 'context');
-      const templatesExist = await fs.pathExists(templatesPath);
-
-      if (templatesExist) {
-        // Templates use .template.md extension
-        const expectedTemplates = [
-          'business-basic.template.md', 'business-advanced.template.md', 'business-expert.template.md',
-          'technical-basic.template.md', 'technical-advanced.template.md', 'technical-expert.template.md',
-          'process-basic.template.md', 'process-advanced.template.md', 'process-expert.template.md',
-        ];
-
-        for (const expected of expectedTemplates) {
-          const templatePath = path.join(templatesPath, expected);
-          const exists = await fs.pathExists(templatePath);
-          if (!exists) {
-            console.log(`Missing context template: ${expected}`);
-          }
-          expect(exists).toBe(true);
-        }
-      } else {
-        // In bundled mode, templates may not be available - skip validation
-        console.log('Context templates directory not found (bundled mode) - skipping template validation');
-        expect(true).toBe(true);
-      }
-    });
-
-  });
 
   describe('Module Declarations', () => {
     it('should have all declared agent files', async () => {

@@ -13,10 +13,6 @@ available-skills:
   - validating-markdown
   - using-mcp
   - using-framework
-context-category-needs:
-  business: basic
-  technical: expert
-  process: advanced
 token-budget: 3000
 ---
 
@@ -133,7 +129,7 @@ When the framework version changes:
 
 Orchestration steps (implementation delegated):
 
-1. **Analyze token usage** — Count tokens in the agent file, check `agents.json` for current budget, review `context-category-needs`. Identify duplication across agents.
+1. **Analyze token usage** — Count tokens in the agent file, check `agents.json` for current budget. Identify duplication across agents.
 2. **Design optimization** — Decide what to extract to skills, which capability-needs to remove, which context levels to adjust.
 3. **Delegate implementation** — Dispatch `ai-framework-developer` to apply changes: extract skills, update frontmatter, condense templates.
 4. **Validate** — Verify discovery still works, no functionality lost, token reduction achieved.

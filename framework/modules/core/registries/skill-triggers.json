@@ -77,21 +77,6 @@
         "verify.*url"
       ]
     },
-    "building-context": {
-      "description": "Context file authoring and validation",
-      "triggers": [
-        "context file",
-        "business context",
-        "technical context",
-        "process context",
-        "context-category-needs"
-      ],
-      "prompt-patterns": [
-        "create.*context",
-        "update.*context",
-        "write.*context"
-      ]
-    },
     "building-skills": {
       "description": "Skill creation and framework integration",
       "triggers": [

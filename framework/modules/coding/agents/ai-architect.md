@@ -10,10 +10,6 @@ capability-needs:
 available-skills:
   - validating-markdown
   - using-mcp
-context-category-needs:
-  business: advanced
-  technical: advanced
-  process: basic
 variant: full
 delegates-to:
 token-budget: 3000
@@ -70,8 +66,6 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 ---
 
 ## Required Reading
-
-> **Context:** Auto-loaded via `context-category-needs` declared in frontmatter
 
 **MUST review before creating architecture documents:**
 

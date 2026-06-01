@@ -43,7 +43,7 @@ This skill is **exclusive to ai-framework-manager** capability-needs.
 - Tokens: < 3,000
 - Agent-specific content: > 90%
 
-**Agent responsibility:** Route to skills/context, coordinate workflows, evaluate completion.
+**Agent responsibility:** Route to skills, coordinate workflows, evaluate completion.
 
 **NOT agent responsibility:** Store domain knowledge, provide templates, explain architecture.
 
@@ -56,9 +56,8 @@ This skill is **exclusive to ai-framework-manager** capability-needs.
 | Content Location | Action |
 |------------------|--------|
 | Exists in a skill | Reference skill via capability-needs |
-| Exists in context | Reference via context-category-needs |
 | Exists in docs | Link to docs (never auto-load) |
-| Doesn't exist | Create skill or context file first |
+| Doesn't exist | Create skill first |
 
 **Detection:** Search for 50+ consecutive similar lines across agent files.
 
@@ -68,7 +67,6 @@ This skill is **exclusive to ai-framework-manager** capability-needs.
 
 | Content Type | Belongs In | Example |
 |--------------|------------|---------|
-| Domain knowledge | Context files | Business rules, technical patterns |
 | Reusable workflows | Skills | Git workflows, validation, formatting |
 | Agent orchestration | Agent file | Task routing, evaluation, coordination |
 | Examples/templates | Skill supporting files | Code templates, before/after examples |
@@ -117,7 +115,6 @@ Is this content agent-specific orchestration?
 │   Examples: Task routing, evaluation checklist, mandatory workflow
 │
 └── NO → Where does it belong?
-    ├── Is it domain knowledge? → Context file
     ├── Is it a reusable workflow? → Skill
     ├── Is it examples/templates? → Skill supporting file
     └── Is it reference documentation? → docs/ folder
@@ -141,11 +138,10 @@ Before committing agent changes:
 
 - [ ] **Lines:** < 500 lines total
 - [ ] **Tokens:** < 3,000 tokens estimated
-- [ ] **Duplication:** 0% duplicated content from skills/context
+- [ ] **Duplication:** 0% duplicated content from skills
 - [ ] **Agent-specific:** > 90% content is orchestration
 - [ ] **Skill routing:** All task types route to skills
 - [ ] **Discovery:** capability-needs resolve to skills
-- [ ] **Context:** context-category-needs defined correctly
 
 **Full validation:** See [VALIDATION-CHECKLIST.md](./VALIDATION-CHECKLIST.md)
 
@@ -157,10 +153,9 @@ Before committing agent changes:
 
 1. **Start with template** from [AGENT-TEMPLATE.md](./AGENT-TEMPLATE.md)
 2. **Define capability-needs** (what skills this agent requires)
-3. **Define context-category-needs** (business/technical/process levels)
-4. **Write orchestration content only** (routing, coordination, evaluation)
-5. **Validate against checklist** before committing
-6. **Update registries** (agents.json, discovery-map.json if new capabilities)
+3. **Write orchestration content only** (routing, coordination, evaluation)
+4. **Validate against checklist** before committing
+5. **Update registries** (agents.json, discovery-map.json if new capabilities)
 
 ### Verifying Existing Agent
 
@@ -209,17 +204,6 @@ Replace inline knowledge with capability reference:
 
 > **Skill:** Load `using-mcp` for MCP tool guidance
 > **Supporting:** See FRAMEWORK-MCP-PATTERNS.md for framework-specific patterns
-```
-
-### Pattern 3: Context Reference
-
-Replace inline domain knowledge with context reference:
-
-```markdown
-## Architecture Understanding
-
-> **Context:** Auto-loaded via `context-category-needs.technical: advanced`
-> **Skill:** For deep architecture patterns, load `understanding-framework-architecture` skill
 ```
 
 ---

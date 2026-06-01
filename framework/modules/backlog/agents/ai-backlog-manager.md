@@ -11,10 +11,6 @@ capability-needs:
 available-skills:
   - validating-markdown
   - publishing-confluence
-context-category-needs:
-  business: advanced
-  technical: basic
-  process: advanced
 variant: full
 delegates-to:
 token-budget: 3000
@@ -70,8 +66,6 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 ---
 
 ## Required Reading
-
-> **Registry:** Context requirements defined in `{project}/ai/registries/agents.json` under `ai-backlog-manager.context-category-needs`
 
 Load these context files for project-specific guidance:
 
@@ -409,7 +403,6 @@ Load these context files for project-specific guidance:
 
 **Version:** 12.0 (Discovery-Driven Architecture)
 **Token Budget:** ~2,500 tokens (agent file only, skills auto-loaded via Discovery Engine)
-**Context Loading:** Auto-discovered via context-category-needs in agents.json
 **Last Updated:** 2025-12-15
 
 **Skills Routed To:**

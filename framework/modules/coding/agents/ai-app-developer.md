@@ -9,10 +9,6 @@ capability-needs:
   - intelligence-gathering
 available-skills:
   - using-mcp
-context-category-needs:
-  business: basic
-  technical: advanced
-  process: basic
 variant: full
 delegates-to:
 token-budget: 3000
@@ -71,8 +67,6 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 ## Required Reading
 
 ### Context Files
-
-> **Registry:** Context requirements defined in `{project}/ai/registries/agents.json` under `ai-app-developer.context-category-needs`
 
 **Load these 3 files before writing code:**
 
@@ -260,7 +254,6 @@ Please review the implementation and provide feedback. Reply:
 
 **Version:** 12.0 (Discovery-Driven Architecture)
 **Token Budget:** ~2,500 tokens (agent file only, skills auto-loaded via Discovery Engine)
-**Context Loading:** Auto-discovered via context-category-needs in agents.json
 **Last Updated:** 2025-12-15
 
 **Skills Routed To:**

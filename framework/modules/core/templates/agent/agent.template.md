@@ -3,10 +3,6 @@ agent: ai-{{name}}
 role: {{role}}
 capability-needs:
   - {{capability}}
-context-category-needs:
-  business: {{businessLevel}}
-  technical: {{technicalLevel}}
-  process: {{processLevel}}
 variant: {{variant}}
 delegates-to: {{delegatesTo}}
 token-budget: {{tokenBudget}}
@@ -48,8 +44,6 @@ token-budget: {{tokenBudget}}
 ## Required Reading
 
 ### Context Files
-
-> **Registry:** Context requirements defined in `{project}/ai/registries/agents.json` under `ai-{{name}}.context-category-needs`
 
 Load these context files before starting work:
 
@@ -93,5 +87,4 @@ Load these context files before starting work:
 
 **Version:** 12.0 (Discovery-Driven Architecture)
 **Token Budget:** ~{{tokenBudget}} tokens
-**Context Loading:** Auto-discovered via context-category-needs in agents.json
 **Created:** {{date}}

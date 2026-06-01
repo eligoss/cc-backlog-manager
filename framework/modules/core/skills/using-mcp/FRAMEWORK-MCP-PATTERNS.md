@@ -95,22 +95,6 @@ With FS MCP:
 Result: Safe bulk rename with reference updates
 ```
 
-### Use Case 5: Context File Reorganization
-
-```
-Task: "Split large context file into smaller focused files"
-
-With FS MCP:
-1. Read source file: ai/context/technical-basic.md
-2. Identify logical sections
-3. Create new files for each section
-4. Update context.json with new files
-5. Update agent context-category-needs
-6. Validate all references
-
-Result: Automated file splitting with validation
-```
-
 **Safety Guidelines:**
 - Always preview changes before applying (use `--report` mode)
 - Validate after bulk operations using version control
@@ -177,7 +161,6 @@ With Git MCP:
 2. Filter to framework files (ai/, framework/)
 3. Categorize changes:
    - Agent modifications
-   - Context file updates
    - Registry changes
    - Documentation updates
 4. Generate summary report

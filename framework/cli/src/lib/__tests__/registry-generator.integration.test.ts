@@ -66,9 +66,6 @@ describe('RegistryGenerator', () => {
 capability-needs:
   - framework-governance
   - git-workflow-management
-context-category-needs:
-  business: basic
-  technical: expert
 token-budget: 2500
 variant: full
 delegates-to:
@@ -83,8 +80,6 @@ delegates-to:
       `---
 capability-needs:
   - framework-governance
-context-category-needs:
-  business: basic
 token-budget: 1000
 variant: slim
 parent-agent: ai-framework-manager
@@ -138,8 +133,6 @@ capabilities-provided:
       `---
 capability-needs:
   - ticket-management
-context-category-needs:
-  process: advanced
 token-budget: 2000
 ---
 # Backlog Manager Agent

@@ -9,11 +9,6 @@ This document provides a systematic approach to deciding where content belongs i
 ```
 START: What type of content is this?
 │
-├── DOMAIN KNOWLEDGE (What the business/system does)
-│   ├── Business rules, use cases, personas → ai/context/business-*.md
-│   ├── Technical architecture, patterns → ai/context/technical-*.md
-│   └── Process standards, workflows → ai/context/process-*.md
-│
 ├── REUSABLE WORKFLOW (How to do something)
 │   ├── Git operations → committing-code
 │   ├── Quality validation → verifying-quality
@@ -41,32 +36,7 @@ START: What type of content is this?
 
 ## Content Type Classification
 
-### 1. Domain Knowledge → Context Files
-
-**Definition:** Information about WHAT the business or system does, not HOW to do tasks.
-
-**Examples:**
-- Business rules and constraints
-- User personas and use cases
-- Technical architecture patterns
-- System integrations and APIs
-- Process standards and conventions
-
-**Location:** `ai/context/{category}-{level}.md`
-
-**Categories:**
-- `business-basic.md` - Core business concepts
-- `business-advanced.md` - Detailed use cases, personas
-- `technical-basic.md` - Architecture overview
-- `technical-advanced.md` - Detailed patterns, APIs
-- `process-basic.md` - Standard workflows
-- `process-advanced.md` - Complex processes, edge cases
-
-**How agents access:** `context-category-needs` in YAML frontmatter
-
----
-
-### 2. Reusable Workflows → Skills
+### 1. Reusable Workflows → Skills
 
 **Definition:** HOW to do something that multiple agents might need.
 
@@ -96,7 +66,7 @@ START: What type of content is this?
 
 ---
 
-### 3. Agent Orchestration → Agent File
+### 2. Agent Orchestration → Agent File
 
 **Definition:** Coordination logic SPECIFIC to this agent's purpose.
 
@@ -118,7 +88,7 @@ START: What type of content is this?
 
 ---
 
-### 4. Examples & Templates → Skill Supporting Files
+### 3. Examples & Templates → Skill Supporting Files
 
 **Definition:** Concrete examples, templates, and samples.
 
@@ -134,7 +104,7 @@ START: What type of content is this?
 
 ---
 
-### 5. Reference Documentation → docs/ Folder
+### 4. Reference Documentation → docs/ Folder
 
 **Definition:** Static documentation for human consumption.
 
@@ -163,7 +133,6 @@ START: What type of content is this?
 ### Step 2: Classify Content Type
 
 Use the decision tree above to determine:
-- Context file (domain knowledge)
 - Skill (reusable workflow)
 - Skill supporting file (examples/templates)
 - Docs (reference documentation)
@@ -178,21 +147,20 @@ Use the decision tree above to determine:
 **If skill doesn't exist:**
 1. Determine if content warrants new skill (used by 2+ agents)
 2. If yes, create new skill with proper structure
-3. If no, consider context file or keep in agent
+3. If no, keep in agent
 
 ### Step 4: Move Content
 
-1. Create target file (supporting file in skill or context file)
+1. Create target file (supporting file in skill)
 2. Move content to target
-3. Add skill/context reference in agent
+3. Add skill reference in agent
 4. Remove original content from agent
 
 ### Step 5: Update References
 
 1. Update agent's `capability-needs` if new skill
-2. Update agent's `context-category-needs` if context changed
-3. Update registries (skills.json, agents.json)
-4. Validate with Discovery Engine
+2. Update registries (skills.json, agents.json)
+3. Validate with Discovery Engine
 
 ---
 
@@ -218,7 +186,7 @@ Use the decision tree above to determine:
 **Classification:**
 - Type: Domain knowledge (technical architecture)
 - Reason: Explains WHAT the system is, not HOW to do tasks
-- Decision: Could be context OR skill knowledge file
+- Decision: Belongs in a skill knowledge file
 
 **Action:** Create `DISCOVERY-ENGINE-ARCHITECTURE.md` in architecture knowledge skill
 
@@ -254,9 +222,6 @@ Use the decision tree above to determine:
 
 | Content Type | Location | Access Method |
 |--------------|----------|---------------|
-| Business rules | context/business-*.md | context-category-needs |
-| Technical patterns | context/technical-*.md | context-category-needs |
-| Process standards | context/process-*.md | context-category-needs |
 | Reusable workflows | skills/{taxonomy}/{id}/ | capability-needs |
 | Examples/templates | skills/.../EXAMPLES.md | On-demand |
 | Agent orchestration | agents/ai-{name}.md | Direct |
@@ -266,15 +231,7 @@ Use the decision tree above to determine:
 
 ## Anti-Patterns
 
-### Anti-Pattern 1: Domain Knowledge in Agent
-
-**Wrong:** Agent file contains 200 lines explaining business rules
-
-**Right:** Business rules in context file, agent references via context-category-needs
-
----
-
-### Anti-Pattern 2: Duplicated Workflows
+### Anti-Pattern 1: Duplicated Workflows
 
 **Wrong:** Same git workflow in 3 different agents
 
@@ -282,7 +239,7 @@ Use the decision tree above to determine:
 
 ---
 
-### Anti-Pattern 3: Examples in Agent
+### Anti-Pattern 2: Examples in Agent
 
 **Wrong:** Agent contains 150 lines of code examples
 
@@ -290,7 +247,7 @@ Use the decision tree above to determine:
 
 ---
 
-### Anti-Pattern 4: Inline Reference Docs
+### Anti-Pattern 3: Inline Reference Docs
 
 **Wrong:** Agent contains API documentation
 

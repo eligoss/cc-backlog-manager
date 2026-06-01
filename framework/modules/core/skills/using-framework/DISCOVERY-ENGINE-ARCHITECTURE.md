@@ -32,11 +32,6 @@ Framework v12.0 implements **discovery-driven architecture** where agents and sk
    "git-workflow-management" → maps to skill "committing-code"
 
 3. Skills auto-loaded at agent invocation time
-
-4. Context files auto-loaded based on context-category-needs:
-   business: advanced → loads business-advanced context files
-   technical: basic → loads technical-basic context files
-   process: advanced → loads process-advanced context files
 ```
 
 ---
@@ -92,10 +87,6 @@ capability-needs:
   - architecture-design
   - quality-assurance
   - markdown-formatting
-context-category-needs:
-  business: advanced
-  technical: expert
-  process: advanced
 token-budget: 15000
 ---
 ```
@@ -119,11 +110,6 @@ Capability Needs: architecture-design, quality-assurance, markdown-formatting
 Discovered Skills:
 - verifying-quality (quality-assurance)
 - validating-markdown (markdown-formatting)
-
-Context Files Auto-Loaded:
-- business-advanced: [...business context files...]
-- technical-expert: [...technical context files...]
-- process-advanced: [...process context files...]
 ```
 
 ---
@@ -201,7 +187,6 @@ python3 src/framework/discovery_engine.py validate
 - All skills in skills.json are valid
 - All capabilities in discovery-map.json exist
 - All agent capability-needs have matching skills in discovery-map
-- All context-category-needs resolve to context files
 - No orphaned capabilities (defined but unused)
 - No missing capabilities (needed but not mapped)
 
@@ -283,47 +268,6 @@ python3 src/framework/discovery_engine.py validate
 git add ai/registries/agents.json ai/registries/skills.json ai/registries/discovery-map.json
 git commit -m "feat(framework): add {new-capability} capability to discovery system"
 ```
-
----
-
-## Context-Category-Needs
-
-Replaced the old loading-matrix with semantic context declarations.
-
-**Old (v11.1):** Hardcoded loading-matrix in registry.yml specified which context files each agent loads
-
-**New (v12.0):** Agents declare business/technical/process levels, Discovery Engine finds matching context files
-
-**Pattern:**
-```yaml
-context-category-needs:
-  business: none|basic|advanced|expert
-  technical: none|basic|advanced|expert
-  process: none|basic|advanced|expert
-```
-
-**Example: ai-architect.md**
-```yaml
-context-category-needs:
-  business: advanced  # Loads all business-advanced context files
-  technical: expert   # Loads all technical-expert context files
-  process: advanced   # Loads all process-advanced context files
-```
-
-**Discovery Engine Resolution:**
-1. Reads context-category-needs from agent
-2. Queries context.json for matching files:
-   - business=advanced → loads integration-systems.md, framework-scripts-inventory.md
-   - technical=expert → loads syncing-with-jira patterns
-   - process=advanced → loads organizing-backlog.md, planning-phases.md
-3. Auto-loads context files at agent invocation time
-4. Validates: All declared levels have matching context files
-
-**Benefits:**
-- Semantic declaration (role-based, not file-based)
-- Auto-discovery (new context files automatically available)
-- Layered loading (progressive disclosure)
-- Single source of truth (context.json defines all mappings)
 
 ---
 

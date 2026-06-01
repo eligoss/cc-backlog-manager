@@ -289,10 +289,6 @@ capability-needs:
   - framework-development
   - git-workflow-management
   - quality-assurance
-context-category-needs:
-  business: basic
-  technical: advanced
-  process: advanced
 token-budget: 2500
 ---
 # Framework Developer Agent`;

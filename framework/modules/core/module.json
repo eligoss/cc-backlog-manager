@@ -17,10 +17,8 @@
       "verifying-quality",
       "validating-markdown",
       "using-mcp",
-      "building-context",
       "building-skills",
       "using-framework",
-      "using-context",
       "validating-links",
       "building-framework",
       "managing-versions",
@@ -98,11 +96,6 @@
   },
   "requires": {},
   "optional-dependencies": [],
-  "context": {
-    "business": [],
-    "technical": [],
-    "process": []
-  },
   "entry-points": {
     "hooks": {
       "pre-commit": [
