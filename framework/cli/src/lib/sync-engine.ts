@@ -399,8 +399,8 @@ export class SyncEngine {
    * Sync module templates to .claude/templates/{module}/.
    *
    * Each module may have a templates/ directory at its root containing
-   * template files (e.g., world templates for writer module). These are
-   * deployed to .claude/templates/{module-id}/ for use by CLI commands.
+   * template files. These are deployed to .claude/templates/{module-id}/
+   * for use by CLI commands.
    *
    * @param modules - List of installed module manifests
    * @returns List of sync actions performed

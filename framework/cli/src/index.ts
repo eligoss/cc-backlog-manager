@@ -41,18 +41,6 @@ import { createCreateSkillCommand } from "./commands/create-skill.js";
 import { createCreateModuleCommand } from "./commands/create-module.js";
 import { createSkillCommand } from "./commands/skill/index.js";
 import { createBuildCommand } from "./commands/build.js";
-import { createInitCommand } from "./commands/writer/init.js";
-import { createCreatePartCommand } from "./commands/writer/create-part.js";
-import { createCreateChapterCommand } from "./commands/writer/create-chapter.js";
-import { createCreateSceneCommand } from "./commands/writer/create-scene.js";
-import { createCreateCharacterCommand } from "./commands/writer/create-character.js";
-import { createValidateCommand as createValidateWriterCommand } from "./commands/writer/validate.js";
-import { createBuildCommand as createBuildWriterCommand } from "./commands/writer/build.js";
-import { createAnalyzeCommand as createAnalyzeWriterCommand } from "./commands/writer/analyze.js";
-import { createExportCommand as createExportWriterCommand } from "./commands/writer/export.js";
-import { createValidateImmutabilityCommand } from "./commands/writer/validate-immutability.js";
-import { createLockFactCommand } from "./commands/writer/lock-fact.js";
-import { createUnlockFactCommand } from "./commands/writer/unlock-fact.js";
 import { createGenerateCommandsCommand } from "./commands/generate-commands.js";
 import { createGenerateAgentsCommand } from "./commands/generate-agents.js";
 import { createTestCommand } from "./commands/test.js";
@@ -257,26 +245,6 @@ const planning = program
 
 planning.addCommand(createCreatePlanCommand());
 planning.addCommand(createValidatePlanCommand());
-
-// Writer commands
-const writer = program
-  .command("writer")
-  .description(
-    "Manage fantasy book writing (create parts, chapters, scenes, characters)",
-  );
-
-writer.addCommand(createInitCommand());
-writer.addCommand(createCreatePartCommand());
-writer.addCommand(createCreateChapterCommand());
-writer.addCommand(createCreateSceneCommand());
-writer.addCommand(createCreateCharacterCommand());
-writer.addCommand(createValidateWriterCommand());
-writer.addCommand(createBuildWriterCommand());
-writer.addCommand(createAnalyzeWriterCommand());
-writer.addCommand(createExportWriterCommand());
-writer.addCommand(createValidateImmutabilityCommand());
-writer.addCommand(createLockFactCommand());
-writer.addCommand(createUnlockFactCommand());
 
 // Template commands
 program.addCommand(createTemplateCommandGroup());

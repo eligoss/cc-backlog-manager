@@ -124,40 +124,6 @@ describe('CLI Type Safety Integration Tests', () => {
     });
   });
 
-  describe('writer build command options', () => {
-    it('should accept --watch option', () => {
-      const result = execCLI('writer build --help');
-      expect(result.stdout).toContain('-w, --watch');
-    });
-
-    it('should accept --verbose option', () => {
-      const result = execCLI('writer build --help');
-      expect(result.stdout).toContain('-v, --verbose');
-    });
-
-    it('should accept --path option', () => {
-      const result = execCLI('writer build --help');
-      expect(result.stdout).toContain('-p, --path');
-    });
-  });
-
-  describe('writer analyze command options', () => {
-    it('should accept --output option', () => {
-      const result = execCLI('writer analyze --help');
-      expect(result.stdout).toContain('-o, --output');
-    });
-
-    it('should accept --verbose option', () => {
-      const result = execCLI('writer analyze --help');
-      expect(result.stdout).toContain('-v, --verbose');
-    });
-
-    it('should accept --path option', () => {
-      const result = execCLI('writer analyze --help');
-      expect(result.stdout).toContain('-p, --path');
-    });
-  });
-
   describe('agent run command options', () => {
     it('should accept --model option', () => {
       const result = execCLI('agent run --help');
@@ -207,19 +173,6 @@ describe('Command Option Default Values', () => {
     });
   });
 
-  describe('writer build command', () => {
-    it('should use default path . when not specified', () => {
-      const result = execCLI('writer build --help');
-      expect(result.stdout).toContain('.');
-    });
-  });
-
-  describe('writer analyze command', () => {
-    it('should use default output build/analysis when not specified', () => {
-      const result = execCLI('writer analyze --help');
-      expect(result.stdout).toContain('build/analysis');
-    });
-  });
 });
 
 describe('Command Option Error Handling', () => {

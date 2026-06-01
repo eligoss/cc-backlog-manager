@@ -135,7 +135,6 @@ Intelligence gathering is the FIRST step. After synthesizing scout results and e
 | ai-app-developer     | `verifying-quality`                 | SOLID/DRY, test coverage, no breaking changes, linter                       |
 | ai-framework-manager | `building-framework`                | Registry consistency, discovery-map, module.json, backward compat           |
 | ai-architect         | `designing-architecture`            | Pattern coherence, constraint satisfaction, trade-off documentation         |
-| ai-book-writer       | `building-worlds` / `writing-prose` | World consistency, style adherence, continuity                              |
 | ai-ios-developer     | `verifying-quality`                 | SOLID/DRY, HIG compliance (via ai-hig-reviewer), tests                      |
 
 **Never skip verification.** Intelligence gathering improves input quality; verification ensures output quality.

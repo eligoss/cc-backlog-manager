@@ -107,9 +107,6 @@ const STRICT_COMMAND_FILES = [
   'commands/update.ts',
   'commands/backlog/create-ticket.ts',
   'commands/backlog/validate.ts',
-  'commands/writer/build.ts',
-  'commands/writer/analyze.ts',
-  'commands/writer/validate.ts',
 ];
 
 /**

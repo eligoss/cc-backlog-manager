@@ -678,7 +678,7 @@ describe('cli-instrumentation', () => {
 
       await recordInitCommand(
         'large-project',
-        ['core', 'planning', 'coding', 'jira', 'confluence', 'reporting'],
+        ['core', 'planning', 'coding', 'jira', 'confluence', 'backlog'],
         1000,
         true
       );

@@ -356,18 +356,6 @@ describe('Init Command with MCP Integration', () => {
       expect(await fs.pathExists(path.join(testDir, 'backlog', 'milestones'))).toBe(true);
     });
 
-    it('should deduplicate directories when multiple modules declare the same one', async () => {
-      // Both confluence and reporting declare 'reports' — only one reports/ dir should be created
-      execFileSync(
-        process.execPath,
-        [CLI_DIST, 'init', 'dedup-test', '--no-interactive', '--no-git', '--modules', 'confluence,reporting'],
-        { cwd: testDir, env: { ...process.env, NO_COLOR: '1' }, timeout: 60000 }
-      );
-
-      // Directory exists (created once, not twice — fs.ensureDir is idempotent so no error)
-      expect(await fs.pathExists(path.join(testDir, 'reports'))).toBe(true);
-    });
-
     it('should not fail when module declares no directories', () => {
       // core module declares no directories — init should complete without error
       // and must not create any module-specific dirs like backlog/ or reports/

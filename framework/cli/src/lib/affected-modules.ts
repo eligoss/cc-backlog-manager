@@ -57,13 +57,11 @@ const FILE_TO_MODULE_MAPPING: Array<{ pattern: RegExp; moduleId: string }> = [
   { pattern: /^framework\/modules\/backlog\//, moduleId: 'backlog' },
   { pattern: /^framework\/modules\/confluence\//, moduleId: 'confluence' },
   { pattern: /^framework\/modules\/coding\//, moduleId: 'coding' },
-  { pattern: /^framework\/modules\/writer\//, moduleId: 'writer' },
   { pattern: /^framework\/modules\/planning\//, moduleId: 'planning' },
   { pattern: /^framework\/modules\/core\//, moduleId: 'core' },
 
   // CLI command implementations (map to their modules)
   { pattern: /^framework\/cli\/src\/commands\/backlog\//, moduleId: 'backlog' },
-  { pattern: /^framework\/cli\/src\/commands\/writer\//, moduleId: 'writer' },
   { pattern: /^framework\/cli\/src\/commands\/planning\//, moduleId: 'planning' },
   { pattern: /^framework\/cli\/src\/commands\/confluence\//, moduleId: 'confluence' },
 
@@ -79,10 +77,8 @@ const FILE_TO_MODULE_MAPPING: Array<{ pattern: RegExp; moduleId: string }> = [
   // AI directory files (skills, agents, context)
   { pattern: /^ai\/skills\/.*backlog/, moduleId: 'backlog' },
   { pattern: /^ai\/skills\/.*confluence/, moduleId: 'confluence' },
-  { pattern: /^ai\/skills\/.*writer/, moduleId: 'writer' },
   { pattern: /^ai\/agents\/.*backlog/, moduleId: 'backlog' },
   { pattern: /^ai\/agents\/.*confluence/, moduleId: 'confluence' },
-  { pattern: /^ai\/agents\/.*writer/, moduleId: 'writer' },
   { pattern: /^ai\//, moduleId: 'core' },
 
   // Deployed files
@@ -101,9 +97,6 @@ export const MODULE_TEST_PATTERNS: Record<string, string[]> = {
   ],
   confluence: [
     'confluence',  // Matches any test file with 'confluence' in path
-  ],
-  writer: [
-    'writer',  // Matches any test file with 'writer' in path
   ],
   planning: [
     'planning',  // Matches any test file with 'planning' in path

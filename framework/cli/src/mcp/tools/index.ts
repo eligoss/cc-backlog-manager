@@ -12,7 +12,6 @@ import { confluenceTools } from './confluence.js';
 import { planningTools } from './planning.js';
 import { templateTools } from './template.js';
 import { skillTools } from './skill.js';
-import { writerTools } from './writer.js';
 import { agentTools } from './agent.js';
 import { createTools } from './create.js';
 import type { MCPTool } from '../types.js';
@@ -27,7 +26,6 @@ export const allTools: MCPTool[] = [
   ...planningTools,
   ...templateTools,
   ...skillTools,
-  ...writerTools,
   ...agentTools,
   ...createTools,
 ];
@@ -43,7 +41,6 @@ export function getToolsByCategory(): Record<string, MCPTool[]> {
     planning: planningTools,
     template: templateTools,
     skill: skillTools,
-    writer: writerTools,
     agent: agentTools,
     create: createTools,
   };
@@ -64,7 +61,6 @@ export {
   planningTools,
   templateTools,
   skillTools,
-  writerTools,
   agentTools,
   createTools,
 };
