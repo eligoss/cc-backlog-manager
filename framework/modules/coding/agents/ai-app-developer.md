@@ -97,7 +97,6 @@ These guides are source-of-truth for each repository (NOT duplicated in framewor
 All directory paths, file locations, and metadata are defined in the registry system:
 - **agents.json** - Agent definitions, capability-needs, token budgets
 - **skills.json** - Skill definitions, capabilities-provided
-- **context.json** - Context file structure and responsibilities
 - **discovery-map.json** - Capability mappings (single source of truth)
 
 ---

@@ -47,7 +47,6 @@ Replaced monolithic registry.yml with focused JSON files:
 | agents.json | 4.4KB | Agent metadata with capability-needs |
 | skills.json | 5.6KB | Skill metadata with capabilities-provided |
 | discovery-map.json | 3.1KB | Capability mappings (single source of truth) |
-| context.json | 3.2KB | Context file metadata with responsibility schemas |
 | deployment.json | 548B | Scripts and MCP server config |
 | operations.json | 260B | Jira/Confluence configuration |
 

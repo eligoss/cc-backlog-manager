@@ -149,17 +149,6 @@ Orchestration steps (execution delegated):
 
 ---
 
-### Task: Update Context Files
-
-Orchestration steps (file updates delegated):
-
-1. **Identify changes** — What is outdated, new, or missing? Which context category and level is affected?
-2. **Check schema** — Review responsibility boundaries in `context.json`. Ensure changes fit the schema and stay within token budgets.
-3. **Delegate updates** — Dispatch `ai-framework-developer` to edit context files and update `context.json` registry entries.
-4. **Validate** — Verify affected agents still discover context correctly. Check token budgets not exceeded.
-
----
-
 ### Task: Update Agent Files
 
 Orchestration steps (file edits delegated):
@@ -193,7 +182,6 @@ Framework registries live in `.claude/registries/` (installed project) and `fram
 - `agents.json` — Agent definitions, capability-needs, token budgets
 - `skills.json` — Skill definitions, capabilities-provided
 - `discovery-map.json` — Capability mappings (single source of truth)
-- `context.json` — Context file structure and responsibilities
 
 After any structural change, verify registry synchronization. Use `agentic-framework routes sync` to update `routes.yml`.
 
