@@ -175,6 +175,20 @@ export class SyncEngine {
         const skillName = path.basename(skillDir);
         const targetPath = path.join(targetDir, skillName);
 
+        // Copy-once: never overwrite a user-filled project-knowledge skill.
+        if (
+          (await this.isProjectKnowledgeSkill(skillDir)) &&
+          (await fs.pathExists(targetPath))
+        ) {
+          items.push({
+            name: skillName,
+            source: skillDir,
+            target: targetPath,
+            action: "skipped",
+          });
+          continue;
+        }
+
         try {
           await this.copySkillDirectory(skillDir, targetPath);
 
@@ -1256,6 +1270,28 @@ export class SyncEngine {
       // If parsing fails, default to both
     }
     return "both";
+  }
+
+  /**
+   * Read the project-knowledge marker from a source skill's SKILL.md frontmatter.
+   * Project-knowledge skills ship as user-filled templates and must be copied
+   * once (never overwritten on re-sync) to preserve filled-in content.
+   */
+  private async isProjectKnowledgeSkill(skillDir: string): Promise<boolean> {
+    try {
+      const content = await fs.readFile(
+        path.join(skillDir, "SKILL.md"),
+        "utf-8",
+      );
+      const match = content.match(/^---\n([\s\S]*?)\n---/);
+      if (match) {
+        const frontmatter = yaml.parse(match[1]) as Record<string, unknown>;
+        return frontmatter["project-knowledge"] === true;
+      }
+    } catch {
+      // If parsing fails, treat as a normal skill (safe default: overwrite)
+    }
+    return false;
   }
 
   /**
