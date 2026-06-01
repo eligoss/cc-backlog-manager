@@ -178,17 +178,23 @@ In `project-resolver.test.ts` remove the routes-marker detection test(s) (a proj
 
 **Files:** modify `src/lib/path-resolver.ts`, `src/lib/cli-context.ts`; update `path-resolver.test.ts`, `cli-context.test.ts`, `backlog/__tests__/path-consistency.test.ts`.
 
-> **Why safe:** routes-based path resolution is already inert (the resolver's keys never matched routes.yml's structure, so `DEFAULT_PATHS` already wins). Removing the `RoutesConfig` parameter/loader is **dead-code removal with no behavior change**. Verified end-to-end in Step 6.
+> **Why safe (exhaustively verified):** every `this.resolve(<key>)` accessor in `path-resolver.ts` queries a key — `backlog.tickets`, `plans.root`, `planning.root`, `context.root`, `agents.root`, `skills.root`, `registries.root` — that is **absent** from the actual `routes.yml` structure (which only has `claude.*`, `modules.*`, `framework.*`, `paths.*`, `registries.{agents,skills,…}` but no `.root`). So each already returns null → `DEFAULT_PATHS`. The rich `modules.*`/`framework.*`/`paths.*` keys in routes.yml are **never resolved by any accessor** — they were navigation-only data. Removing the `RoutesConfig` loader is therefore **dead-code removal with no behavior change**.
+
+> **External callers of `resolve()` (must handle, not just delete):** `resolve()` is public and called by `src/commands/backlog/validate.ts` and `src/commands/backlog/validate-enhanced.ts` as `ctx.paths.resolve('backlog') || path.join(...)`. `routes.yml` has no `backlog` key, so these already always use their fallback. These backlog-validate commands are NOT removed in Plan 5. So either keep a `resolve()` that always returns `null`, OR update both callers to drop the `ctx.paths.resolve('backlog') ||` prefix. This plan does the latter (clean removal) — see Step 2b.
 
 - [ ] **Step 1: Survey**
 
-Run: `cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && grep -n "RoutesConfig\|routesConfig\|loadRoutesConfig\|resolve(" src/lib/path-resolver.ts src/lib/cli-context.ts`.
+Run: `cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && grep -n "RoutesConfig\|routesConfig\|loadRoutesConfig\|resolve(" src/lib/path-resolver.ts src/lib/cli-context.ts` and `grep -rn "\.paths\.resolve(\|ctx.paths.resolve" src --include="*.ts" | grep -v __tests__`.
 
 - [ ] **Step 2: `path-resolver.ts` — make it DEFAULT_PATHS-only**
 
 Remove the `RoutesConfig` interface, the `routesConfig` constructor parameter/field, the `resolve(dotPath)` method (which read routes), and `parseRoutesYml`. Each semantic accessor (`getTicketPath`, `getPlanPath`, `getContextPath`, `getAgentPath`, `getSkillPath`, …) currently does `const x = this.resolve('…') || path.join(projectRoot, DEFAULT_PATHS.…)`; simplify each to `path.join(this.projectRoot, DEFAULT_PATHS.…)` (with the existing category/ticket-type joins preserved). Update `createPathResolverSync` (and any async factory) to no longer accept/pass `routesConfig`.
 
 > `getContextPath()`/`DEFAULT_PATHS.context` are vestigial (context system removed) but harmless — leave the default in place; deleting `getContextPath` is out of scope (no caller cleanup here). If `tsc` shows `getContextPath` has zero callers, you may delete it; otherwise leave it.
+
+- [ ] **Step 2b: Update the two external `resolve('backlog')` callers**
+
+In `src/commands/backlog/validate.ts` (~line 96) and `src/commands/backlog/validate-enhanced.ts` (~line 92), replace `ctx.paths.resolve('backlog') || path.join(ctx.projectRoot, '<fallback>')` with just `path.join(ctx.projectRoot, '<fallback>')` (preserve each file's existing fallback string — `'backlog'` and `'ai/backlog'` respectively). This removes the only external dependency on `resolve()`, so the method can be deleted cleanly in Step 2. Verify no other caller remains: `grep -rn "\.paths\.resolve(\|\.resolve('" src --include="*.ts" | grep -v __tests__ | grep -v "path.resolve\|Promise.resolve"` → no PathResolver `.resolve(` matches.
 
 - [ ] **Step 3: `cli-context.ts` — stop loading routes.yml**
 
@@ -200,7 +206,7 @@ Remove `loadRoutesConfigSync` (and its `routesFilePath`/`routes.yml` reads), rem
 
 - [ ] **Step 5: Update + run tests**
 
-In `path-resolver.test.ts`: remove tests that pass a `routesConfig` / assert routes-derived resolution; keep/adjust the DEFAULT_PATHS resolution tests (these now describe the only behavior). In `cli-context.test.ts`: remove routes-config loading assertions. In `backlog/__tests__/path-consistency.test.ts`: ensure ticket/plan path assertions still pass against DEFAULT_PATHS. Run: `npx jest path-resolver cli-context path-consistency 2>&1 | tail -10`. PASS.
+In `path-resolver.test.ts`: remove tests that pass a `routesConfig` / assert routes-derived resolution (and any test of the deleted `resolve()` method); keep/adjust the DEFAULT_PATHS resolution tests (these now describe the only behavior). In `cli-context.test.ts`: remove routes-config loading assertions. In `backlog/__tests__/path-consistency.test.ts`: ensure ticket/plan path assertions still pass against DEFAULT_PATHS. Also run the backlog validate tests since their `resolve('backlog')` callers changed. Run: `npx jest path-resolver cli-context path-consistency backlog 2>&1 | tail -12`. PASS.
 
 - [ ] **Step 6: Type-check, lint, commit**
 
@@ -248,9 +254,9 @@ ls "$SMOKE/.claude/skills" | grep knowing && ls "$SMOKE/references.yml" && ls "$
 node /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli/dist/index.js status -p "$SMOKE" 2>&1 | tail -5
 echo "SMOKE=$SMOKE"
 ```
-Then run any backlog path-resolution CLI you have (e.g. `backlog` subcommand or rely on `path-consistency.test.ts` already proving DEFAULT_PATHS resolution). Clean up: `rm -rf /tmp/p4-smoke-*`.
+Clean up: `rm -rf /tmp/p4-smoke-*`.
 
-Expected: `init exit=0`, no routes.yml, knowing-* + references.yml + .agentic-framework.json present, `status` works (proving root detection via `.agentic-framework.json` alone).
+Expected: `init exit=0`, no routes.yml, knowing-* + references.yml + .agentic-framework.json present, `status` works. This smoke test proves **root detection via `.agentic-framework.json` alone** (no routes.yml) and that `init` no longer emits routes.yml. **Ticket/plan path resolution against DEFAULT_PATHS is covered by `backlog/__tests__/path-consistency.test.ts` in the gate (Step 3)** — that is the authoritative check for that claim, not this smoke test.
 
 - [ ] **Step 5: Confirm source survived the emit build, then commit**
 
