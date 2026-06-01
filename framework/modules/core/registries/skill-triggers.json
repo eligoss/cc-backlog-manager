@@ -152,20 +152,6 @@
         "convert.*adf"
       ]
     },
-    "building-reports": {
-      "description": "Report generation and metrics collection",
-      "triggers": [
-        "report",
-        "metrics",
-        "status report",
-        "executive summary"
-      ],
-      "prompt-patterns": [
-        "generate.*report",
-        "create.*report",
-        "build.*metrics"
-      ]
-    },
     "organizing-backlog": {
       "description": "Backlog organization and ticket lifecycle",
       "triggers": [
@@ -178,20 +164,6 @@
         "organize.*backlog",
         "plan.*sprint",
         "break.*epic"
-      ]
-    },
-    "building-worlds": {
-      "description": "World design and magic system creation",
-      "triggers": [
-        "world building",
-        "magic system",
-        "fantasy world",
-        "culture design"
-      ],
-      "prompt-patterns": [
-        "create.*world",
-        "design.*magic",
-        "build.*culture"
       ]
     }
   }

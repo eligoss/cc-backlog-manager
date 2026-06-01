@@ -233,7 +233,7 @@
         },
         "category": {
           "type": "string",
-          "enum": ["core", "integration", "workflow", "development", "documentation", "reporting"]
+          "enum": ["core", "integration", "workflow", "development", "documentation"]
         }
       }
     }
