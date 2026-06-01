@@ -115,12 +115,6 @@ export const settingsJsonTemplate: SettingsJson = {
         hooks: [
           {
             type: "command",
-            command:
-              "{{PROJECT_ROOT}}/.claude/hooks/subagent-context-loader.sh",
-            statusMessage: "Loading context for subagent...",
-          },
-          {
-            type: "command",
             command: "{{PROJECT_ROOT}}/.claude/hooks/skill-reminder.sh",
             statusMessage: "Checking available skills...",
           },

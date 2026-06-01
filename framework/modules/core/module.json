@@ -165,7 +165,6 @@
         {
           "matcher": ".*",
           "scripts": [
-            "subagent-context-loader.sh",
             "skill-reminder.sh"
           ]
         }

@@ -1016,8 +1016,8 @@ describe.skip('SyncEngine', () => {
         '#!/bin/bash\necho "stop hook"'
       );
       await fs.writeFile(
-        path.join(coreHooksDir, 'subagent-context-loader.sh'),
-        '#!/bin/bash\necho "subagent hook"'
+        path.join(coreHooksDir, 'skill-reminder.sh'),
+        '#!/bin/bash\necho "skill reminder hook"'
       );
 
       // Run syncHooks
@@ -1032,14 +1032,14 @@ describe.skip('SyncEngine', () => {
       expect(hookNames).toContain('pre-write-quality.sh');
       expect(hookNames).toContain('post-write-validate.sh');
       expect(hookNames).toContain('stop-quality-check.sh');
-      expect(hookNames).toContain('subagent-context-loader.sh');
+      expect(hookNames).toContain('skill-reminder.sh');
 
       // Verify files exist in target
       const targetDir = path.join(projectDir, '.claude/hooks');
       expect(await fs.pathExists(path.join(targetDir, 'pre-write-quality.sh'))).toBe(true);
       expect(await fs.pathExists(path.join(targetDir, 'post-write-validate.sh'))).toBe(true);
       expect(await fs.pathExists(path.join(targetDir, 'stop-quality-check.sh'))).toBe(true);
-      expect(await fs.pathExists(path.join(targetDir, 'subagent-context-loader.sh'))).toBe(true);
+      expect(await fs.pathExists(path.join(targetDir, 'skill-reminder.sh'))).toBe(true);
     });
 
     it('should set executable permissions on hook scripts', async () => {
