@@ -95,23 +95,38 @@ every context-coupled artifact explicitly so deletion is complete, not partial.
 
 ## 5. The 3 Knowledge Skills (replace context files)
 
-Authored as normal skills, **Tier-2 auto-discovered** via `capability-needs`. They
-ship in `core` as **templates** that `init` deploys to the project's
+**Delivery mechanism — on-demand native skills (decided after verifying the engine).**
+A code trace established that the framework has two distinct mechanisms:
+
+- The `subagent-context-loader` hook **injects file content** (always present).
+- The discovery engine + tiers only **resolve skill names**; a skill's body loads
+  only when the agent **invokes** it via the Skill tool. *No tier — including Tier-1
+  "essential" — auto-injects skill content.*
+
+The chosen model is **on-demand native skills**: the 3 knowledge skills are ordinary
+Claude Code skills in `.claude/skills/`, surfaced by their `description`, invoked when
+relevant, and nudged by the `skill-reminder` hook. This is the maximal-simplification
+path; the loader hook is deleted entirely (§6).
+
+They ship in `core` as **templates** that `init` deploys to the project's
 `.claude/skills/`, where the user fills them in for their target project.
 
-| Skill | Replaces | Capability | Holds |
-|-------|----------|------------|-------|
-| `knowing-the-codebase` | technical-* context | `project-technical-knowledge` | Target app's stack, architecture, conventions, **testing & CI**, git workflow |
-| `knowing-the-domain` | business-* context | `project-domain-knowledge` | Platform, business domain, users, product context |
-| `knowing-backlog` | process-* context | `project-backlog-knowledge` | This project's Jira project key, board/sprint structure, workflow states, ticket-type conventions, labels/components, definition-of-ready/done, Jira/Confluence integration config |
+| Skill | Replaces | Holds |
+|-------|----------|-------|
+| `knowing-the-codebase` | technical-* context | Target app's stack, architecture, conventions, **testing & CI**, git workflow |
+| `knowing-the-domain` | business-* context | Platform, business domain, users, product context |
+| `knowing-backlog` | process-* context (incl. `backlog/module.json` → `context.process: backlog-workflow.md`) | This project's Jira project key, board/sprint structure, workflow states, ticket-type conventions, labels/components, definition-of-ready/done, Jira/Confluence integration config |
 
 Generic non-backlog process knowledge (CI, testing, git) folds into
 `knowing-the-codebase` as technical convention — keeping a clean trio.
 
-**Agent migration:** Each agent's frontmatter swaps `context-category-needs`
-(e.g. `technical: advanced`) for the matching `capability-needs` entries
-(e.g. `project-technical-knowledge`). No new loading logic required — these are
-ordinary skills the existing engine already discovers.
+**Accepted trade-off & mitigation:** On-demand delivery means knowledge is *not*
+guaranteed present — the agent must choose to invoke it. To reduce skip risk:
+project-facing agents list the relevant `knowing-*` skill in their `available-skills`
+(Tier-3 reference), their prompts carry an explicit instruction to *invoke the relevant
+`knowing-*` skill before project work*, and the deployed `CLAUDE.md` states the same.
+These skills are **not** wired through `capability-needs` (that path resolves names for
+routing tables, not content injection — it would not change the on-demand behavior).
 
 ---
 
@@ -120,12 +135,19 @@ ordinary skills the existing engine already discovers.
 Every context-coupled artifact, listed for complete removal:
 
 - **Templates:** 9 files `framework/modules/core/templates/context/*-{basic,advanced,expert}.template.md`
-- **Level system:** basic/advanced/expert loading + token budgets
-- **Frontmatter:** `context-category-needs` on all agents → migrated to `capability-needs` (§5)
-- **Registry:** `context.json` generation in `registry-generator.ts`
-- **Hook:** the context-loading half of `subagent-context-loader` hook
+- **Level system:** basic/advanced/expert loading + token budgets (incl. `ContextLevel`,
+  `getCumulativeContextFiles`, `getContextFilesForAgent` in `discovery-engine.ts`)
+- **Frontmatter:** `context-category-needs` **removed** from all agents — in **both** the
+  hand-authored source `framework/modules/*/agents/*.md` *and* the generated
+  `agents.json` registry (agent-generator merges registry-over-frontmatter, so both must
+  be cleared). Not migrated to `capability-needs` — knowledge is on-demand (§5).
+- **Hook:** `subagent-context-loader` deleted **entirely** (it is context-only — clean removal)
+  and de-registered from `settings.json` hook config.
+- **Registry:** `context.json` generation in `registry-generator.ts`; `contextCategoryNeeds`
+  field in `AgentDefinition`
 - **Skills:** `using-context`, `building-context`
-- **`module.json`:** the `context:` block in every module manifest
+- **`module.json`:** the `context:` block in every module manifest + the `context` property
+  in `module.schema.json`
 - **CLI:** context-emitting paths in `discovery-engine.ts` / generators (skill & agent
   discovery paths are retained)
 
@@ -177,11 +199,18 @@ The CLAUDE.md "Trust Directive" is relaxed accordingly to permit native navigati
 
 1. **Copy** the `agentic-development-framework` source into `cc-backlog-manager`.
 2. **Delete** per §4 (modules), §6 (context machinery), §8 (routes), §9 (CLI).
-3. **Add** the 3 knowledge-skill templates (§5) and `references.yml` template (§7).
-4. **Migrate** all agent frontmatter `context-category-needs` → `capability-needs`.
-5. **Re-baseline** version to **v1.0.0**; update CLAUDE.md / README for new identity.
-6. **Verify**: build, run discovery, confirm no dangling context references, agents
-   resolve their `capability-needs`.
+3. **Update build/publish machinery** that enumerates modules (e.g.
+   `scripts/prepare-publish.js`, sync/bundle logic) so deleting `writer`/`reporting`
+   does not break the build or restore deleted files. *(Verify before relying on
+   "copy then delete" — prepare-publish is known to bundle modules and revert source
+   edits; it must be updated, not fought.)*
+4. **Add** the 3 knowledge-skill templates (§5) + `references.yml` template (§7);
+   wire `knowing-*` into project-facing agents' `available-skills` and prompt guidance.
+5. **Remove** `context-category-needs` from source agent `.md` frontmatter and from
+   `agents.json` (§6) — no capability migration.
+6. **Re-baseline** version to **v1.0.0**; update CLAUDE.md / README for new identity.
+7. **Verify**: build, run discovery, confirm no dangling context references, agents
+   resolve their `capability-needs`, and the 3 knowledge skills are discoverable.
 
 This preserves working machinery and renders the simplification as a clean,
 reviewable deletion diff.
@@ -191,14 +220,16 @@ reviewable deletion diff.
 ## 11. Success Criteria
 
 - Framework builds and the discovery engine runs with zero references to the deleted
-  context system.
-- All retained agents resolve their `capability-needs` (including the 3 new knowledge
-  capabilities).
+  context system (no `context-category-needs`, `context.json`, `ContextLevel`, or
+  context-loader references anywhere — source, registry, tests, schema).
+- All retained agents resolve their `capability-needs`; the 3 knowledge skills are
+  present in `.claude/skills/` and surfaced (description-based + `available-skills`).
 - `init` scaffolds a project with 3 fillable knowledge skills + `references.yml`,
   and no context templates or level system.
 - Jira/Confluence sync and scaffolding generators work unchanged.
 - `writer`, `reporting`, iOS coding artifacts, `routes.yml`, `routes sync`,
-  `using-context`, `building-context` are fully removed with no dangling references.
+  `using-context`, `building-context`, `subagent-context-loader` are fully removed
+  with no dangling references, and the build/publish step succeeds post-deletion.
 - Repo identity reset to v1.0.0 with updated entry-point docs.
 
 ---
@@ -208,6 +239,8 @@ reviewable deletion diff.
 | Risk | Mitigation |
 |------|------------|
 | Orphaned context-emitting code after partial deletion | §6 enumerates every artifact; verify no dangling reference per item |
-| Agents lose knowledge that context files used to inject | 3 knowledge skills are Tier-2 auto-discovered; migration maps each old category to a capability |
+| Agent proceeds without loading project knowledge (on-demand skip risk — accepted) | `knowing-*` in `available-skills`, explicit prompt + CLAUDE.md instruction to invoke before project work, `skill-reminder` nudges |
+| Frontmatter edits reverted by generators/publish | `context-category-needs` cleared in both source `.md` and `agents.json`; build/publish machinery updated (§10 step 3); verify after a build |
+| Deleting modules breaks build/publish enumeration | Update `prepare-publish.js`/bundle logic before relying on copy-then-delete (§10 step 3) |
 | `module.json` schema breaks when `context:` block removed | Update `module.schema.json` to drop the `context` property |
-| Removing `routes.yml` breaks discovery | Verified independent — discovery reads `skills.json`/`agents.json`, not `routes.yml` |
+| Removing `routes.yml` breaks discovery | Verified independent — discovery reads `skills.json`/`agents.json`, not `routes.yml`; `subagent-context-loader` also used `routes.yml` for root-detection and is being deleted, so re-confirm no other consumer |
