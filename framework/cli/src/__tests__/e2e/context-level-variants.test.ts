@@ -142,14 +142,14 @@ describe("Level-Based Context Loading and Agent Variants - Integration", () => {
       "ai-backlog-manager",
       "ai-architect",
       "ai-app-developer",
-      "ai-ios-developer",
       "ai-confluence-manager",
-      "ai-report-manager",
-      "ai-book-writer",
+      "ai-scout-backlog",
+      "ai-scout-codebase",
+      "ai-scout-knowledge",
     ];
 
-    it("should discover all 10 agents", () => {
-      expect(allAgents.length).toBeGreaterThanOrEqual(10);
+    it("should discover all 9 agents", () => {
+      expect(allAgents.length).toBe(9);
 
       for (const agentId of expectedAgents) {
         expect(allAgents.map((a) => a.id)).toContain(agentId);
@@ -181,7 +181,7 @@ describe("Level-Based Context Loading and Agent Variants - Integration", () => {
     it("should report correct stats", async () => {
       const result = await validator.validateAgentVariants();
 
-      expect(result.stats.checked).toBeGreaterThanOrEqual(10);
+      expect(result.stats.checked).toBe(9);
       expect(result.stats.failed).toBe(0);
     });
 
@@ -256,10 +256,7 @@ describe("Level-Based Context Loading and Agent Variants - Integration", () => {
         { path: "modules/backlog", agent: "ai-backlog-manager" },
         { path: "modules/coding", agent: "ai-architect" },
         { path: "modules/coding", agent: "ai-app-developer" },
-        { path: "modules/coding", agent: "ai-ios-developer" },
         { path: "modules/confluence", agent: "ai-confluence-manager" },
-        { path: "modules/reporting", agent: "ai-report-manager" },
-        { path: "modules/writer", agent: "ai-book-writer" },
       ];
 
       for (const { path: modulePath, agent } of modulesToCheck) {
@@ -276,7 +273,7 @@ describe("Level-Based Context Loading and Agent Variants - Integration", () => {
       }
     });
 
-    it("should have all 10 agents registered in module manifests", async () => {
+    it("should have all 9 agents registered in module manifests", async () => {
       const modules = discoveryEngine.getLoadedModules();
       const registeredAgents: string[] = [];
 
@@ -285,13 +282,13 @@ describe("Level-Based Context Loading and Agent Variants - Integration", () => {
         registeredAgents.push(...agents);
       }
 
-      expect(registeredAgents.length).toBeGreaterThanOrEqual(10);
+      expect(registeredAgents.length).toBe(9);
     });
   });
 
   describe("Real Agent Validation", () => {
     it("should load actual agent files from the framework", async () => {
-      expect(allAgents.length).toBeGreaterThanOrEqual(10);
+      expect(allAgents.length).toBe(9);
 
       // Verify each agent has required properties
       for (const agent of allAgents) {
@@ -302,17 +299,17 @@ describe("Level-Based Context Loading and Agent Variants - Integration", () => {
       }
     });
 
-    it("should verify the 10 agents have correct metadata", () => {
+    it("should verify the 9 agents have correct metadata", () => {
       const expectedAgents = [
         "ai-framework-manager",
         "ai-framework-developer",
         "ai-backlog-manager",
         "ai-architect",
         "ai-app-developer",
-        "ai-ios-developer",
         "ai-confluence-manager",
-        "ai-report-manager",
-        "ai-book-writer",
+        "ai-scout-backlog",
+        "ai-scout-codebase",
+        "ai-scout-knowledge",
       ];
 
       for (const agentId of expectedAgents) {

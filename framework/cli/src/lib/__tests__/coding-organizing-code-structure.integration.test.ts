@@ -139,7 +139,6 @@ describe('structuring-code Skill Integration', () => {
     it('should be listed alongside other coding skills', () => {
       expect(moduleJson.provides.skills).toContain('implementing-code');
       expect(moduleJson.provides.skills).toContain('designing-architecture');
-      expect(moduleJson.provides.skills).toContain('implementing-ios');
     });
   });
 
