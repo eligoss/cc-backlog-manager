@@ -209,7 +209,7 @@ apm-r-ai-agentic-framework/
 **Category Organization:**
 - Skills grouped by domain category (e.g., `coding/`, `jira/`, `planning/`)
 - Platform-specific skills go in their domain category, NOT separate platform folders
-- Example: `coding/implementing-ios/` (NOT `ios/implementing-ios/`)
+- Example: `coding/android-development-standards/` (NOT `android/android-development-standards/`)
 - This keeps related skills together while enabling future platform additions
 
 **Deployment (Auto-Synced):**

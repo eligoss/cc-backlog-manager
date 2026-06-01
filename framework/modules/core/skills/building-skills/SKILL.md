@@ -220,12 +220,11 @@ applicable-projects: any
 ```
 ✅ Reusable across **any project using that platform**
 ✅ Source: `ai/skills/{domain-category}/{platform}-{skill-name}/`
-✅ Example: `ai/skills/coding/implementing-ios/`
-✅ NOT in separate platform folder: ~~`ai/skills/ios/implementing-ios/`~~
-✅ Keeps related domain skills together (coding: generic + iOS + Android + Web)
+✅ Example: `ai/skills/coding/android-development-standards/`
+✅ NOT in separate platform folder: ~~`ai/skills/android/android-development-standards/`~~
+✅ Keeps related domain skills together (coding: generic + Android + Web)
 
 **Platform skill naming:** `{platform}-{descriptive-name}`
-- `implementing-ios` (iOS coding patterns)
 - `android-development-standards` (Android coding patterns)
 - `web-development-standards` (Web coding patterns)
 
