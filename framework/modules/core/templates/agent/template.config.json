@@ -1,0 +1,47 @@
+{
+  "$schema": "../../registries/schemas/template.schema.json",
+  "version": "1.0",
+  "templates": {
+    "agent.template": {
+      "output": "ai-{{name}}.md",
+      "description": "Create a new agent markdown file with standard structure",
+      "variables": {
+        "required": ["name", "capability", "description"],
+        "optional": ["role", "title", "variant", "delegatesTo", "tokenBudget", "businessLevel", "technicalLevel", "processLevel"],
+        "computed": ["date"]
+      },
+      "defaults": {
+        "role": "Agent Role",
+        "title": "Agent Title",
+        "variant": "full",
+        "delegatesTo": "[]",
+        "tokenBudget": "2500",
+        "businessLevel": "basic",
+        "technicalLevel": "basic",
+        "processLevel": "basic"
+      },
+      "validation": {
+        "name": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "minLength": 2,
+          "maxLength": 30
+        },
+        "capability": {
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "variant": {
+          "enum": ["interactive", "autonomous"]
+        },
+        "businessLevel": {
+          "enum": ["basic", "advanced", "expert"]
+        },
+        "technicalLevel": {
+          "enum": ["basic", "advanced", "expert"]
+        },
+        "processLevel": {
+          "enum": ["basic", "advanced", "expert"]
+        }
+      }
+    }
+  }
+}

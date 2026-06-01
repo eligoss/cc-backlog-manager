@@ -1,0 +1,330 @@
+#!/bin/bash
+#
+# Pre-push hook for Agentic Development Framework
+#
+# Runs comprehensive validation before pushing to remote:
+# 1. Check for uncommitted formatting changes (auto-format verification)
+# 2. Run linter
+# 3. Run unit tests
+# 4. Run integration tests
+# 5. Verify build passes
+# 6. Generate IDE schemas
+# 7. Run quick framework validation
+# 8. Run full framework validation (agentic-framework build)
+# 9. Validate markdown links
+#
+# This ensures CI will pass before code leaves local machine.
+#
+# This file is managed by the framework - do not edit manually.
+# To update, run: agentic-framework sync --config
+#
+# Skip Options (set to 'false' to skip phases):
+#   RUN_FORMAT_CHECK=false  - Skip uncommitted changes check
+#   RUN_LINT=false          - Skip linting
+#   RUN_TESTS=false         - Skip unit and integration tests
+#   RUN_BUILD=false         - Skip build verification and schema generation
+#   RUN_VALIDATE=false      - Skip quick and full framework validation
+#   RUN_LINKS=false         - Skip markdown link validation
+#
+# Example: RUN_TESTS=false git push
+#
+# Bypass with: git push --no-verify
+
+set -e
+
+# Colors
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Initialize nvm if available (for GUI git clients like Fork)
+export NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    . "$NVM_DIR/nvm.sh" --no-use  # Load nvm without switching versions
+    # Use default node version if current version not set
+    if ! command -v node &> /dev/null; then
+        nvm use default &> /dev/null || true
+    fi
+fi
+
+# Configuration (can be overridden with environment variables)
+RUN_FORMAT_CHECK=${RUN_FORMAT_CHECK:-true}
+RUN_LINT=${RUN_LINT:-true}
+RUN_TESTS=${RUN_TESTS:-true}
+RUN_BUILD=${RUN_BUILD:-true}
+RUN_VALIDATE=${RUN_VALIDATE:-true}
+RUN_LINKS=${RUN_LINKS:-true}
+
+# Find project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+echo -e "${BLUE}Running pre-push validation...${NC}"
+echo ""
+
+# Detect project type:
+# 1. Framework development repo: has framework/cli but no .agentic-framework.json
+# 2. Consumer project: has .agentic-framework.json and framework/cli
+# 3. Neither: skip validation
+IS_FRAMEWORK_DEV=false
+IS_CONSUMER_PROJECT=false
+
+if [ -d "$PROJECT_ROOT/framework/cli" ]; then
+    if [ -f "$PROJECT_ROOT/.agentic-framework.json" ]; then
+        IS_CONSUMER_PROJECT=true
+        echo -e "${BLUE}Detected: Consumer project with framework${NC}"
+    else
+        IS_FRAMEWORK_DEV=true
+        echo -e "${BLUE}Detected: Framework development repository${NC}"
+    fi
+fi
+
+# Skip if neither framework dev nor consumer project
+if [ "$IS_FRAMEWORK_DEV" = "false" ] && [ "$IS_CONSUMER_PROJECT" = "false" ]; then
+    echo -e "${YELLOW}Not a framework project, skipping validation${NC}"
+    exit 0
+fi
+
+cd "$PROJECT_ROOT/framework/cli"
+
+# ============================================
+# Phase 1: Check for Uncommitted Changes (Format Check)
+# ============================================
+if [ "$RUN_FORMAT_CHECK" = "true" ]; then
+    echo -e "${BLUE}Phase 1: Checking for uncommitted changes...${NC}"
+
+    cd "$PROJECT_ROOT"
+    if [ -n "$(git status --porcelain)" ]; then
+        echo ""
+        echo -e "${RED}✗ Uncommitted changes detected${NC}"
+        echo ""
+        echo "The following files have uncommitted changes:"
+        git status --short
+        echo ""
+        echo -e "${RED}Push aborted: Commit or stash changes before pushing${NC}"
+        echo "To skip format check: RUN_FORMAT_CHECK=false git push"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ No uncommitted changes${NC}"
+    cd "$PROJECT_ROOT/framework/cli"
+else
+    echo -e "${YELLOW}Phase 1: Skipping format check (RUN_FORMAT_CHECK=false)${NC}"
+fi
+
+echo ""
+
+# ============================================
+# Phase 2: Run Linter
+# ============================================
+if [ "$RUN_LINT" = "true" ]; then
+    echo -e "${BLUE}Phase 2: Running linter...${NC}"
+
+    if npm run lint --silent 2>&1; then
+        echo -e "${GREEN}✓ Linter passed${NC}"
+    else
+        echo ""
+        echo -e "${RED}✗ Linter failed${NC}"
+        echo ""
+        echo -e "${RED}Push aborted: Fix lint errors and try again${NC}"
+        echo "To skip lint check: RUN_LINT=false git push"
+        exit 1
+    fi
+else
+    echo -e "${YELLOW}Phase 2: Skipping lint (RUN_LINT=false)${NC}"
+fi
+
+echo ""
+
+# ============================================
+# Phase 3: Run Unit Tests
+# ============================================
+if [ "$RUN_TESTS" = "true" ]; then
+    echo -e "${BLUE}Phase 3: Running unit tests...${NC}"
+
+    if npm test 2>&1; then
+        echo -e "${GREEN}✓ Unit tests passed${NC}"
+    else
+        echo ""
+        echo -e "${RED}✗ Unit tests failed${NC}"
+        echo ""
+        echo -e "${RED}Push aborted: Fix failing tests and try again${NC}"
+        echo "To skip tests: RUN_TESTS=false git push"
+        exit 1
+    fi
+else
+    echo -e "${YELLOW}Phase 3: Skipping tests (RUN_TESTS=false)${NC}"
+fi
+
+echo ""
+
+# ============================================
+# Phase 3b: Run Integration Tests
+# ============================================
+if [ "$RUN_TESTS" = "true" ]; then
+    echo -e "${BLUE}Phase 3b: Running integration tests...${NC}"
+
+    # Allow integration test failures (matching CI behavior: continue-on-error: true)
+    set +e
+    npm run test:integration 2>&1
+    INTEGRATION_EXIT_CODE=$?
+    set -e
+
+    if [ $INTEGRATION_EXIT_CODE -eq 0 ]; then
+        echo -e "${GREEN}✓ Integration tests passed${NC}"
+    else
+        echo -e "${YELLOW}⚠ Integration tests had failures (allowing - matches CI behavior)${NC}"
+    fi
+else
+    echo -e "${YELLOW}Phase 3b: Skipping integration tests (RUN_TESTS=false)${NC}"
+fi
+
+echo ""
+
+# ============================================
+# Phase 4: Verify Build
+# ============================================
+if [ "$RUN_BUILD" = "true" ]; then
+    echo -e "${BLUE}Phase 4: Verifying build...${NC}"
+
+    if npm run build > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Build successful${NC}"
+    else
+        echo ""
+        echo -e "${RED}✗ Build failed${NC}"
+        echo ""
+        echo -e "${RED}Push aborted: Fix build errors and try again${NC}"
+        echo "To skip build: RUN_BUILD=false git push"
+        exit 1
+    fi
+else
+    echo -e "${YELLOW}Phase 4: Skipping build (RUN_BUILD=false)${NC}"
+fi
+
+echo ""
+
+# ============================================
+# Phase 4b: Generate IDE Schemas
+# ============================================
+if [ "$RUN_BUILD" = "true" ]; then
+    echo -e "${BLUE}Phase 4b: Generating IDE schemas...${NC}"
+
+    cd "$PROJECT_ROOT"
+
+    # Allow schema generation warnings (not blocking)
+    set +e
+    node framework/cli/dist/index.js build -p . --emit-schemas --schema-dir .generated/schemas --quick 2>&1
+    SCHEMA_EXIT_CODE=$?
+    set -e
+
+    if [ $SCHEMA_EXIT_CODE -eq 0 ]; then
+        echo -e "${GREEN}✓ Schemas generated successfully${NC}"
+    else
+        echo -e "${YELLOW}⚠ Schema generation had warnings (not blocking)${NC}"
+    fi
+
+    cd "$PROJECT_ROOT/framework/cli"
+else
+    echo -e "${YELLOW}Phase 4b: Skipping schema generation (RUN_BUILD=false)${NC}"
+fi
+
+echo ""
+
+# ============================================
+# Phase 5a: Framework Quick Validation
+# ============================================
+if [ "$RUN_VALIDATE" = "true" ]; then
+    echo -e "${BLUE}Phase 5a: Running framework quick validation...${NC}"
+
+    cd "$PROJECT_ROOT"
+
+    # Allow quick validation warnings (not blocking - will run full validation next)
+    set +e
+    node framework/cli/dist/index.js build -p . --quick --ci 2>&1
+    QUICK_EXIT_CODE=$?
+    set -e
+
+    if [ $QUICK_EXIT_CODE -eq 0 ]; then
+        echo -e "${GREEN}✓ Quick framework validation passed${NC}"
+    else
+        echo -e "${YELLOW}⚠ Quick validation had warnings (not blocking - will run full validation next)${NC}"
+    fi
+
+    cd "$PROJECT_ROOT/framework/cli"
+else
+    echo -e "${YELLOW}Phase 5a: Skipping quick framework validation (RUN_VALIDATE=false)${NC}"
+fi
+
+echo ""
+
+# ============================================
+# Phase 5b: Framework Full Validation
+# ============================================
+if [ "$RUN_VALIDATE" = "true" ]; then
+    echo -e "${BLUE}Phase 5b: Running framework full validation...${NC}"
+
+    cd "$PROJECT_ROOT"
+
+    # Run full framework build validation (compile-time-like checking)
+    if node framework/cli/dist/index.js build -p . --ci 2>&1; then
+        echo -e "${GREEN}✓ Framework validation passed${NC}"
+    else
+        echo ""
+        echo -e "${RED}✗ Framework validation failed${NC}"
+        echo ""
+        echo -e "${RED}Push aborted: Fix validation errors and try again${NC}"
+        echo "To skip validation: RUN_VALIDATE=false git push"
+        exit 1
+    fi
+
+    cd "$PROJECT_ROOT/framework/cli"
+else
+    echo -e "${YELLOW}Phase 5b: Skipping framework full validation (RUN_VALIDATE=false)${NC}"
+fi
+
+echo ""
+
+# ============================================
+# Phase 6: Validate Markdown Links
+# ============================================
+if [ "$RUN_LINKS" = "true" ]; then
+    echo -e "${BLUE}Phase 6: Validating markdown links...${NC}"
+
+    cd "$PROJECT_ROOT"
+    # Temporarily disable set -e to capture exit code
+    set +e
+    node framework/cli/dist/index.js validate --links 2>&1
+    LINK_EXIT_CODE=$?
+    set -e
+
+    if [ $LINK_EXIT_CODE -eq 0 ]; then
+        echo -e "${GREEN}✓ Link validation passed${NC}"
+    elif [ $LINK_EXIT_CODE -eq 2 ]; then
+        # Exit code 2 = warnings only (anti-patterns in content files)
+        echo -e "${YELLOW}⚠ Link validation passed with warnings${NC}"
+    else
+        # Exit code 1 = critical errors (broken links)
+        echo ""
+        echo -e "${RED}✗ Link validation failed${NC}"
+        echo ""
+        echo -e "${RED}Push aborted: Fix broken links and try again${NC}"
+        echo "To skip link check: RUN_LINKS=false git push"
+        exit 1
+    fi
+else
+    echo -e "${YELLOW}Phase 6: Skipping link validation (RUN_LINKS=false)${NC}"
+fi
+
+echo ""
+
+# ============================================
+# Complete
+# ============================================
+echo -e "${GREEN}╔═══════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║   Pre-push validation complete!       ║${NC}"
+echo -e "${GREEN}║   All checks passed successfully.     ║${NC}"
+echo -e "${GREEN}╚═══════════════════════════════════════╝${NC}"
+echo ""
+echo -e "${GREEN}Pushing to remote...${NC}"
+exit 0

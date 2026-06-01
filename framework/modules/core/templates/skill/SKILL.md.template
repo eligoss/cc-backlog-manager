@@ -1,0 +1,96 @@
+---
+id: {{id}}
+name: {{name}}
+description: {{description}}
+scope: {{scope}}
+applicable-projects: {{applicableProjects}}
+module: {{module}}
+capabilities-provided:
+  - {{capability}}
+---
+
+# {{title}}
+
+## When to Use This Skill
+
+Use this skill when you need to:
+- <!-- TODO: Add first use case -->
+- <!-- TODO: Add second use case -->
+- <!-- TODO: Add third use case -->
+
+This skill is applicable to: **{{applicableProjects}}** projects.
+
+**Example invocation:** "Use {{id}} to help me <!-- TODO: describe a typical task -->"
+
+---
+
+## Quick Reference
+
+<!-- TODO: Add quick reference section with common patterns or commands -->
+
+### Common Operations
+
+```
+<!-- TODO: Add code examples -->
+```
+
+---
+
+## Workflow
+
+### Step 1: Preparation
+
+<!-- TODO: Describe preparation steps -->
+
+### Step 2: Execution
+
+<!-- TODO: Describe execution steps -->
+
+### Step 3: Validation
+
+<!-- TODO: Describe validation steps -->
+
+---
+
+## Best Practices
+
+1. **<!-- TODO: Best practice 1 -->**
+   - Details...
+
+2. **<!-- TODO: Best practice 2 -->**
+   - Details...
+
+3. **<!-- TODO: Best practice 3 -->**
+   - Details...
+
+---
+
+## Common Patterns
+
+### Pattern 1: <!-- TODO: Pattern name -->
+
+```
+<!-- TODO: Add pattern example -->
+```
+
+**When to use:** <!-- TODO: Describe when to use this pattern -->
+
+---
+
+## Troubleshooting
+
+### Problem: <!-- TODO: Common problem -->
+
+**Solution:** <!-- TODO: Solution description -->
+
+---
+
+## Related Skills
+
+- <!-- TODO: List related skills if any -->
+
+---
+
+**Created:** {{date}}
+**Scope:** {{scope}}
+**Module:** {{module}}

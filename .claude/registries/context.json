@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "context": [
+    {
+      "id": "business-basic",
+      "category": "business",
+      "level": "basic",
+      "location": ".claude/context/business-basic.md",
+      "responsibility": "Product overview, user roles, key features"
+    },
+    {
+      "id": "business-advanced",
+      "category": "business",
+      "level": "advanced",
+      "location": ".claude/context/business-advanced.md",
+      "responsibility": "Business strategy, market context, competitive landscape"
+    },
+    {
+      "id": "business-expert",
+      "category": "business",
+      "level": "expert",
+      "location": ".claude/context/business-expert.md",
+      "responsibility": "Strategic vision, long-term planning, business architecture"
+    },
+    {
+      "id": "technical-basic",
+      "category": "technical",
+      "level": "basic",
+      "location": ".claude/context/technical-basic.md",
+      "responsibility": "Tech stack, architecture overview"
+    },
+    {
+      "id": "technical-advanced",
+      "category": "technical",
+      "level": "advanced",
+      "location": ".claude/context/technical-advanced.md",
+      "responsibility": "Design patterns, integration points, technical debt"
+    },
+    {
+      "id": "technical-expert",
+      "category": "technical",
+      "level": "expert",
+      "location": ".claude/context/technical-expert.md",
+      "responsibility": "Architecture decisions, system evolution, technical strategy"
+    },
+    {
+      "id": "process-basic",
+      "category": "process",
+      "level": "basic",
+      "location": ".claude/context/process-basic.md",
+      "responsibility": "Workflow, team structure"
+    },
+    {
+      "id": "process-advanced",
+      "category": "process",
+      "level": "advanced",
+      "location": ".claude/context/process-advanced.md",
+      "responsibility": "Development processes, quality gates, release management"
+    },
+    {
+      "id": "process-expert",
+      "category": "process",
+      "level": "expert",
+      "location": ".claude/context/process-expert.md",
+      "responsibility": "Process optimization, team scaling, operational excellence"
+    }
+  ]
+}

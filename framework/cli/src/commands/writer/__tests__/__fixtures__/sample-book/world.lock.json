@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "created": "2026-01-01",
+  "last-updated": "2026-01-01T00:00:00.000Z",
+  "immutable-facts": {
+    "world-core-physics": {
+      "hash": "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456",
+      "established": "2026-01-01",
+      "file": "world/rules/physics.md",
+      "category": "core"
+    }
+  },
+  "append-only-facts": {
+    "world-history-great-war": {
+      "original-hash": "b2c3d4e5f67890123456789012345678901abcdef12345678901abcdef1234567",
+      "current-version": "1.0.0",
+      "established": "2026-01-01",
+      "file": "world/history/great-war.md",
+      "additions": []
+    }
+  },
+  "expandable-facts": {
+    "world-geography-northern-kingdom": {
+      "original-hash": "c3d4e5f6789012345678901234567890123abcdef123456789012abcdef12345678",
+      "established": "2026-01-01",
+      "file": "world/regions/northern-kingdom.md",
+      "expansions": []
+    }
+  },
+  "validation-rules": {
+    "prevent-modification": true,
+    "require-hash-match": true
+  },
+  "audit-trail": []
+}

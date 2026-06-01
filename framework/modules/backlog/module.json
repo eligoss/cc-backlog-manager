@@ -1,0 +1,108 @@
+{
+  "$schema": "../core/registries/schemas/module.schema.json",
+  "id": "backlog",
+  "version": "1.17.0",
+  "name": "Backlog Management",
+  "description": "Ticket-based backlog management with Jira-like workflow, milestone tracking, and sprint organization",
+  "provides": {
+    "agents": [
+      "ai-backlog-manager"
+    ],
+    "skills": [
+      "building-tickets",
+      "organizing-backlog",
+      "syncing-with-jira"
+    ],
+    "capabilities": [
+      "ticket-decomposition",
+      "ticket-writing",
+      "jira-formatting",
+      "epic-breakdown",
+      "sprint-planning",
+      "milestone-tracking",
+      "organizing-backlog-knowledge",
+      "backlog-workflow",
+      "ticket-lifecycle",
+      "jira-sync",
+      "markdown-jira-conversion"
+    ],
+    "scripts": [],
+    "directories": [
+      "backlog/tickets",
+      "backlog/epics",
+      "backlog/sprints",
+      "backlog/milestones"
+    ],
+    "cli-commands": [
+      {
+        "name": "backlog create-ticket",
+        "type": "create",
+        "skill": "building-tickets",
+        "template": "ticket.md.template",
+        "description": "Create a new ticket from template"
+      },
+      {
+        "name": "backlog validate",
+        "type": "validate",
+        "skill": "building-tickets",
+        "schema": "ticket.schema.json",
+        "description": "Validate ticket files against v10.1.1 standards"
+      },
+      {
+        "name": "backlog import",
+        "type": "import",
+        "skill": "organizing-backlog",
+        "description": "Import tickets from Jira"
+      },
+      {
+        "name": "backlog migrate-milestones",
+        "type": "migrate",
+        "skill": "organizing-backlog",
+        "description": "Migrate milestone structure"
+      },
+      {
+        "name": "backlog update-fields",
+        "type": "update",
+        "skill": "organizing-backlog",
+        "description": "Update ticket field mappings"
+      },
+      {
+        "name": "backlog pull",
+        "type": "sync",
+        "description": "Pull tickets from Jira to local backlog files",
+        "skill": "organizing-backlog"
+      },
+      {
+        "name": "backlog diff",
+        "type": "validate",
+        "description": "Compare local tickets against Jira remote state",
+        "skill": "organizing-backlog"
+      },
+      {
+        "name": "backlog push",
+        "type": "sync",
+        "description": "Push local ticket changes to Jira",
+        "skill": "organizing-backlog"
+      }
+    ]
+  },
+  "requires": {},
+  "optional-dependencies": [
+    "core"
+  ],
+  "context": {
+    "process": [
+      "backlog-workflow.md"
+    ]
+  },
+  "metadata": {
+    "category": "workflow",
+    "keywords": [
+      "backlog",
+      "tickets",
+      "sprints",
+      "milestones",
+      "agile"
+    ]
+  }
+}

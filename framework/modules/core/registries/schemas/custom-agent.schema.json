@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-framework.dev/schemas/custom-agent.schema.json",
+  "title": "Claude Code Custom Agent Definition",
+  "description": "Schema for .claude/agents/*.json files that define custom agents for Claude Code invocation via Task tool",
+  "type": "object",
+  "required": ["name", "description", "model", "instructions", "tools"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^ai-[a-z][a-z0-9-]*$",
+      "description": "Custom agent identifier (must match subagent_type in Task tool invocation)"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 200,
+      "description": "Brief description shown in /agents listing"
+    },
+    "model": {
+      "type": "string",
+      "enum": ["opus", "sonnet", "haiku"],
+      "default": "sonnet",
+      "description": "Default model for this agent (can be overridden at invocation)"
+    },
+    "instructions": {
+      "type": "string",
+      "minLength": 100,
+      "description": "System prompt instructions for the agent (condensed from markdown source)"
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Tool"
+      },
+      "minItems": 1,
+      "description": "Tools available to this agent"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      },
+      "description": "Skills this agent can invoke via Skill tool"
+    },
+    "context": {
+      "$ref": "#/definitions/ContextNeeds",
+      "description": "Context loading requirements"
+    },
+    "sourceAgent": {
+      "type": "string",
+      "pattern": "^ai-[a-z][a-z0-9-]*$",
+      "description": "Source agent ID from agents.json (for traceability)"
+    },
+    "generated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when this definition was generated"
+    }
+  },
+  "definitions": {
+    "Tool": {
+      "type": "string",
+      "enum": [
+        "Read",
+        "Write",
+        "Edit",
+        "Glob",
+        "Grep",
+        "Bash",
+        "WebSearch",
+        "WebFetch",
+        "Task",
+        "TodoWrite",
+        "AskUserQuestion",
+        "NotebookEdit",
+        "Skill"
+      ],
+      "description": "Claude Code tool name"
+    },
+    "ContextNeeds": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "business": {
+          "$ref": "#/definitions/ContextLevel"
+        },
+        "technical": {
+          "$ref": "#/definitions/ContextLevel"
+        },
+        "process": {
+          "$ref": "#/definitions/ContextLevel"
+        }
+      }
+    },
+    "ContextLevel": {
+      "type": "string",
+      "enum": ["basic", "advanced", "expert"],
+      "description": "Context loading level"
+    }
+  }
+}

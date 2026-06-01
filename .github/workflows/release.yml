@@ -1,0 +1,145 @@
+name: Manual Release
+run-name: "Manual Release (${{ inputs.version_type }})"
+
+# Manual workflow for creating releases (typically for major versions)
+# For automatic patch/minor releases, see auto-release.yml which runs on main merge
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type (use major for breaking changes)'
+        required: true
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+      use_auto_detect:
+        description: 'Auto-detect affected modules for version bump'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release-and-publish:
+    name: Release and Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+          cache-dependency-path: framework/cli/package-lock.json
+
+      - name: Upgrade npm
+        run: npm install -g npm@^11.5.1
+
+      - name: Install dependencies
+        working-directory: framework/cli
+        run: npm ci
+
+      - name: Build CLI
+        working-directory: framework/cli
+        run: npm run build
+
+      - name: Run linter
+        working-directory: framework/cli
+        run: npm run lint
+
+      - name: Run tests
+        working-directory: framework/cli
+        run: npm test -- --coverage --testPathIgnorePatterns="writer/__tests__" --testPathIgnorePatterns="sync-engine"
+
+      - name: Validate framework
+        working-directory: framework/cli
+        run: node dist/index.js build -p ../.. --ci
+
+      - name: Bump version
+        id: bump
+        working-directory: framework/cli
+        run: |
+          if [ "${{ inputs.use_auto_detect }}" = "true" ]; then
+            echo "Auto-detecting affected modules..."
+            if ! node dist/index.js bump-version --auto --type ${{ inputs.version_type }} -p ../..; then
+              echo "❌ Error: Version bump (auto-detect) failed"
+              exit 1
+            fi
+          else
+            echo "Bumping package version only (module versions unchanged)..."
+            if ! node dist/index.js bump-version --package-only --type ${{ inputs.version_type }} -p ../..; then
+              echo "❌ Error: Version bump (package-only) failed"
+              exit 1
+            fi
+          fi
+
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "New version: $NEW_VERSION"
+
+          if [ -z "$NEW_VERSION" ]; then
+            echo "❌ Error: Could not read new version from package.json"
+            exit 1
+          fi
+
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit version bump
+        run: |
+          git add .
+          git diff --cached --quiet || git commit -m "chore: bump version to v${{ steps.bump.outputs.version }}"
+
+      - name: Push changes
+        run: git push
+
+      - name: Bundle framework for publishing
+        working-directory: framework/cli
+        run: node scripts/prepare-publish.js
+
+      - name: Verify package contents
+        working-directory: framework/cli
+        run: |
+          echo "Checking framework directory exists..."
+          ls -la framework/ || (echo "ERROR: framework/ directory not found" && exit 1)
+          ls -la framework/modules/ || (echo "ERROR: framework/modules/ directory not found" && exit 1)
+          echo ""
+          echo "Package contents preview:"
+          npm pack --dry-run 2>&1 | head -100
+          echo ""
+          echo "Verifying required directories in package..."
+          npm pack --dry-run 2>&1 | grep -q "dist/" || (echo "ERROR: dist/ not found in package" && exit 1)
+          npm pack --dry-run 2>&1 | grep -q "bin/" || (echo "ERROR: bin/ not found in package" && exit 1)
+          npm pack --dry-run 2>&1 | grep -q "framework/" || (echo "ERROR: framework/ not found in package" && exit 1)
+          echo "All required directories present"
+
+      - name: Publish to npm
+        working-directory: framework/cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.bump.outputs.version }}
+          name: Release v${{ steps.bump.outputs.version }}
+          generate_release_notes: true
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

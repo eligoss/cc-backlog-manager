@@ -1,0 +1,41 @@
+{
+  "$schema": "../../registries/schemas/template.schema.json",
+  "version": "1.0",
+  "templates": {
+    "module.json": {
+      "output": "module.json",
+      "description": "Create a new module.json manifest file",
+      "variables": {
+        "required": ["id", "name", "description"],
+        "optional": ["version", "category", "author"],
+        "computed": []
+      },
+      "defaults": {
+        "version": "1.0.0",
+        "category": "workflow",
+        "author": "Agentic Framework"
+      },
+      "validation": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "minLength": 2,
+          "maxLength": 30
+        },
+        "name": {
+          "minLength": 3,
+          "maxLength": 50
+        },
+        "description": {
+          "minLength": 10,
+          "maxLength": 200
+        },
+        "version": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "category": {
+          "enum": ["core", "integration", "workflow", "development", "documentation", "reporting"]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+version: 1.4.0
+framework:
+  root: framework
+  modules: framework/modules
+  cli: framework/cli
+  cli-src: framework/cli/src
+  cli-commands: framework/cli/src/commands
+  cli-lib: framework/cli/src/lib
+claude:
+  root: .claude
+  commands: .claude/commands
+  skills: .claude/skills
+  project-skills: .claude/skills/project
+  context: .claude/context
+  registries: .claude/registries
+  templates: .claude/templates
+registries:
+  agents: .claude/registries/agents.json
+  skills: .claude/registries/skills.json
+  discovery-map: .claude/registries/discovery-map.json
+  context: .claude/registries/context.json
+modules:
+  core:
+    root: framework/modules/core
+    agents: framework/modules/core/agents
+    skills: framework/modules/core/skills
+    templates: framework/modules/core/templates
+    registries: framework/modules/core/registries
+    schemas: framework/modules/core/registries/schemas
+  backlog:
+    root: framework/modules/backlog
+    agents: framework/modules/backlog/agents
+    skills: framework/modules/backlog/skills/backlog
+    templates: framework/modules/backlog/templates
+  coding:
+    root: framework/modules/coding
+    agents: framework/modules/coding/agents
+    skills: framework/modules/coding/skills/coding
+  confluence:
+    root: framework/modules/confluence
+    agents: framework/modules/confluence/agents
+    skills: framework/modules/confluence/skills/confluence
+  reporting:
+    root: framework/modules/reporting
+    agents: framework/modules/reporting/agents
+    skills: framework/modules/reporting/skills/reporting
+  writer:
+    root: framework/modules/writer
+    agents: framework/modules/writer/agents
+    skills: framework/modules/writer/skills/writer
+    templates: framework/modules/writer/templates
+    schemas: framework/modules/writer/schemas
+docs:
+  root: docs
+  getting-started: docs/getting-started.md
+  architecture: docs/architecture.md
+  cli-reference: docs/cli-reference.md
+  module-development: docs/module-development.md
+  telemetry: docs/telemetry.md
+  troubleshooting: docs/troubleshooting.md
+context-files:
+  business:
+    basic: .claude/context/business-basic.md
+    advanced: .claude/context/business-advanced.md
+    expert: .claude/context/business-expert.md
+  technical:
+    basic: .claude/context/technical-basic.md
+    advanced: .claude/context/technical-advanced.md
+    expert: .claude/context/technical-expert.md
+  process:
+    basic: .claude/context/process-basic.md
+    advanced: .claude/context/process-advanced.md
+    expert: .claude/context/process-expert.md
+root-files:
+  claude-md: CLAUDE.md
+  readme: README.md
+  changelog: CHANGELOG.md
+  config: .agentic-framework.json
+paths:
+  docs:
+    root: docs/
+  framework:
+    root: framework/
+    cli: framework/cli/
+    cli-bin: framework/cli/bin/
+    cli-dist: framework/cli/dist/
+    cli-dist-__mocks__: framework/cli/dist/__mocks__/
+    cli-dist-commands: framework/cli/dist/commands/
+    cli-dist-hooks: framework/cli/dist/hooks/
+    cli-dist-lib: framework/cli/dist/lib/
+    cli-dist-mcp: framework/cli/dist/mcp/
+    cli-dist-templates: framework/cli/dist/templates/
+    cli-dist-types: framework/cli/dist/types/
+    cli-scripts: framework/cli/scripts/
+    cli-src: framework/cli/src/
+    cli-src-__mocks__: framework/cli/src/__mocks__/
+    cli-src-__tests__: framework/cli/src/__tests__/
+    cli-src-commands: framework/cli/src/commands/
+    cli-src-hooks: framework/cli/src/hooks/
+    cli-src-lib: framework/cli/src/lib/
+    cli-src-mcp: framework/cli/src/mcp/
+    cli-src-templates: framework/cli/src/templates/
+    cli-src-types: framework/cli/src/types/
+    modules: framework/modules/
+    modules-backlog: framework/modules/backlog/
+    modules-backlog-agents: framework/modules/backlog/agents/
+    modules-backlog-commands: framework/modules/backlog/commands/
+    modules-backlog-schemas: framework/modules/backlog/schemas/
+    modules-backlog-skills: framework/modules/backlog/skills/
+    modules-backlog-templates: framework/modules/backlog/templates/
+    modules-coding: framework/modules/coding/
+    modules-coding-agents: framework/modules/coding/agents/
+    modules-coding-skills: framework/modules/coding/skills/
+    modules-confluence: framework/modules/confluence/
+    modules-confluence-agents: framework/modules/confluence/agents/
+    modules-confluence-commands: framework/modules/confluence/commands/
+    modules-confluence-schemas: framework/modules/confluence/schemas/
+    modules-confluence-skills: framework/modules/confluence/skills/
+    modules-core: framework/modules/core/
+    modules-core-agents: framework/modules/core/agents/
+    modules-core-commands: framework/modules/core/commands/
+    modules-core-hooks: framework/modules/core/hooks/
+    modules-core-registries: framework/modules/core/registries/
+    modules-core-skills: framework/modules/core/skills/
+    modules-core-templates: framework/modules/core/templates/
+    modules-reporting: framework/modules/reporting/
+    modules-reporting-agents: framework/modules/reporting/agents/
+    modules-reporting-skills: framework/modules/reporting/skills/
+    modules-writer: framework/modules/writer/
+    modules-writer-agents: framework/modules/writer/agents/
+    modules-writer-commands: framework/modules/writer/commands/
+    modules-writer-schemas: framework/modules/writer/schemas/
+    modules-writer-skills: framework/modules/writer/skills/
+    modules-writer-src: framework/modules/writer/src/
+    modules-writer-templates: framework/modules/writer/templates/
+  plugin:
+    root: plugin/
+  src:
+    root: src/
+    writer: src/writer/
+meta:
+  last-updated: 2026-01-29
+  sync-status: synchronized

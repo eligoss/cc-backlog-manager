@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-framework.dev/schemas/command.schema.json",
+  "title": "Agentic Framework Command Wrapper",
+  "description": "Schema for command wrapper markdown files that expose CLI commands as Claude slash commands",
+  "type": "object",
+  "required": ["command", "cli-command", "module", "type", "description"],
+  "additionalProperties": true,
+  "properties": {
+    "command": {
+      "type": "string",
+      "pattern": "^cmd-[a-z][a-z0-9-]*$",
+      "description": "Unique command identifier (e.g., cmd-backlog-create-ticket)"
+    },
+    "cli-command": {
+      "type": "string",
+      "pattern": "^agentic-framework .+$",
+      "description": "Full CLI invocation (e.g., agentic-framework backlog create-ticket)"
+    },
+    "module": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Module ID that provides this command"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["create", "validate", "sync", "transform", "export", "import", "migrate", "update", "fetch", "query", "execute"],
+      "description": "Command type category"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 200,
+      "description": "Brief description of what the command does"
+    },
+    "related-skill": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Related skill that provides detailed guidance (optional)"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/CommandOption"
+      },
+      "description": "Command-line options"
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/CommandExample"
+      },
+      "description": "Usage examples"
+    }
+  },
+  "definitions": {
+    "CommandOption": {
+      "type": "object",
+      "required": ["name", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^--?[a-z][a-z0-9-]*( <[a-z]+>)?$",
+          "description": "Option name with optional value placeholder (e.g., --type <type>)"
+        },
+        "description": {
+          "type": "string",
+          "description": "What this option does"
+        },
+        "required": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this option is required"
+        },
+        "default": {
+          "type": "string",
+          "description": "Default value if not specified"
+        }
+      }
+    },
+    "CommandExample": {
+      "type": "object",
+      "required": ["command", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "type": "string",
+          "description": "Example command invocation"
+        },
+        "description": {
+          "type": "string",
+          "description": "What this example demonstrates"
+        }
+      }
+    }
+  }
+}

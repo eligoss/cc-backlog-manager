@@ -1,0 +1,760 @@
+# Validation Rules & Checklist (v10.1.1)
+
+## Quick Validation Checklist
+
+Use this checklist before marking a ticket "Ready for Development":
+
+### YAML Frontmatter (5 minutes)
+- ✅ `documentType` present and valid (story|task|bug|spike|epic)
+- ✅ `title` present and descriptive (30-80 chars)
+- ✅ `description` present (one-line summary)
+- ✅ `createdDate` present (ISO 8601)
+- ✅ All `jira-*` fields present (even if null)
+- ✅ All `framework-*` fields present (even if null)
+- ✅ No nested objects (all fields at root level)
+- ✅ Arrays are YAML arrays `[]` not strings
+- ✅ Strings properly quoted if containing special chars
+
+### Body Structure (5 minutes)
+- ✅ H1 title matches YAML `title` field
+- ✅ `---` divider after H1 title
+- ✅ **AS/WANT/SO THAT section present** (stories/tasks only - first after H1 divider)
+- ✅ Format: `**AS** a [role],` / `**I WANT** [capability],` / `**SO THAT** [business value].`
+- ✅ Exactly 2 H2 sections: `## Description` and `## Acceptance Criteria`
+- ✅ `---` divider between H2 sections
+- ✅ NO `###` headers anywhere (use bold labels only)
+- ✅ NO bold pseudo-headers for H2 sections
+- ✅ Subsection labels use bold: `**Context:**`, `**In Order to Support This:**`, `**Technical Notes:**`
+- ✅ NO metadata lines in body (e.g., "Type: Task | Status: Ready")
+
+### Content Quality (10-15 minutes)
+- ✅ **Context section:**
+  - Written as 2-3 plain paragraphs (NOT bullet points)
+  - 3-5 sentences total
+  - Explains WHY not WHAT
+  - Related tickets properly linked
+- ✅ **In Order to Support This section:**
+  - Formatted as bullet list
+  - 4-6 bullets (not too many, not too few)
+  - Each bullet 1-2 sentences
+  - Max 2 nesting levels
+  - Clear and specific language
+- ✅ **Technical Notes section:**
+  - 3-5 bullets (not too many)
+  - References PATTERNS only (no code snippets)
+  - High-level guidance
+  - Actionable and clear
+- ✅ **Acceptance Criteria section:**
+  - 5-10 "Verify" statements (focused, not padded)
+  - QA-verifiable: testable through UI, API, or observable behavior
+  - No implementation details, code-level checks, or meta items
+  - Measurable thresholds where applicable (not "performance is good")
+  - Priority: core flows → edge cases → error recovery → cross-device
+
+### Document Quality (5 minutes)
+- ✅ Line count appropriate:
+  - Stories/Tasks: 30-100 lines
+  - Epics: 30-50 lines
+- ✅ NO code snippets anywhere in ticket body
+- ✅ NO implementation step-by-step instructions
+- ✅ NO Jira wiki markup (h3., h2., etc.) - use native markdown only
+- ✅ Links use proper markdown format: `[text](https://url)`
+- ✅ Framework file refs in YAML fields, NOT in body
+
+**Total Time:** ~25 minutes per ticket
+
+---
+
+## Detailed Validation Rules
+
+### Rule 1: YAML Structure Must Be Flat
+
+**CORRECT:**
+```yaml
+---
+documentType: story
+jira-ticketId: PROJ-100
+jira-url: "https://..."
+jira-related: [PROJ-101, PROJ-102]
+framework-documentation: null
+framework-milestone: "backlog/milestones/Feb2026.md"
+---
+```
+
+**WRONG - Nested structure:**
+```yaml
+---
+documentType: story
+jiraFields:
+  ticketId: PROJ-100
+  url: "https://..."
+  related: [PROJ-101]
+frameworkFields:
+  documentation: null
+---
+```
+
+**Why:** Flat structure is easier to parse, validate, and import/export to Jira.
+
+---
+
+### Rule 2: All Required Fields Must Be Present
+
+**Required YAML Fields (Every Ticket):**
+- documentType
+- version
+- title
+- description
+- createdDate
+
+**Required Jira Integration Fields (Every Ticket):**
+- jira-ticketId
+- jira-url
+- jira-parent
+- jira-related
+- jira-blocking
+- jira-blockedBy
+- jira-fixVersion
+- jira-internalNotes
+
+**Required Framework Fields (Every Ticket):**
+- framework-documentation
+- framework-milestone
+- framework-technicalGuides
+- framework-relatedLocal
+
+Even if a field is not applicable, it MUST be present (set to `null` or `[]`).
+
+---
+
+### Rule 3: Body Must Have Exactly 2 H2 Sections
+
+**CORRECT:**
+```markdown
+# Title
+
+---
+
+## Description
+
+[content]
+
+---
+
+## Acceptance Criteria
+
+[content]
+```
+
+**WRONG - Missing sections:**
+```markdown
+# Title
+
+---
+
+## Description
+
+[content]
+```
+
+**WRONG - Too many sections:**
+```markdown
+# Title
+
+---
+
+## Description
+
+[content]
+
+---
+
+## Technical Notes
+
+[content]
+
+---
+
+## Acceptance Criteria
+
+[content]
+```
+
+**Why:** Consistency enables reliable parsing for Jira export.
+
+---
+
+### Rule 4: NO Metadata Lines in Body
+
+**CORRECT - Metadata in YAML only:**
+```yaml
+---
+documentType: story
+priority: P1
+storyPoints: 5
+---
+
+# Story Title
+
+---
+
+## Description
+
+...
+
+---
+
+## Acceptance Criteria
+
+...
+```
+
+**WRONG - Metadata repeated in body:**
+```yaml
+---
+documentType: story
+priority: P1
+storyPoints: 5
+---
+
+# Story Title
+
+**Type:** Story | **Status:** Ready | **Priority:** P1 | **Story Points:** 5
+
+---
+
+## Description
+
+...
+```
+
+**Why:** Duplication causes confusion and export errors.
+
+---
+
+### Rule 5: Context Section Must Be Paragraphs, NOT Bullets
+
+**CORRECT:**
+```markdown
+**Context:**
+
+Polling is inefficient and creates high latency. We've designed the data layer
+to be subscription-ready. This story implements push updates for real-time
+status without modifying page components.
+```
+
+**WRONG - Bullet points:**
+```markdown
+**Context:**
+
+* Polling is inefficient
+* Creates high latency
+* We need subscriptions
+* Data layer is ready
+```
+
+**Why:** Paragraphs provide better narrative flow and explain the "why." Bullets are for lists, not storytelling.
+
+---
+
+### Rule 6: "In Order to Support This" Must Reference Requirements, Not Implementation
+
+**CORRECT:**
+```markdown
+**In Order to Support This:**
+
+* Expose GraphQL subscription for status events (started/progress/completed/failed)
+* Switch data layer to subscription transport
+* Standardize connection: single active subscription per context, clean unsubscribe
+```
+
+**WRONG - Code snippets or too prescriptive:**
+```markdown
+**In Order to Support This:**
+
+* Implement subscription manager:
+  ```typescript
+  class SubscriptionManager {
+    constructor() { ... }
+    subscribe() { ... }
+  }
+  ```
+* Add retry logic
+* Configure timeouts
+```
+
+**Why:** Ticket should describe WHAT, not HOW. Developers figure out implementation details.
+
+---
+
+### Rule 7: Acceptance Criteria Must Be QA-Verifiable
+
+**CORRECT - QA can test through the UI/API:**
+```markdown
+* **Verify** status updates appear on screen within 2 seconds of a change event
+* **Verify** page loads within 1 second on slow 3G connection
+* **Verify** user A cannot see user B's organization data (test with 2 accounts)
+* **Verify** connection loss displays "Reconnecting..." indicator to user
+```
+
+**WRONG - Implementation details (requires reading code):**
+```markdown
+* **Verify** Apollo Client is used for subscriptions
+* **Verify** single active subscription per context
+* **Verify** unsubscribe cleanup prevents memory leaks
+```
+
+**WRONG - Vague/unmeasurable:**
+```markdown
+* **Verify** subscriptions work
+* **Verify** performance is good
+* **Verify** memory is managed
+```
+
+**Why:** AC exists for QA — every criterion must be testable by a QA engineer through observable behavior, not code inspection. Implementation concerns belong in code review.
+
+---
+
+### Rule 8: Jira URLs Use Full Format
+
+**CORRECT:**
+```markdown
+Related ticket: [PROJ-103](https://{your-org}.atlassian.net/browse/PROJ-103)
+```
+
+**WRONG - Ticket number only:**
+```markdown
+Related ticket: PROJ-103
+```
+
+**WRONG - Shortcut:**
+```markdown
+Related ticket: [PROJ-103]
+```
+
+**Why:** Full URL enables direct navigation from any system.
+
+---
+
+### Rule 9: Framework Files Go in YAML Fields, NOT Body
+
+**CORRECT - YAML fields:**
+```yaml
+framework-documentation: "@backend-repo/CLAUDE.md"
+framework-relatedLocal: ["backlog/epics/1171.md"]
+```
+
+In body (only Jira tickets):
+```markdown
+Related: [PROJ-103](https://{your-org}.atlassian.net/browse/PROJ-103)
+```
+
+**WRONG - Local files in body:**
+```markdown
+Related files:
+- backlog/epics/1171.md
+- ai/context/technical.md
+```
+
+**Why:** Body focuses on Jira relationships. Framework references belong in metadata for import/export.
+
+---
+
+### Rule 10: Arrays Must Be YAML Arrays
+
+**CORRECT:**
+```yaml
+jira-related: [PROJ-101, PROJ-102]
+jira-blocking: []
+labels: [my-project, frontend, feature]
+framework-technicalGuides: ["@backend-repo/docs/api.md"]
+```
+
+**WRONG - String format:**
+```yaml
+jira-related: "PROJ-101, PROJ-102"
+jira-blocking: ""
+labels: "my-project, frontend, feature"
+```
+
+**Why:** YAML arrays enable proper parsing for import/export.
+
+---
+
+## Line Count Validation
+
+### Stories & Tasks
+- **Minimum:** 30 lines (too short = incomplete)
+- **Maximum:** 100 lines (too long = verbose)
+- **Target:** 50-80 lines
+
+**Why:** Stories >100 lines are too detailed. Developers don't need step-by-step instructions. Stories <30 lines lack sufficient context.
+
+### Epics
+- **Minimum:** 30 lines
+- **Maximum:** 50 lines
+- **Target:** 35-45 lines
+
+**Why:** Epics should be concise (business value + child stories). Anything >50 lines is too detailed for an epic.
+
+### Bugs
+- **Minimum:** 30 lines
+- **Maximum:** 80 lines (may be longer if complex repro steps)
+
+**How to Check:**
+```bash
+wc -l file.md  # Count lines
+```
+
+---
+
+## YAML Field Validation Rules
+
+### documentType Validation
+- ✅ Must be one of: story, task, bug, spike, epic
+- ❌ NOT: user-story, task, bug-fix, investigation, feature
+- ❌ NOT: Story, TASK, BUG (case-sensitive, lowercase only)
+
+### version Validation
+- ✅ Must be semantic: 1.0, 1.1, 2.0
+- ❌ NOT: v1.0, 1, 1.0.0
+- ✅ Start at 1.0 for new tickets
+
+### milestone Validation
+- ✅ Must match project's milestone codes: Jan2026, Feb2026, Mar2026, etc.
+- ✅ CAN be null (not assigned yet)
+- ❌ NOT: "Q1 2026", "January", "sprint-5"
+- ❌ NOT: Different format (must be MonthYear)
+
+### priority Validation
+- ✅ Must be P0, P1, or P2
+- ✅ CAN be null (not prioritized yet)
+- ❌ NOT: Critical, High, Medium, Low
+- ❌ NOT: P-0, p0 (must be uppercase)
+
+### storyPoints Validation
+- ✅ Must be 1, 2, 3, 5, or 8 (Fibonacci-like)
+- ✅ CAN be null (not estimated yet)
+- ❌ NOT: 4, 6, 7, 10 (not Fibonacci)
+- ❌ Epics should NOT have story points (null)
+
+### labels Validation
+- ✅ Must be YAML array: [label1, label2, label3]
+- ✅ Use lowercase kebab-case: my-project, frontend, bug-fix
+- ✅ 2-5 labels per ticket
+- ❌ NOT: ["My-Project", "Frontend"] (not lowercase)
+- ❌ NOT: ["my_project"] (not kebab-case)
+
+### jira-ticketId Validation
+- ✅ Must be PROJECT-NUMBER format: PROJ-100
+- ✅ CAN be null (before export)
+- ❌ NOT: 100, proj-100, PROJ100
+
+### jira-url Validation
+- ✅ Must be full URL: https://{your-org}.atlassian.net/browse/PROJ-1234
+- ✅ CAN be null (before export)
+- ❌ NOT: PROJ-100, /browse/PROJ-100, shortened URL
+
+### jira-parent Validation
+- ✅ Must be PROJ-XXXX format if present
+- ✅ CAN be null (if not a child story)
+- ❌ NOT: Epic-1, EPIC-1171
+
+### Arrays Validation (jira-related, jira-blocking, jira-blockedBy, labels, etc.)
+- ✅ Must be YAML array: []
+- ✅ Each item must be valid: PROJ-100
+- ✅ CAN be empty array: []
+- ❌ NOT: String "PROJ-100"
+- ❌ NOT: Mixed format
+
+### Framework Paths Validation
+- ✅ Cross-repo: @repo-name/path/to/file.md
+- ✅ Local: repo-root-relative/path/to/file.md
+- ✅ CAN be null
+- ❌ NOT: ../ paths (must be root-relative)
+- ❌ NOT: Absolute filesystem paths
+
+---
+
+## Content Quality Rubric
+
+### Context Section (2-3 points)
+| Rating | Criteria |
+|--------|----------|
+| ✅ Excellent | 2-3 paragraphs, 3-5 sentences, clear WHY, business context, related links |
+| ⚠️ Acceptable | Paragraphs present but somewhat vague on "why" or too long |
+| ❌ Needs Work | Bullets instead of paragraphs, vague, missing context, no links |
+
+### In Order to Support This Section (2-3 points)
+| Rating | Criteria |
+|--------|----------|
+| ✅ Excellent | 4-6 specific bullets, clear and concise, max 2 nesting levels |
+| ⚠️ Acceptable | Right format but too many/few bullets or somewhat vague |
+| ❌ Needs Work | Wrong format (paragraphs), too verbose, too few items, vague language |
+
+### Technical Notes Section (2-3 points)
+| Rating | Criteria |
+|--------|----------|
+| ✅ Excellent | 3-5 bullets, patterns referenced, NO code, actionable |
+| ⚠️ Acceptable | Right format but maybe too many bullets or slightly prescriptive |
+| ❌ Needs Work | Contains code snippets, too verbose, too few bullets, unclear guidance |
+
+### Acceptance Criteria Section (2-3 points)
+| Rating | Criteria |
+|--------|----------|
+| ✅ Excellent | 5-10 QA-verifiable "Verify" statements, testable through UI/API, measurable thresholds |
+| ⚠️ Acceptable | Right format but some criteria require code inspection or lack measurable thresholds |
+| ❌ Needs Work | Padded with filler (docs, tests, console errors), vague, or implementation-focused |
+
+**Total: Pass if 7-12 points**
+
+---
+
+## Pre-Export Checklist (Before Jira Export)
+
+Before running export to Jira, verify:
+
+### YAML Fields (2 minutes)
+- ✅ `jira-ticketId` is null (not exported yet)
+- ✅ `jira-url` is null (not exported yet)
+- ✅ `exportedDate` is null (not exported yet)
+- ✅ All other fields populated correctly
+
+### Body Structure (2 minutes)
+- ✅ No Jira wiki markup (h3., h2., etc.)
+- ✅ Native markdown only (##, ###, **, etc.)
+- ✅ NO metadata lines (Type, Status, Priority, Points)
+- ✅ Exactly 2 H2 sections with --- dividers
+
+### Content Quality (5 minutes)
+- ✅ Acceptance Criteria QA-verifiable (5-10 focused items, no filler)
+- ✅ Technical Notes don't contain code
+- ✅ Context is paragraphs, not bullets
+- ✅ No vague language ("Make it work", "Improve performance")
+
+**Ready to Export:** ✅ Pass all checks above
+
+---
+
+## After-Export Validation (Jira Sync)
+
+After `backlog push` syncs to Jira, verify:
+
+### YAML Fields Updated (Auto-filled)
+- ✅ `jira-ticketId` now populated (PROJ-XXXX)
+- ✅ `jira-url` now populated (full URL)
+- ✅ `exportedDate` now populated (ISO 8601)
+
+### Jira Display
+- ✅ Ticket appears in Jira project
+- ✅ Title matches YAML title
+- ✅ Description formatted correctly
+- ✅ Acceptance Criteria displayed properly
+- ✅ No formatting artifacts (broken markup, double text)
+
+### File Organization
+- ✅ File moved from `backlog/_workflow/ready-to-export/` to `backlog/tickets/[type]/`
+- ✅ Filename unchanged (same name throughout workflow)
+- ✅ YAML metadata updated with Jira ticket ID
+
+**Export Successful:** ✅ All items above verified
+
+---
+
+## Common Validation Failures & Fixes
+
+### ❌ Context Section Has Bullets
+
+**Problem:**
+```markdown
+**Context:**
+
+* Users want customization
+* Current dashboard is fixed
+* We should add selection
+```
+
+**Fix:**
+```markdown
+**Context:**
+
+Users want dashboard customization. Current design has fixed cards that don't
+match individual workflows. This story enables card selection so each user can
+focus on metrics that matter to them.
+```
+
+---
+
+### ❌ In Order to Support This Section Has Only 2 Items
+
+**Problem:**
+```markdown
+**In Order to Support This:**
+
+* Add card selector
+* Save preferences
+```
+
+**Fix:**
+```markdown
+**In Order to Support This:**
+
+* Add card selector sidebar with 1-9 toggles
+* Persist selected cards to localStorage (per browser)
+* Render dashboard grid based on selections
+* Add reset button for default layout
+```
+
+---
+
+### ❌ Acceptance Criteria Are Vague or Implementation-Focused
+
+**Problem — too vague:**
+```markdown
+## Acceptance Criteria
+
+* **Verify** selector works
+* **Verify** preferences save
+* **Verify** performance is good
+```
+
+**Problem — implementation details QA can't test:**
+```markdown
+* **Verify** Zustand store updates correctly on toggle
+* **Verify** localStorage key uses correct format
+* **Verify** no console errors or React warnings
+* **Verify** documentation updated: Dashboard README.md
+```
+
+**Fix — QA-verifiable with clear actions and expected results:**
+```markdown
+## Acceptance Criteria
+
+* **Verify** card selector shows all 9 available cards with checkboxes
+* **Verify** toggling a card checkbox immediately shows/hides the card on dashboard
+* **Verify** selected cards persist after page refresh (same cards visible)
+* **Verify** reset button returns dashboard to default 9-card layout
+* **Verify** selecting 0 cards shows "Select at least one card" message
+* **Verify** card toggle responds within 100ms (no visible delay)
+* **Verify** layout renders correctly on mobile (375px), tablet (768px), desktop (1440px)
+```
+
+---
+
+### ❌ Technical Notes Contains Code Snippet
+
+**Problem:**
+```markdown
+**Technical Notes:**
+
+* Implement with MUI Drawer:
+  ```typescript
+  const [open, setOpen] = React.useState(false);
+  const drawer = (
+    <Drawer open={open}>
+      ...
+    </Drawer>
+  );
+  ```
+```
+
+**Fix:**
+```markdown
+**Technical Notes:**
+
+* Follow MUI Drawer pattern (existing component in codebase)
+* Use Zustand for state management (established pattern)
+* localStorage key: dashboard:cardPreferences:{orgId}
+* Card order persists in Phase 2 (current phase: selection only)
+```
+
+---
+
+### ❌ jira-related Not a YAML Array
+
+**Problem:**
+```yaml
+jira-related: "PROJ-104, PROJ-105"
+```
+
+**Fix:**
+```yaml
+jira-related: [PROJ-104, PROJ-105]
+```
+
+---
+
+### ❌ Context Uses Bullet Points Instead of Paragraphs
+
+**Problem:**
+```markdown
+**Context:**
+
+* Polling has latency
+* Users see stale data
+* Performance degrades under load
+```
+
+**Fix:**
+```markdown
+**Context:**
+
+Polling creates high latency and stale data visibility. As datasets grow,
+polling becomes increasingly expensive on both client and server. This story
+implements push-based subscriptions for real-time updates.
+```
+
+---
+
+## Reference: Validation Checklists by Document Type
+
+### Story Checklist
+- ✅ **AS/WANT/SO THAT format REQUIRED** (first line after H1 divider)
+- ✅ Context explains business need (not implementation)
+- ✅ In Order to Support This: 4-6 specific bullets
+- ✅ Technical Notes reference patterns (no code)
+- ✅ 5-10 QA-verifiable Acceptance Criteria
+- ✅ Story Points: 1-8 (never >8)
+- ✅ Total lines: 50-100
+
+### Task Checklist
+- ✅ **AS/WANT/SO THAT format REQUIRED** (first line after H1 divider)
+- ✅ Context explains what/why
+- ✅ In Order to Support This: 4-6 specific bullets
+- ✅ Technical Notes reference patterns
+- ✅ 5-10 QA-verifiable Acceptance Criteria
+- ✅ Story Points: 1-8 (never >8)
+- ✅ Total lines: 50-100
+
+### Epic Checklist
+- ✅ Business Value section (why this epic matters)
+- ✅ Technical Scope section (high-level approach)
+- ✅ Child Stories listed as implementation steps
+- ✅ Each child story has ticket number
+- ✅ Acceptance Criteria (minimal - focuses on completion)
+- ✅ NO Story Points (stories have points, not epic)
+- ✅ Total lines: 30-50
+
+### Bug Checklist
+- ✅ Problem described clearly (current broken behavior)
+- ✅ Symptoms or repro steps included
+- ✅ Acceptance Criteria describe fixed behavior
+- ✅ Performance regression reference (if applicable)
+- ✅ 5-10 QA-verifiable Acceptance Criteria
+- ✅ Priority P0 or P1 (critical bugs)
+- ✅ Total lines: 40-80
+
+### Spike Checklist
+- ✅ Research questions clearly stated
+- ✅ Scope boundaries defined (what's IN scope/OUT scope)
+- ✅ Technical Notes mention key topics to explore
+- ✅ Acceptance Criteria focus on decision deliverables
+- ✅ Output clear (decision doc, recommendation, estimates)
+- ✅ Story Points: 2-5 (research typically smaller)
+- ✅ Total lines: 30-60
+
+---
+
+**Last Updated:** 2025-12-08
+**Framework Version:** v11.2
+**Specification:** v10.1.1 Jira Ticket Structure

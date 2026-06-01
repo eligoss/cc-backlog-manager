@@ -1,0 +1,17 @@
+{
+  "name": "{{projectName}}",
+  "version": "1.0.0",
+  "type": "project",
+  "modules": {},
+  "framework": {
+    "version": "{{frameworkVersion}}",
+    "source": "npm",
+    "deployedAt": "{{timestamp}}",
+    "lastSyncAt": null
+  },
+  "paths": {
+    "deployed": ".claude/",
+    "projectData": "ai/"
+  }
+}
+F

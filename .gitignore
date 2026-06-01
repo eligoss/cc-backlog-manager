@@ -1,0 +1,152 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100/
+.TemporaryItems/
+
+# Node/NPM
+node_modules/
+.npm
+.eslintcache
+.turbo/
+.swc/
+.npmrc.local
+
+# TypeScript
+*.tsbuildinfo
+.tsc-out
+tsconfig.tsbuildinfo
+# TypeScript unit tests
+.jest-cache/
+coverage/
+.nyc_output/
+*.lcov
+*.test.js
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.ts
+*.spec.tsx
+# Exception: track framework CLI tests
+!framework/cli/src/**/*.test.ts
+!framework/cli/src/**/*.spec.ts
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.Python
+env/
+venv/
+ENV/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+!framework/cli/src/lib/
+!framework/cli/src/commands/**/lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+# Python unit tests
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.hypothesis/
+# Python static analysis & linting caches
+.mypy_cache/
+.ruff_cache/
+.pylint.d/
+.dmypy.json
+dmypy.json
+
+# Obsidian
+.obsidian/
+*.md.bak
+
+# IDE & Editors
+.vscode/
+.idea/
+.vs/
+*.iml
+*.iwb
+*.iws
+*.ipr
+*.code-workspace
+# Vim/Nano
+*.swp
+*.swo
+*~
+.env
+.env.local
+.env.*.local
+
+# Bash
+.bash_history
+.bashrc.local
+.bash_profile.local
+*.sh~
+
+# Windows
+Thumbs.db
+desktop.ini
+*.lnk
+
+# Backup & Temporary files
+*.bak
+*.backup
+*.orig
+*.tmp
+.tmp/
+
+# Logs
+*.log
+
+# Build artifacts
+dist/
+build/
+!framework/cli/src/lib/build/
+.generated/
+
+# Test artifacts
+.test-sandbox/
+
+# Project specific
+cli/dist/
+.cache/
+
+# Telemetry
+.claude/telemetry/
+telemetry.config.json
+
+# Auto Claude data directory
+.auto-claude/
+
+# Auto Claude generated files
+.auto-claude-security.json
+.auto-claude-status
+.claude_settings.json
+.worktrees/
+.security-key
+logs/security/
+
+# Superpowers design specs and implementation plans (local working docs)
+docs/superpowers/specs/
+docs/superpowers/plans/
+
+# Framework manifest - local project state, should not be committed
+.agentic-framework.json
+.serena/cache
+.claude/settings.local.json
+.claude/settings.local.json.backup-*

@@ -1,0 +1,190 @@
+#!/bin/bash
+#
+# Pre-commit hook for Agentic Development Framework
+#
+# Automatically syncs .claude/skills/ and .claude/commands/ with their source
+# files before each commit. Ensures deployment files are always in sync.
+#
+# This file is managed by the framework - do not edit manually.
+# To update, run: agentic-framework sync --config
+#
+
+set -e
+
+# Colors
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# =============================================================================
+# BRANCH PROTECTION: Block direct commits to main/master
+# =============================================================================
+CURRENT_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+PROTECTED_BRANCHES="main master"
+
+# Check if on a protected branch
+for branch in $PROTECTED_BRANCHES; do
+    if [ "$CURRENT_BRANCH" = "$branch" ]; then
+        # Allow merges (MERGE_HEAD exists during merge commits)
+        if [ -f "$(git rev-parse --git-dir)/MERGE_HEAD" ]; then
+            echo -e "${GREEN}✓ Merge commit allowed on $branch${NC}"
+            break
+        fi
+
+        # Allow rebases (GIT_SEQUENCE_EDITOR is set during rebase)
+        if [ -n "${GIT_REBASE_TODO:-}" ] || [ -d "$(git rev-parse --git-dir)/rebase-merge" ] || [ -d "$(git rev-parse --git-dir)/rebase-apply" ]; then
+            echo -e "${GREEN}✓ Rebase commit allowed on $branch${NC}"
+            break
+        fi
+
+        # Block direct commits
+        echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${RED}  ✗ Direct commits to '$branch' are not allowed!${NC}"
+        echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+        echo -e "${YELLOW}Please use a feature branch:${NC}"
+        echo -e "  git checkout -b feature/your-feature-name"
+        echo -e "  git commit -m 'Your message'"
+        echo -e "  git push -u origin feature/your-feature-name"
+        echo ""
+        echo -e "${YELLOW}Then create a Pull Request to merge into $branch.${NC}"
+        echo ""
+        exit 1
+    fi
+done
+
+# =============================================================================
+# FRAMEWORK SYNC AND BUILD
+# =============================================================================
+
+# Initialize nvm if available (for GUI git clients like Fork)
+export NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    . "$NVM_DIR/nvm.sh" --no-use  # Load nvm without switching versions
+    # Use default node version if current version not set
+    if ! command -v node &> /dev/null; then
+        nvm use default &> /dev/null || true
+    fi
+fi
+
+# Find project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+echo -e "${BLUE}Running pre-commit sync...${NC}"
+
+# Check if node is available
+if ! command -v node &> /dev/null; then
+    echo -e "${RED}Error: node not found${NC}"
+    echo "Please install Node.js to use this hook."
+    exit 1
+fi
+
+# Check if this is an agentic framework project
+if [ ! -f "$PROJECT_ROOT/.agentic-framework.json" ]; then
+    echo -e "${YELLOW}Not an agentic framework project, skipping sync${NC}"
+    exit 0
+fi
+
+# Determine CLI command
+if [ -f "$PROJECT_ROOT/framework/cli/dist/index.js" ]; then
+    CLI_CMD="node $PROJECT_ROOT/framework/cli/dist/index.js"
+elif command -v agentic-framework &> /dev/null; then
+    CLI_CMD="agentic-framework"
+else
+    CLI_CMD="npx agentic-framework"
+fi
+
+# Check and auto-sync
+check_and_sync() {
+    local check_type="$1"
+    local check_flag="$2"
+
+    if $CLI_CMD sync "$check_flag" --check -p "$PROJECT_ROOT" > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ $check_type in sync${NC}"
+        return 0
+    else
+        local exit_code=$?
+        if [ $exit_code -eq 2 ]; then
+            echo -e "${YELLOW}⟳ $check_type out of sync, auto-syncing...${NC}"
+            if $CLI_CMD sync "$check_flag" -p "$PROJECT_ROOT" > /dev/null 2>&1; then
+                echo -e "${GREEN}✓ $check_type synced${NC}"
+                return 0
+            else
+                echo -e "${RED}✗ Failed to sync $check_type${NC}"
+                return 1
+            fi
+        else
+            echo -e "${RED}✗ Error checking $check_type${NC}"
+            return 1
+        fi
+    fi
+}
+
+SYNCED=0
+SYNC_FAILED=0
+
+# Check and sync skills
+if ! check_and_sync "Skills" "--skills"; then
+    SYNC_FAILED=1
+else
+    [ -n "$(git diff --name-only .claude/skills/ 2>/dev/null)" ] && SYNCED=1
+fi
+
+# Check and sync agents
+if ! check_and_sync "Agents" "--agents"; then
+    SYNC_FAILED=1
+else
+    [ -n "$(git diff --name-only .claude/commands/ 2>/dev/null)" ] && SYNCED=1
+fi
+
+# Abort if sync failed
+if [ $SYNC_FAILED -eq 1 ]; then
+    echo -e "${RED}Commit aborted: Sync failed${NC}"
+    exit 1
+fi
+
+# Stage synced files
+if [ $SYNCED -eq 1 ]; then
+    echo -e "${BLUE}Staging synced files...${NC}"
+    git add .claude/skills/ .claude/commands/ 2>/dev/null || true
+    echo -e "${GREEN}✓ Synced files staged${NC}"
+fi
+
+# Stage .agentic-framework.json if it was updated by sync
+if [ -n "$(git diff --name-only .agentic-framework.json 2>/dev/null)" ]; then
+    git add .agentic-framework.json 2>/dev/null || true
+fi
+
+# Build and link CLI if in framework development mode
+if [ -d "$PROJECT_ROOT/framework/cli" ]; then
+    echo -e "${BLUE}Building CLI...${NC}"
+
+    # Build the CLI
+    cd "$PROJECT_ROOT/framework/cli"
+    if npm run build --silent > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ CLI built successfully${NC}"
+    else
+        echo -e "${RED}✗ CLI build failed${NC}"
+        echo ""
+        echo -e "${YELLOW}Running build with errors shown:${NC}"
+        npm run build 2>&1 | tail -20
+        echo ""
+        echo -e "${RED}Commit aborted: Fix build errors and try again${NC}"
+        exit 1
+    fi
+
+    # Link globally
+    echo -e "${BLUE}Linking CLI globally...${NC}"
+    if npm link --silent > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ CLI linked successfully${NC}"
+    else
+        echo -e "${YELLOW}⚠ Failed to link CLI (continuing)${NC}"
+        # Don't fail on link errors - build is the critical part
+    fi
+fi
+
+echo -e "${GREEN}Pre-commit sync complete!${NC}"
+exit 0

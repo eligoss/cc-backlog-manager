@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-framework.dev/schemas/writer/world-fact.schema.json",
+  "title": "World Fact Schema",
+  "description": "Schema for world-building fact YAML frontmatter with immutability controls",
+  "type": "object",
+  "required": [
+    "id",
+    "title",
+    "type",
+    "category",
+    "mutability",
+    "established",
+    "version"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^world-[a-z]+-[a-z0-9-]+$",
+      "description": "Unique identifier following pattern: world-{category}-{name}"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 100,
+      "description": "Human-readable title for this world fact"
+    },
+    "type": {
+      "const": "world-fact",
+      "description": "Type identifier for world facts"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "core",
+        "magic",
+        "geography",
+        "nations",
+        "history",
+        "factions",
+        "species",
+        "artifacts",
+        "languages",
+        "calendars",
+        "technology",
+        "religion",
+        "cosmology"
+      ],
+      "description": "Category of world fact"
+    },
+    "mutability": {
+      "type": "string",
+      "enum": ["immutable", "append-only", "expandable"],
+      "description": "Immutability level - determines what changes are allowed"
+    },
+    "established": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when this fact was established (ISO 8601 format)"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version number"
+    },
+    "content-hash": {
+      "type": "string",
+      "description": "SHA-256 hash of content for immutability verification"
+    },
+    "token-count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Estimated token count for full content"
+    },
+    "summary-available": {
+      "type": "boolean",
+      "description": "Whether a summary section exists"
+    },
+    "summary-token-count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Estimated token count for summary only"
+    },
+    "depends-on": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^world-[a-z]+-[a-z0-9-]+$"
+      },
+      "description": "IDs of other world facts this depends on"
+    },
+    "referenced-by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of content that references this fact (books, chapters, etc.)"
+    },
+    "additions": {
+      "type": "array",
+      "description": "Array of additions for append-only facts",
+      "items": {
+        "type": "object",
+        "required": ["date", "description", "section"],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Date when addition was made"
+          },
+          "author": {
+            "type": "string",
+            "description": "Who made the addition (agent or human)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of what was added"
+          },
+          "section": {
+            "type": "string",
+            "description": "Section title or identifier for the addition"
+          },
+          "hash": {
+            "type": "string",
+            "description": "SHA-256 hash of the added content"
+          }
+        }
+      }
+    },
+    "expansions": {
+      "type": "array",
+      "description": "Array of expansions for expandable facts",
+      "items": {
+        "type": "object",
+        "required": ["date", "type", "added"],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Date when expansion was made"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of expansion (location, character, sub-region, etc.)"
+          },
+          "added": {
+            "type": "string",
+            "description": "Name of what was added"
+          },
+          "file": {
+            "type": "string",
+            "description": "Path to the new file (relative to this fact)"
+          }
+        }
+      }
+    },
+    "magic-type": {
+      "type": "string",
+      "enum": ["soft", "hard", "hybrid"],
+      "description": "Type of magic system (for magic category facts only)"
+    },
+    "era": {
+      "type": "string",
+      "description": "Historical era (for history category facts)"
+    },
+    "date-in-world": {
+      "type": "string",
+      "description": "Date within the world's timeline (for history category facts)"
+    }
+  },
+  "additionalProperties": false
+}

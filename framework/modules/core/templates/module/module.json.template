@@ -1,0 +1,20 @@
+{
+  "$schema": "../core/registries/schemas/module.schema.json",
+  "id": "{{id}}",
+  "version": "{{version}}",
+  "name": "{{name}}",
+  "description": "{{description}}",
+  "provides": {
+    "agents": [],
+    "skills": [],
+    "capabilities": [],
+    "cli-commands": []
+  },
+  "requires": {
+    "core": ">=1.0.0"
+  },
+  "metadata": {
+    "category": "{{category}}",
+    "author": "{{author}}"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Backlog Configuration",
+  "description": "Project-scoped configuration for backlog module",
+  "type": "object",
+  "required": ["jiraProject", "jiraBaseUrl"],
+  "properties": {
+    "jiraProject": {
+      "type": "string",
+      "description": "Jira project key (e.g. DAPM)",
+      "pattern": "^[A-Z][A-Z0-9_]+$"
+    },
+    "jiraBaseUrl": {
+      "type": "string",
+      "description": "Jira instance URL",
+      "format": "uri"
+    },
+    "envFile": {
+      "type": "string",
+      "description": "Path to .env file with JIRA_EMAIL and JIRA_API_TOKEN",
+      "default": ".env"
+    },
+    "components": {
+      "type": "array",
+      "description": "Valid component names for validation. If empty, any string accepted.",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "defaults": {
+      "type": "object",
+      "properties": {
+        "ticketPath": { "type": "string", "default": "./backlog/tickets" },
+        "epicPath": { "type": "string", "default": "./backlog/epics" },
+        "sprintPath": { "type": "string", "default": "./backlog/sprints" },
+        "milestonePath": { "type": "string", "default": "./backlog/milestones" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

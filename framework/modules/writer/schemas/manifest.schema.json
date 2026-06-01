@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-framework.dev/schemas/writer/manifest.schema.json",
+  "title": "World Directory Manifest Schema",
+  "description": "Schema for _manifest.json files in world directories",
+  "type": "object",
+  "required": ["directory", "type", "created", "facts"],
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "Path to this directory relative to world root"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["immutable", "append-only", "expandable"],
+      "description": "Mutability type for this directory"
+    },
+    "created": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when this directory was created"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what this directory contains"
+    },
+    "facts": {
+      "type": "array",
+      "description": "Array of all facts in this directory",
+      "items": {
+        "type": "object",
+        "required": ["file", "hash", "established", "version", "summary"],
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Filename or relative path to fact file"
+          },
+          "fact-id": {
+            "type": "string",
+            "pattern": "^world-[a-z]+-[a-z0-9-]+$",
+            "description": "Unique fact identifier"
+          },
+          "hash": {
+            "type": "string",
+            "description": "Current content hash (SHA-256)"
+          },
+          "established": {
+            "type": "string",
+            "format": "date",
+            "description": "Date when fact was established"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+$",
+            "description": "Current version of the fact"
+          },
+          "immutable": {
+            "type": "boolean",
+            "description": "Whether this specific fact is immutable"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Brief summary of the fact for quick reference"
+          },
+          "token-estimate": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Estimated token count for full content"
+          },
+          "summary-token-estimate": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Estimated token count for summary only"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category of the fact"
+          },
+          "depends-on": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "IDs of facts this depends on"
+          },
+          "referenced-by": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "IDs of content referencing this fact"
+          },
+          "additions-count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of additions (for append-only facts)"
+          },
+          "expansions-count": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of expansions (for expandable facts)"
+          }
+        }
+      }
+    },
+    "total-token-estimate": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total estimated tokens for all facts in this directory"
+    },
+    "total-summary-tokens": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total tokens if loading only summaries"
+    },
+    "fact-count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of facts in this directory"
+    },
+    "last-validated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of last validation check"
+    },
+    "validation-status": {
+      "type": "string",
+      "enum": ["valid", "invalid", "warning", "not-validated"],
+      "description": "Result of last validation"
+    },
+    "validation-errors": {
+      "type": "array",
+      "description": "Array of validation errors if any",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "File with the error"
+          },
+          "error": {
+            "type": "string",
+            "description": "Error description"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["error", "warning"],
+            "description": "Severity level"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

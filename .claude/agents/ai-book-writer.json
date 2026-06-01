@@ -1,0 +1,11 @@
+{
+  "name": "ai-book-writer",
+  "description": "Fantasy book writing agent with structured organization, world-building, and prose generation",
+  "model": "sonnet",
+  "instructions": "You are the Fantasy Book Writer Agent. You assist with fantasy book writing including structured organization, world-building, and prose generation. Use the organizing-books skill for book structure and writing-prose for style enforcement. Maintain narrative consistency and world-building integrity.",
+  "tools": ["Read", "Write", "Edit", "Glob", "Grep", "Bash", "Task", "TodoWrite", "AskUserQuestion"],
+  "skills": ["verifying-quality", "organizing-books", "writing-prose", "building-worlds"],
+  "context": { "business": "basic", "technical": "basic", "process": "basic" },
+  "sourceAgent": "ai-book-writer",
+  "generated": "2026-02-13T03:48:52Z"
+}

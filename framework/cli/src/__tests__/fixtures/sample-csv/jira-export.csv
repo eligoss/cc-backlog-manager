@@ -1,0 +1,4 @@
+Issue key,Summary,Status,Priority,Assignee,Sprint,Epic Link,Story Points
+PROJ-101,Implement user authentication,In Progress,High,john.doe,2026-W1,PROJ-100,5
+PROJ-102,Add login page UI,To Do,Medium,jane.smith,2026-W1,PROJ-100,3
+PROJ-103,Setup database schema,Done,High,john.doe,2026-W1,,8

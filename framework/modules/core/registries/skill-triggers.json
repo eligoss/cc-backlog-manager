@@ -1,0 +1,198 @@
+{
+  "version": "1.0.0",
+  "description": "Skill trigger patterns for contextual skill reminders. Maps available skills to keywords and patterns that indicate when the skill would be helpful.",
+  "skill-triggers": {
+    "using-mcp": {
+      "description": "MCP tools and web search capabilities",
+      "triggers": [
+        "mcp",
+        "model context protocol",
+        "web search",
+        "search the web",
+        "external api",
+        "third-party tool",
+        "duckduckgo",
+        "fetch url",
+        "external service"
+      ],
+      "prompt-patterns": [
+        "search.*web",
+        "find.*mcp",
+        "discover.*tool",
+        "fetch.*url",
+        "look up.*online"
+      ]
+    },
+    "validating-markdown": {
+      "description": "Markdown formatting and YAML frontmatter validation",
+      "triggers": [
+        "markdown",
+        "frontmatter",
+        "yaml syntax",
+        ".md file",
+        "documentation format",
+        "readme",
+        "changelog"
+      ],
+      "prompt-patterns": [
+        "create.*doc",
+        "write.*readme",
+        "format.*markdown",
+        "validate.*yaml",
+        "check.*frontmatter"
+      ]
+    },
+    "using-framework": {
+      "description": "Framework architecture and discovery engine understanding",
+      "triggers": [
+        "framework architecture",
+        "routes.yml",
+        "discovery engine",
+        "registry system",
+        "module system",
+        "skill loading",
+        "context loading"
+      ],
+      "prompt-patterns": [
+        "how.*framework",
+        "understand.*architecture",
+        "navigate.*codebase",
+        "discovery.*engine"
+      ]
+    },
+    "validating-links": {
+      "description": "Link validation in markdown documentation",
+      "triggers": [
+        "broken link",
+        "validate link",
+        "check reference",
+        "link syntax",
+        "dead link",
+        "missing reference"
+      ],
+      "prompt-patterns": [
+        "validate.*link",
+        "check.*reference",
+        "find.*broken",
+        "verify.*url"
+      ]
+    },
+    "building-context": {
+      "description": "Context file authoring and validation",
+      "triggers": [
+        "context file",
+        "business context",
+        "technical context",
+        "process context",
+        "context-category-needs"
+      ],
+      "prompt-patterns": [
+        "create.*context",
+        "update.*context",
+        "write.*context"
+      ]
+    },
+    "building-skills": {
+      "description": "Skill creation and framework integration",
+      "triggers": [
+        "create skill",
+        "new skill",
+        "skill file",
+        "skill template"
+      ],
+      "prompt-patterns": [
+        "create.*skill",
+        "build.*skill",
+        "add.*skill"
+      ]
+    },
+    "building-agents": {
+      "description": "Agent design patterns",
+      "triggers": [
+        "create agent",
+        "new agent",
+        "agent design",
+        "agent variant",
+        "agent design"
+      ],
+      "prompt-patterns": [
+        "create.*agent",
+        "build.*agent",
+        "design.*agent"
+      ]
+    },
+    "syncing-with-jira": {
+      "description": "Jira sync via backlog CLI (pull/diff/push)",
+      "triggers": [
+        "jira",
+        "jira ticket",
+        "jira sync",
+        "jira push",
+        "jira pull",
+        "jira import"
+      ],
+      "prompt-patterns": [
+        "sync.*jira",
+        "push.*jira",
+        "pull.*jira",
+        "import.*jira"
+      ]
+    },
+    "publishing-confluence": {
+      "description": "Confluence page publishing and ADF conversion",
+      "triggers": [
+        "confluence",
+        "confluence page",
+        "adf",
+        "atlassian document format"
+      ],
+      "prompt-patterns": [
+        "publish.*confluence",
+        "create.*confluence",
+        "convert.*adf"
+      ]
+    },
+    "building-reports": {
+      "description": "Report generation and metrics collection",
+      "triggers": [
+        "report",
+        "metrics",
+        "status report",
+        "executive summary"
+      ],
+      "prompt-patterns": [
+        "generate.*report",
+        "create.*report",
+        "build.*metrics"
+      ]
+    },
+    "organizing-backlog": {
+      "description": "Backlog organization and ticket lifecycle",
+      "triggers": [
+        "backlog",
+        "sprint planning",
+        "milestone",
+        "epic breakdown"
+      ],
+      "prompt-patterns": [
+        "organize.*backlog",
+        "plan.*sprint",
+        "break.*epic"
+      ]
+    },
+    "building-worlds": {
+      "description": "World design and magic system creation",
+      "triggers": [
+        "world building",
+        "magic system",
+        "fantasy world",
+        "culture design"
+      ],
+      "prompt-patterns": [
+        "create.*world",
+        "design.*magic",
+        "build.*culture"
+      ]
+    }
+  }
+}

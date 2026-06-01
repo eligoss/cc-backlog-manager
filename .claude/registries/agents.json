@@ -1,0 +1,404 @@
+{
+  "version": "1.0.0",
+  "agents": [
+    {
+      "id": "ai-backlog-manager",
+      "module": "backlog",
+      "file": ".claude/commands/ai-backlog-manager.md",
+      "capability-needs": [
+        "organizing-backlog",
+        "intelligence-gathering"
+      ],
+      "context-category-needs": {
+        "business": "advanced",
+        "technical": "basic",
+        "process": "advanced"
+      },
+      "context-files": [
+        "business-basic.md",
+        "business-advanced.md",
+        "technical-basic.md",
+        "process-basic.md",
+        "process-advanced.md"
+      ],
+      "token-budget": 3000,
+      "essential-skills": [
+        "verifying-quality",
+        "building-tickets"
+      ],
+      "available-skills": [
+        "validating-markdown"
+      ],
+      "sdk": {
+        "enabled": true,
+        "model": "sonnet",
+        "custom-agent-file": ".claude/agents/ai-backlog-manager.json"
+      }
+    },
+    {
+      "id": "ai-architect",
+      "module": "coding",
+      "file": ".claude/commands/ai-architect.md",
+      "capability-needs": [
+        "architecture-design",
+        "intelligence-gathering"
+      ],
+      "context-category-needs": {
+        "business": "advanced",
+        "technical": "advanced",
+        "process": "basic"
+      },
+      "context-files": [
+        "business-basic.md",
+        "business-advanced.md",
+        "technical-basic.md",
+        "technical-advanced.md",
+        "process-basic.md"
+      ],
+      "token-budget": 3000,
+      "essential-skills": [
+        "verifying-quality",
+        "designing-architecture"
+      ],
+      "available-skills": [
+        "validating-markdown",
+        "using-mcp"
+      ],
+      "sdk": {
+        "enabled": true,
+        "model": "sonnet",
+        "custom-agent-file": ".claude/agents/ai-architect.json"
+      }
+    },
+    {
+      "id": "ai-app-developer",
+      "module": "coding",
+      "file": ".claude/commands/ai-app-developer.md",
+      "capability-needs": [
+        "git-workflow-management",
+        "intelligence-gathering"
+      ],
+      "context-category-needs": {
+        "business": "basic",
+        "technical": "advanced",
+        "process": "basic"
+      },
+      "context-files": [
+        "business-basic.md",
+        "technical-basic.md",
+        "technical-advanced.md",
+        "process-basic.md"
+      ],
+      "token-budget": 3000,
+      "essential-skills": [
+        "verifying-quality",
+        "implementing-code"
+      ],
+      "available-skills": [
+        "using-mcp"
+      ],
+      "sdk": {
+        "enabled": true,
+        "model": "sonnet",
+        "custom-agent-file": ".claude/agents/ai-app-developer.json"
+      }
+    },
+    {
+      "id": "ai-ios-developer",
+      "module": "coding",
+      "file": ".claude/commands/ai-ios-developer.md",
+      "capability-needs": [
+        "git-workflow-management",
+        "intelligence-gathering"
+      ],
+      "context-category-needs": {
+        "business": "basic",
+        "technical": "advanced",
+        "process": "basic"
+      },
+      "context-files": [
+        "business-basic.md",
+        "technical-basic.md",
+        "technical-advanced.md",
+        "process-basic.md"
+      ],
+      "token-budget": 3000,
+      "essential-skills": [
+        "verifying-quality",
+        "implementing-ios",
+        "designing-ios-ui"
+      ],
+      "available-skills": [
+        "using-mcp"
+      ],
+      "sdk": {
+        "enabled": true,
+        "model": "sonnet",
+        "custom-agent-file": ".claude/agents/ai-ios-developer.json"
+      }
+    },
+    {
+      "id": "ai-hig-reviewer",
+      "module": "coding",
+      "file": "framework/modules/coding/agents/ai-hig-reviewer.md",
+      "deploy-to": "agent",
+      "capability-needs": [],
+      "context-category-needs": {},
+      "context-files": [],
+      "token-budget": 800,
+      "essential-skills": [
+        "designing-ios-ui"
+      ],
+      "available-skills": [],
+      "sdk": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "ai-confluence-manager",
+      "module": "confluence",
+      "file": ".claude/commands/ai-confluence-manager.md",
+      "capability-needs": [
+        "confluence-integration"
+      ],
+      "context-category-needs": {
+        "business": "basic",
+        "technical": "basic",
+        "process": "basic"
+      },
+      "context-files": [
+        "business-basic.md",
+        "technical-basic.md",
+        "process-basic.md"
+      ],
+      "token-budget": 3000,
+      "essential-skills": [
+        "verifying-quality",
+        "converting-adf",
+        "publishing-confluence"
+      ],
+      "available-skills": [
+        "validating-markdown"
+      ],
+      "sdk": {
+        "enabled": true,
+        "model": "sonnet",
+        "custom-agent-file": ".claude/agents/ai-confluence-manager.json"
+      }
+    },
+    {
+      "id": "ai-framework-manager",
+      "module": "core",
+      "file": ".claude/commands/ai-framework-manager.md",
+      "deploy-to": "command",
+      "capability-needs": [
+        "building-agents",
+        "planning-phases",
+        "intelligence-gathering"
+      ],
+      "context-category-needs": {
+        "business": "basic",
+        "technical": "expert",
+        "process": "advanced"
+      },
+      "context-files": [
+        "business-basic.md",
+        "technical-basic.md",
+        "technical-advanced.md",
+        "technical-expert.md",
+        "process-basic.md",
+        "process-advanced.md"
+      ],
+      "token-budget": 3000,
+      "essential-skills": [
+        "verifying-quality",
+        "building-framework"
+      ],
+      "available-skills": [
+        "validating-markdown",
+        "using-mcp",
+        "using-framework"
+      ],
+      "sdk": {
+        "enabled": true,
+        "model": "opus"
+      }
+    },
+    {
+      "id": "ai-framework-developer",
+      "module": "core",
+      "file": ".claude/agents/ai-framework-developer.json",
+      "deploy-to": "agent",
+      "capability-needs": [
+        "git-workflow-management"
+      ],
+      "context-category-needs": {
+        "business": "basic",
+        "technical": "advanced",
+        "process": "basic"
+      },
+      "context-files": [
+        "business-basic.md",
+        "technical-basic.md",
+        "technical-advanced.md",
+        "process-basic.md"
+      ],
+      "token-budget": 3000,
+      "essential-skills": [
+        "verifying-quality",
+        "building-framework"
+      ],
+      "available-skills": [
+        "using-framework",
+        "using-mcp"
+      ],
+      "sdk": {
+        "enabled": true,
+        "model": "sonnet",
+        "custom-agent-file": ".claude/agents/ai-framework-developer.json"
+      }
+    },
+    {
+      "id": "ai-report-manager",
+      "module": "reporting",
+      "file": ".claude/commands/ai-report-manager.md",
+      "capability-needs": [
+        "report-generation"
+      ],
+      "context-category-needs": {
+        "business": "basic",
+        "technical": "basic",
+        "process": "basic"
+      },
+      "context-files": [
+        "business-basic.md",
+        "technical-basic.md",
+        "process-basic.md"
+      ],
+      "token-budget": 3000,
+      "essential-skills": [
+        "verifying-quality",
+        "building-reports"
+      ],
+      "available-skills": [
+        "validating-markdown"
+      ],
+      "sdk": {
+        "enabled": true,
+        "model": "sonnet",
+        "custom-agent-file": ".claude/agents/ai-report-manager.json"
+      }
+    },
+    {
+      "id": "ai-scout-backlog",
+      "module": "core",
+      "file": "framework/modules/core/agents/ai-scout-backlog.md",
+      "deploy-to": "agent",
+      "capability-needs": [],
+      "context-category-needs": {},
+      "context-files": [],
+      "token-budget": 800,
+      "essential-skills": [],
+      "available-skills": [],
+      "sdk": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "ai-scout-codebase",
+      "module": "core",
+      "file": "framework/modules/core/agents/ai-scout-codebase.md",
+      "deploy-to": "agent",
+      "capability-needs": [],
+      "context-category-needs": {},
+      "context-files": [],
+      "token-budget": 800,
+      "essential-skills": [],
+      "available-skills": [],
+      "sdk": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "ai-scout-knowledge",
+      "module": "core",
+      "file": "framework/modules/core/agents/ai-scout-knowledge.md",
+      "deploy-to": "agent",
+      "capability-needs": [],
+      "context-category-needs": {},
+      "context-files": [],
+      "token-budget": 800,
+      "essential-skills": [],
+      "available-skills": [],
+      "sdk": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "ai-book-writer",
+      "module": "writer",
+      "file": ".claude/commands/ai-book-writer.md",
+      "deploy-to": "command",
+      "capability-needs": [
+        "book-organization",
+        "intelligence-gathering"
+      ],
+      "context-category-needs": {
+        "business": "basic",
+        "technical": "basic",
+        "process": "basic"
+      },
+      "context-files": [
+        "business-basic.md",
+        "technical-basic.md",
+        "process-basic.md"
+      ],
+      "token-budget": 3000,
+      "essential-skills": [
+        "verifying-quality",
+        "organizing-books"
+      ],
+      "sdk": {
+        "enabled": true,
+        "model": "sonnet",
+        "custom-agent-file": ".claude/agents/ai-book-writer.json"
+      }
+    },
+    {
+      "id": "ai-world-builder",
+      "module": "writer",
+      "file": "framework/modules/writer/agents/ai-world-builder.md",
+      "deploy-to": "agent",
+      "capability-needs": [],
+      "context-category-needs": {},
+      "context-files": [],
+      "token-budget": 800,
+      "essential-skills": [
+        "building-worlds",
+        "organizing-books"
+      ],
+      "available-skills": [],
+      "sdk": {
+        "enabled": false
+      }
+    },
+    {
+      "id": "ai-prose-writer",
+      "module": "writer",
+      "file": "framework/modules/writer/agents/ai-prose-writer.md",
+      "deploy-to": "agent",
+      "capability-needs": [],
+      "context-category-needs": {},
+      "context-files": [],
+      "token-budget": 800,
+      "essential-skills": [
+        "writing-prose",
+        "organizing-books"
+      ],
+      "available-skills": [],
+      "sdk": {
+        "enabled": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "version": "1.0.0",
+  "framework": "agentic-development-framework",
+  "description": "Machine-readable agent catalog for OpenClaw orchestration",
+  "agents": [
+    {
+      "id": "ai-backlog-manager",
+      "name": "Backlog Manager",
+      "description": "Ticket creation, organization, and sprint planning",
+      "model": "sonnet",
+      "module": "backlog",
+      "capabilities": ["ticket-decomposition", "ticket-writing", "sprint-planning"],
+      "autonomous": true
+    },
+    {
+      "id": "ai-architect",
+      "name": "Architect",
+      "description": "System design, tech stack choices, and architectural reviews",
+      "model": "sonnet",
+      "module": "coding",
+      "capabilities": ["architecture-design", "code-organization"],
+      "autonomous": true
+    },
+    {
+      "id": "ai-app-developer",
+      "name": "Application Developer",
+      "description": "Code implementation, testing, and code review",
+      "model": "sonnet",
+      "module": "coding",
+      "capabilities": ["code-implementation", "code-review", "test-writing"],
+      "autonomous": true
+    },
+    {
+      "id": "ai-ios-developer",
+      "name": "iOS Developer",
+      "description": "Swift/SwiftUI development with Apple HIG compliance",
+      "model": "sonnet",
+      "module": "coding",
+      "capabilities": ["ios-development", "ios-testing", "hig-compliance"],
+      "autonomous": true
+    },
+    {
+      "id": "ai-confluence-manager",
+      "name": "Confluence Manager",
+      "description": "Page publishing, space organization, and ADF conversion",
+      "model": "sonnet",
+      "module": "confluence",
+      "capabilities": ["confluence-integration", "documentation-management"],
+      "autonomous": true
+    },
+    {
+      "id": "ai-framework-manager",
+      "name": "Framework Manager",
+      "description": "Framework governance, architecture decisions, and module design",
+      "model": "opus",
+      "module": "core",
+      "capabilities": ["framework-governance", "building-agents", "planning-phases"],
+      "autonomous": true
+    },
+    {
+      "id": "ai-framework-developer",
+      "name": "Framework Developer",
+      "description": "Framework feature implementation, CLI commands, and TypeScript code",
+      "model": "sonnet",
+      "module": "core",
+      "capabilities": ["framework-development", "code-implementation"],
+      "autonomous": true
+    },
+    {
+      "id": "ai-report-manager",
+      "name": "Report Manager",
+      "description": "Project status reports, metrics collection, and documentation",
+      "model": "sonnet",
+      "module": "reporting",
+      "capabilities": ["report-generation", "metrics-collection", "status-reporting"],
+      "autonomous": true
+    },
+    {
+      "id": "ai-book-writer",
+      "name": "Book Writer",
+      "description": "Fantasy book writing with world-building and prose generation",
+      "model": "sonnet",
+      "module": "writer",
+      "capabilities": ["book-organization", "prose-generation", "world-building"],
+      "autonomous": true
+    }
+  ],
+  "execution": {
+    "command": "agentic-framework agent run {agent-id} \"{prompt}\" --autonomous",
+    "permissionMode": "acceptEdits",
+    "autonomousFlag": "--autonomous"
+  }
+}

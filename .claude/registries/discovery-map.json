@@ -1,0 +1,480 @@
+{
+  "version": "1.0.0",
+  "capabilities": [
+    {
+      "capability": "ticket-decomposition",
+      "skills-providing": [
+        "building-tickets"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "ticket-writing",
+      "skills-providing": [
+        "building-tickets"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "jira-formatting",
+      "skills-providing": [
+        "building-tickets"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "organizing-backlog",
+      "skills-providing": [
+        "organizing-backlog"
+      ],
+      "used-by-agents": [
+        "ai-backlog-manager"
+      ]
+    },
+    {
+      "capability": "epic-breakdown",
+      "skills-providing": [
+        "organizing-backlog"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "sprint-planning",
+      "skills-providing": [
+        "organizing-backlog"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "milestone-tracking",
+      "skills-providing": [
+        "organizing-backlog"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "organizing-backlog-knowledge",
+      "skills-providing": [
+        "organizing-backlog"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "backlog-workflow",
+      "skills-providing": [
+        "organizing-backlog"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "ticket-lifecycle",
+      "skills-providing": [
+        "organizing-backlog"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "architecture-design",
+      "skills-providing": [
+        "designing-architecture"
+      ],
+      "used-by-agents": [
+        "ai-architect"
+      ]
+    },
+    {
+      "capability": "code-implementation",
+      "skills-providing": [
+        "implementing-code"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "code-review",
+      "skills-providing": [
+        "implementing-code"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "test-writing",
+      "skills-providing": [
+        "implementing-code"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "code-organization",
+      "skills-providing": [
+        "structuring-code"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "file-structure-guidance",
+      "skills-providing": [
+        "structuring-code"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "readability-assessment",
+      "skills-providing": [
+        "structuring-code"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "ios-development",
+      "skills-providing": [
+        "implementing-ios"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "ios-testing",
+      "skills-providing": [
+        "implementing-ios"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "hig-compliance",
+      "skills-providing": [
+        "implementing-ios"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "confluence-integration",
+      "skills-providing": [
+        "publishing-confluence"
+      ],
+      "used-by-agents": [
+        "ai-confluence-manager"
+      ]
+    },
+    {
+      "capability": "confluence-publish",
+      "skills-providing": [
+        "publishing-confluence"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "confluence-fetch",
+      "skills-providing": [
+        "publishing-confluence"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "documentation-management",
+      "skills-providing": [
+        "publishing-confluence"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "format-conversion",
+      "skills-providing": [
+        "publishing-confluence"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "markdown-to-adf",
+      "skills-providing": [
+        "publishing-confluence"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "git-workflow-management",
+      "skills-providing": [
+        "committing-code"
+      ],
+      "used-by-agents": [
+        "ai-app-developer",
+        "ai-ios-developer",
+        "ai-framework-developer"
+      ]
+    },
+    {
+      "capability": "jira-integration",
+      "skills-providing": [
+        "committing-code"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "jira-git-integration",
+      "skills-providing": [
+        "committing-code"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "jira-branch-workflow",
+      "skills-providing": [
+        "committing-code"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "quality-assurance",
+      "skills-providing": [
+        "verifying-quality"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "markdown-formatting",
+      "skills-providing": [
+        "validating-markdown"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "mcp-tool-usage",
+      "skills-providing": [
+        "using-mcp"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "mcp-discovery",
+      "skills-providing": [
+        "using-mcp"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "web-search",
+      "skills-providing": [
+        "using-mcp"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "context-authoring",
+      "skills-providing": [
+        "building-context"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "context-validation",
+      "skills-providing": [
+        "building-context"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "skill-creation",
+      "skills-providing": [
+        "building-skills"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "framework-architecture-knowledge",
+      "skills-providing": [
+        "using-framework"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "context-loading-knowledge",
+      "skills-providing": [
+        "using-context"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "link-validation",
+      "skills-providing": [
+        "validating-links"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "framework-governance",
+      "skills-providing": [
+        "building-framework"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "framework-development",
+      "skills-providing": [
+        "building-framework"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "planning-phases",
+      "skills-providing": [
+        "building-framework"
+      ],
+      "used-by-agents": [
+        "ai-framework-manager"
+      ]
+    },
+    {
+      "capability": "version-management",
+      "skills-providing": [
+        "managing-versions"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "building-agents",
+      "skills-providing": [
+        "building-agents"
+      ],
+      "used-by-agents": [
+        "ai-framework-manager"
+      ]
+    },
+    {
+      "capability": "agent-design",
+      "skills-providing": [
+        "building-agents"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "report-generation",
+      "skills-providing": [
+        "building-reports"
+      ],
+      "used-by-agents": [
+        "ai-report-manager"
+      ]
+    },
+    {
+      "capability": "metrics-collection",
+      "skills-providing": [
+        "building-reports"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "status-reporting",
+      "skills-providing": [
+        "building-reports"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "book-organization",
+      "skills-providing": [
+        "organizing-books"
+      ],
+      "used-by-agents": [
+        "ai-book-writer"
+      ]
+    },
+    {
+      "capability": "domain-structure",
+      "skills-providing": [
+        "organizing-books"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "ssot-enforcement",
+      "skills-providing": [
+        "organizing-books"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "style-enforcement",
+      "skills-providing": [
+        "writing-prose"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "prose-generation",
+      "skills-providing": [
+        "writing-prose"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "world-building",
+      "skills-providing": [
+        "writing-prose"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "world-design",
+      "skills-providing": [
+        "building-worlds"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "magic-system-design",
+      "skills-providing": [
+        "building-worlds"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "culture-building",
+      "skills-providing": [
+        "building-worlds"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "consistency-enforcement",
+      "skills-providing": [
+        "building-worlds"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "intelligence-gathering",
+      "skills-providing": [
+        "gathering-intelligence"
+      ],
+      "used-by-agents": [
+        "ai-backlog-manager",
+        "ai-app-developer",
+        "ai-framework-manager",
+        "ai-architect",
+        "ai-book-writer",
+        "ai-ios-developer"
+      ]
+    },
+    {
+      "capability": "ios-visual-design",
+      "skills-providing": [
+        "designing-ios-ui"
+      ],
+      "used-by-agents": [
+        "ai-ios-developer"
+      ]
+    },
+    {
+      "capability": "jira-sync",
+      "skills-providing": [
+        "syncing-with-jira"
+      ],
+      "used-by-agents": []
+    },
+    {
+      "capability": "markdown-jira-conversion",
+      "skills-providing": [
+        "syncing-with-jira"
+      ],
+      "used-by-agents": []
+    }
+  ]
+}

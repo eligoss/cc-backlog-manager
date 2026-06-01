@@ -1,0 +1,73 @@
+{
+  "$schema": "../core/registries/schemas/module.schema.json",
+  "id": "confluence",
+  "version": "1.17.0",
+  "name": "Confluence Integration",
+  "description": "Confluence documentation integration for page creation, publishing, and markdown-to-ADF conversion",
+  "provides": {
+    "agents": [
+      "ai-confluence-manager"
+    ],
+    "skills": [
+      "publishing-confluence",
+      "converting-adf"
+    ],
+    "capabilities": [
+      "confluence-integration",
+      "format-conversion",
+      "confluence-publish",
+      "confluence-fetch",
+      "markdown-to-adf",
+      "documentation-management"
+    ],
+    "scripts": [],
+    "directories": [
+      "reports"
+    ],
+    "cli-commands": [
+      {
+        "name": "confluence create-page",
+        "type": "create",
+        "skill": "publishing-confluence",
+        "description": "Create and publish a Confluence page"
+      },
+      {
+        "name": "confluence fetch-page",
+        "type": "fetch",
+        "skill": "publishing-confluence",
+        "description": "Fetch Confluence page content"
+      },
+      {
+        "name": "confluence import-reports",
+        "type": "import",
+        "skill": "publishing-confluence",
+        "description": "Import reports to Confluence"
+      },
+      {
+        "name": "confluence validate",
+        "type": "validate",
+        "skill": "publishing-confluence",
+        "description": "Validate markdown for ADF conversion"
+      }
+    ]
+  },
+  "requires": {},
+  "optional-dependencies": [
+    "core"
+  ],
+  "context": {
+    "technical": [
+      "confluence-api-patterns.md"
+    ]
+  },
+  "metadata": {
+    "category": "integration",
+    "keywords": [
+      "confluence",
+      "atlassian",
+      "documentation",
+      "wiki",
+      "publishing"
+    ]
+  }
+}

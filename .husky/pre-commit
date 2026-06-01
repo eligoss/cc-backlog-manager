@@ -1,0 +1,59 @@
+#!/usr/bin/env sh
+
+# Load nvm for GUI git clients (Fork, SourceTree, etc.)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use
+command -v node >/dev/null 2>&1 || nvm use default >/dev/null 2>&1
+
+# Get current branch
+CURRENT_BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || echo "")
+PROTECTED_BRANCHES="main master"
+
+# Phase 1: Branch Protection
+for branch in $PROTECTED_BRANCHES; do
+  if [ "$CURRENT_BRANCH" = "$branch" ]; then
+    # Allow merges
+    if [ -f "$(git rev-parse --git-dir)/MERGE_HEAD" ]; then
+      echo "✓ Merge commit allowed on $branch"
+      break
+    fi
+    # Allow rebases
+    if [ -n "${GIT_REBASE_TODO:-}" ] || [ -d "$(git rev-parse --git-dir)/rebase-merge" ] || [ -d "$(git rev-parse --git-dir)/rebase-apply" ]; then
+      echo "✓ Rebase commit allowed on $branch"
+      break
+    fi
+    # Block direct commits
+    echo "✗ Direct commits to '$branch' are not allowed!"
+    echo ""
+    echo "Please use a feature branch:"
+    echo "  git checkout -b feature/your-feature-name"
+    echo "  git push -u origin feature/your-feature-name"
+    echo "Then create a Pull Request."
+    exit 1
+  fi
+done
+
+# Phase 2: Branch Naming Validation
+if [ -n "$CURRENT_BRANCH" ]; then
+  # Allow dependabot
+  if [[ "$CURRENT_BRANCH" =~ ^dependabot/ ]]; then
+    echo "✓ Dependabot branch allowed"
+  # Validate semantic naming
+  elif [[ ! "$CURRENT_BRANCH" =~ ^(feature|feat|bugfix|fix|hotfix|docs|refactor|chore|test)/[a-z0-9-]+$ ]]; then
+    echo "✗ Invalid branch name: '$CURRENT_BRANCH'"
+    echo ""
+    echo "Valid format: <type>/<description>"
+    echo "Types: feature, feat, bugfix, fix, hotfix, docs, refactor, chore, test"
+    echo "Example: feature/add-new-feature"
+    echo ""
+    echo "To rename: git branch -m <type>/<description>"
+    echo "To bypass: git commit --no-verify"
+    exit 1
+  else
+    echo "✓ Branch name valid"
+  fi
+fi
+
+# Phase 3: Lint-staged (Prettier + ESLint auto-fix)
+cd framework/cli
+npx lint-staged

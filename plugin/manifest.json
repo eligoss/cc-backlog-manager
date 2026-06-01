@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json.schemastore.org/claude-plugin-manifest.json",
+  "name": "agentic-framework",
+  "version": "1.4.0",
+  "description": "AI-assisted development framework with modular agents, skills, and workflows",
+  "author": "Agentic Framework Team",
+  "license": "MIT",
+  "repository": "https://github.com/agentic-framework/agentic-development-framework",
+  "keywords": [
+    "ai",
+    "agents",
+    "development",
+    "framework",
+    "claude",
+    "productivity"
+  ],
+  "provides": {
+    "skills": true,
+    "agents": true,
+    "hooks": true,
+    "mcp-servers": true,
+    "commands": true
+  },
+  "entry": {
+    "skills": ".claude/skills/",
+    "agents": ".claude/agents/",
+    "hooks": ".claude/hooks/",
+    "commands": ".claude/commands/"
+  },
+  "dependencies": {
+    "node": ">=22.0.0"
+  },
+  "install": {
+    "command": "agentic-framework init --plugin",
+    "postInstall": "agentic-framework sync"
+  },
+  "uninstall": {
+    "command": "agentic-framework remove --all"
+  }
+}

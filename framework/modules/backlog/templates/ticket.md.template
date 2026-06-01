@@ -1,0 +1,111 @@
+---
+documentType: {{type}}
+version: "1.0"
+title: "{{summary}}"
+description: "{{summary}}"
+milestone: null
+priority: P2
+storyPoints: null
+labels: []
+createdDate: "{{date}}"
+exportedDate: null
+
+# Jira Integration Fields (v10.1.1)
+jira-ticketId: null
+jira-url: null
+jira-parent: null
+jira-related: []
+jira-blocking: []
+jira-blockedBy: []
+jira-fixVersion: null
+jira-internalNotes: null
+
+# Framework Integration Fields (v10.1.1)
+framework-documentation: null
+framework-milestone: null
+framework-technicalGuides: []
+framework-relatedLocal: []
+---
+
+# {{summary}}
+
+---
+
+## Description
+
+{{#if story}}
+**AS** a [user role],
+**I WANT** [capability/feature],
+**SO THAT** [business value/benefit].
+
+**Context:**
+
+[2-3 paragraphs explaining WHY this is needed. Focus on user needs and business context.]
+{{/if}}
+{{#if task}}
+**Purpose:**
+
+[Describe what this task accomplishes and why it's needed.]
+
+**Scope:**
+
+[Define the boundaries of this task - what's included and excluded.]
+{{/if}}
+{{#if bug}}
+**Steps to Reproduce:**
+
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+**Expected Behavior:**
+
+[What should happen]
+
+**Actual Behavior:**
+
+[What actually happens]
+
+**Environment:**
+
+- Platform: [e.g., Web, iOS, Android]
+- Version: [app version]
+- Browser/Device: [if applicable]
+{{/if}}
+{{#if epic}}
+**Vision:**
+
+[High-level description of what this epic aims to achieve.]
+
+**Key Objectives:**
+
+1. [Objective 1]
+2. [Objective 2]
+3. [Objective 3]
+
+**Success Metrics:**
+
+- [Metric 1]
+- [Metric 2]
+{{/if}}
+
+**Requirements:**
+
+* [Requirement 1]
+* [Requirement 2]
+* [Requirement 3]
+
+**Technical Notes:**
+
+* [High-level guidance - NO CODE SNIPPETS]
+* Pattern reference: [if applicable]
+
+---
+
+## Acceptance Criteria
+
+* **Verify** [specific testable condition 1]
+* **Verify** [specific testable condition 2]
+* **Verify** [specific testable condition 3]
+* **Verify** documentation is added and linked (if applicable)
+* **Verify** tests are passing

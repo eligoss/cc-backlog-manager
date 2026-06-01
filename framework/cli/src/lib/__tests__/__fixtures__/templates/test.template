@@ -1,0 +1,16 @@
+# {{title}}
+
+**Author:** {{author}}
+**Date:** {{date}}
+
+## Description
+
+{{description}}
+
+## Status
+
+Status: {{status}}
+
+## Additional Information
+
+{{notes}}

@@ -1,0 +1,31 @@
+{
+  "templates": {
+    "test": {
+      "output": "{{name}}.md",
+      "variables": {
+        "required": ["title", "author", "date"],
+        "optional": ["description", "status", "notes"]
+      },
+      "defaults": {
+        "description": "No description provided",
+        "status": "draft",
+        "notes": "None"
+      }
+    },
+    "plan": {
+      "output": "plans/{{category}}/{{number}}-{{name}}/PLAN.md",
+      "variables": {
+        "required": ["name", "category", "number"],
+        "optional": ["author", "version"]
+      },
+      "defaults": {
+        "author": "Unknown",
+        "version": "1.0.0"
+      }
+    }
+  },
+  "autoNumbering": {
+    "pattern": "PLAN-{num}.md",
+    "padding": 3
+  }
+}

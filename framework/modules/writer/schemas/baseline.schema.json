@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Book Baseline Schema",
+  "description": "Schema for book baseline document defining initial world state",
+  "type": "object",
+  "required": ["id", "title", "type", "version", "established", "book"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^baseline-[a-z0-9-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 5
+    },
+    "type": {
+      "const": "baseline"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "established": {
+      "type": "string",
+      "format": "date"
+    },
+    "book": {
+      "type": "string",
+      "description": "Book identifier in kebab-case"
+    },
+    "world-snapshot": {
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "era": { "type": "string" },
+        "major-events-concluded": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "major-events-active": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "token-budget": {
+      "type": "object",
+      "properties": {
+        "full": {
+          "type": "integer",
+          "maximum": 3000
+        },
+        "summary": {
+          "type": "integer",
+          "maximum": 500
+        }
+      }
+    }
+  }
+}

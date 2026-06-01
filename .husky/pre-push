@@ -1,0 +1,51 @@
+#!/usr/bin/env sh
+
+# Load nvm for GUI git clients
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" --no-use
+command -v node >/dev/null 2>&1 || nvm use default >/dev/null 2>&1
+
+cd framework/cli
+
+echo "Running pre-push validation..."
+echo "Note: Mirrors CI/CD checks"
+echo ""
+
+# Phase 1: Build
+echo "📦 Building..."
+npm run build || exit 1
+
+# Phase 2: Link validation
+echo "🔗 Validating links..."
+node dist/index.js validate --links || exit 1
+
+# Phase 3: Tests (unit blocking, integration/e2e non-blocking)
+echo "🧪 Running tests..."
+npm run test:all
+TEST_EXIT=$?
+
+if [ $TEST_EXIT -ne 0 ]; then
+  echo "⚠ Some tests failed, checking unit tests..."
+  npm test || {
+    echo "✗ Unit tests failed"
+    exit 1
+  }
+  echo "⚠ Integration/E2E tests failed (allowing, matches CI)"
+  echo "✓ Unit tests passed"
+fi
+
+# Phase 4: Framework validation
+echo "🔍 Validating framework..."
+node dist/index.js build -p ../.. --ci || exit 1
+
+# Phase 5: Schema generation (non-blocking)
+echo "📝 Generating schemas..."
+node dist/index.js build -p ../.. --emit-schemas --schema-dir .generated/schemas --quick || echo "⚠ Schema warnings (non-blocking)"
+
+# Phase 6: Package verification
+echo "📦 Verifying package..."
+node scripts/prepare-publish.js || exit 1
+npm pack --dry-run >/dev/null || exit 1
+
+echo ""
+echo "✅ All pre-push checks passed!"

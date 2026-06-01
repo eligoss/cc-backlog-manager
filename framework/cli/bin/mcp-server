@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+/**
+ * Agentic Framework MCP Server Executable
+ *
+ * This script launches the MCP server that exposes CLI commands to Claude Code.
+ *
+ * Usage:
+ *   agentic-framework-mcp
+ *   # Or directly:
+ *   node ./bin/mcp-server
+ */
+
+import '../dist/mcp/index.js';

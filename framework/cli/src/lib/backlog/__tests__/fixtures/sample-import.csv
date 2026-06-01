@@ -1,0 +1,22 @@
+Issue key,Summary,Issue Type,Status,Priority,Description,Assignee,Custom field (Story Points),Parent key,Parent summary,Sprint,Fix versions,Labels,Custom field (Acceptance Criteria),Created,Updated
+DAPM-1001,Implement user authentication,Story,In Progress,High,"h2. Overview
+Implement JWT-based authentication for the application.
+
+*Key Features:*
+- Login with email/password
+- Token refresh
+- Session management",John Doe,5,,,APM-APP-2026W1,January 2026,auth backend,"- User can log in with valid credentials
+- Session persists after page refresh
+- Token refreshes automatically",01/Jan/26 10:00 AM,15/Jan/26 3:30 PM
+DAPM-1002,Create login UI component,Task,To Do,Medium,Create React component for login form,Jane Smith,3,DAPM-1001,Implement user authentication,APM-APP-2026W1,January 2026,auth frontend ui,"- Form validates input
+- Error messages display correctly
+- Accessible with keyboard navigation",02/Jan/26 9:00 AM,02/Jan/26 9:00 AM
+DAPM-1003,Fix navigation bug,Bug,Open,High,Navigation menu not displaying on mobile devices,Bob Johnson,2,,,APM-APP-2026W1,January 2026,bug frontend ui,"- Menu displays correctly on mobile
+- All links are clickable
+- No layout issues",05/Jan/26 2:00 PM,10/Jan/26 11:00 AM
+DAPM-1004,Database schema design,Spike,In Progress,Medium,Research and design optimal database schema for user data,Alice Williams,3,DAPM-1001,Implement user authentication,APM-APP-2026W1,January 2026,backend database research,"- Schema supports all user attributes
+- Performance tested with 10k+ records
+- Migration plan documented",03/Jan/26 1:00 PM,12/Jan/26 4:00 PM
+DAPM-1005,Add password reset feature,Story,To Do,Medium,Allow users to reset forgotten passwords via email,John Doe,5,,,APM-APP-2026W1,January 2026,auth backend,"- User receives reset email
+- Reset link expires after 1 hour
+- Password meets complexity requirements",08/Jan/26 10:30 AM,08/Jan/26 10:30 AM

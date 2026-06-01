@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../../core/registries/schemas/template.schema.json",
+  "version": "1.0",
+  "templates": {
+    "story.template": {
+      "output": "{{name}}.md",
+      "description": "Create a user story ticket",
+      "variables": {
+        "required": ["summary"],
+        "optional": ["name"],
+        "computed": ["date"]
+      },
+      "defaults": {}
+    },
+    "task.template": {
+      "output": "{{name}}.md",
+      "description": "Create a task ticket",
+      "variables": {
+        "required": ["summary"],
+        "optional": ["name"],
+        "computed": ["date"]
+      },
+      "defaults": {}
+    },
+    "bug.template": {
+      "output": "{{name}}.md",
+      "description": "Create a bug ticket",
+      "variables": {
+        "required": ["summary"],
+        "optional": ["name"],
+        "computed": ["date"]
+      },
+      "defaults": {}
+    },
+    "epic.template": {
+      "output": "{{name}}.md",
+      "description": "Create an epic ticket",
+      "variables": {
+        "required": ["summary"],
+        "optional": ["name"],
+        "computed": ["date"]
+      },
+      "defaults": {}
+    }
+  },
+  "autoNumbering": {
+    "pattern": "{documentType}-{num}",
+    "padding": 3
+  }
+}

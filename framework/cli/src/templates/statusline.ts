@@ -1,0 +1,259 @@
+/**
+ * Default statusline.sh template for Claude Code projects
+ * This is embedded in the CLI to remove dependency on core module
+ * Reference: https://codelynx.dev/posts/calculate-claude-code-context
+ */
+export const statuslineTemplate = `#!/bin/bash
+# Claude Code Statusline - Model-Aware Context Dashboard
+# Tracks context usage with model-aware sizing, cost, duration, and git info
+# Reference: https://codelynx.dev/posts/calculate-claude-code-context
+
+input=$(cat)
+
+MODEL=$(echo "$input" | jq -r '.model.display_name')
+MODEL_ID=$(echo "$input" | jq -r '.model.id // empty')
+CONTEXT_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size')
+TRANSCRIPT_PATH=$(echo "$input" | jq -r '.transcript_path // empty')
+CURRENT_DIR=$(echo "$input" | jq -r '.workspace.current_dir // empty')
+COST_USD=$(echo "$input" | jq -r '.cost.total_cost_usd // empty')
+DURATION_MS=$(echo "$input" | jq -r '.cost.total_duration_ms // empty')
+
+# ANSI color codes
+GREEN='\\033[0;32m'
+YELLOW='\\033[1;33m'
+ORANGE='\\033[38;5;208m'
+RED='\\033[0;31m'
+BRIGHT_RED='\\033[1;31m'
+CYAN='\\033[0;36m'
+DIM='\\033[2m'
+RESET='\\033[0m'
+
+# Format context size for display (e.g., "1M" or "200K")
+if [ "$CONTEXT_SIZE" -ge 500000 ] 2>/dev/null; then
+    CONTEXT_SIZE_DISPLAY="1M"
+else
+    CONTEXT_SIZE_DISPLAY="200K"
+fi
+
+# Get project name from current directory
+PROJECT_NAME=""
+if [ -n "$CURRENT_DIR" ]; then
+    PROJECT_NAME=$(basename "$CURRENT_DIR")
+fi
+
+# Git info with caching (5s TTL)
+GIT_INFO=""
+GIT_CACHE="/tmp/statusline-git-cache-$$"
+GIT_DIR="\${CURRENT_DIR:-.}"
+
+get_git_info() {
+    local branch staged modified
+    branch=$(git -C "$GIT_DIR" rev-parse --abbrev-ref HEAD 2>/dev/null) || return 1
+    staged=$(git -C "$GIT_DIR" diff --cached --numstat 2>/dev/null | wc -l | tr -d ' ')
+    modified=$(git -C "$GIT_DIR" diff --numstat 2>/dev/null | wc -l | tr -d ' ')
+    echo "\${branch}:\${staged}:\${modified}"
+}
+
+# Check cache freshness (5s TTL)
+CACHE_VALID=false
+if [ -f "$GIT_CACHE" ]; then
+    CACHE_AGE=$(( $(date +%s) - $(stat -f %m "$GIT_CACHE" 2>/dev/null || echo 0) ))
+    if [ "$CACHE_AGE" -lt 5 ]; then
+        CACHE_VALID=true
+    fi
+fi
+
+if $CACHE_VALID; then
+    GIT_RAW=$(cat "$GIT_CACHE")
+else
+    GIT_RAW=$(get_git_info)
+    if [ -n "$GIT_RAW" ]; then
+        echo "$GIT_RAW" > "$GIT_CACHE"
+    fi
+fi
+
+if [ -n "$GIT_RAW" ]; then
+    GIT_BRANCH=$(echo "$GIT_RAW" | cut -d: -f1)
+    GIT_STAGED=$(echo "$GIT_RAW" | cut -d: -f2)
+    GIT_MODIFIED=$(echo "$GIT_RAW" | cut -d: -f3)
+    GIT_INFO=" | 🌿 \${GIT_BRANCH}"
+    [ "$GIT_STAGED" -gt 0 ] 2>/dev/null && GIT_INFO="\${GIT_INFO} +\${GIT_STAGED}"
+    [ "$GIT_MODIFIED" -gt 0 ] 2>/dev/null && GIT_INFO="\${GIT_INFO} ~\${GIT_MODIFIED}"
+fi
+
+# Format cost
+COST_DISPLAY=""
+if [ -n "$COST_USD" ] && [ "$COST_USD" != "null" ]; then
+    COST_DISPLAY="💰 \\$\${COST_USD}"
+fi
+
+# Format duration
+DURATION_DISPLAY=""
+if [ -n "$DURATION_MS" ] && [ "$DURATION_MS" != "null" ] && [ "$DURATION_MS" != "0" ]; then
+    TOTAL_SECS=$((DURATION_MS / 1000))
+    MINS=$((TOTAL_SECS / 60))
+    SECS=$((TOTAL_SECS % 60))
+    if [ $MINS -gt 0 ]; then
+        DURATION_DISPLAY="⏱ \${MINS}m \${SECS}s"
+    else
+        DURATION_DISPLAY="⏱ \${SECS}s"
+    fi
+fi
+
+# Function to calculate tokens from transcript (filters sidechains)
+calculate_from_transcript() {
+    local transcript="$1"
+    if [ -f "$transcript" ]; then
+        local usage=$(cat "$transcript" 2>/dev/null | \\
+            jq -s '[.[] | select(.isSidechain != true and .isApiErrorMessage != true and .message.usage != null)] | last | .message.usage // empty' 2>/dev/null)
+
+        if [ -n "$usage" ] && [ "$usage" != "null" ] && [ "$usage" != "" ]; then
+            local input_tokens=$(echo "$usage" | jq '.input_tokens // 0')
+            local cache_create=$(echo "$usage" | jq '.cache_creation_input_tokens // 0')
+            local cache_read=$(echo "$usage" | jq '.cache_read_input_tokens // 0')
+            echo "$((input_tokens + cache_create + cache_read)):$cache_create:$cache_read"
+            return 0
+        fi
+    fi
+    return 1
+}
+
+# Function to calculate tokens from current_usage (fallback)
+calculate_from_usage() {
+    local usage=$(echo "$input" | jq '.context_window.current_usage')
+    if [ "$usage" != "null" ] && [ -n "$usage" ]; then
+        local input_tokens=$(echo "$usage" | jq '.input_tokens // 0')
+        local cache_create=$(echo "$usage" | jq '.cache_creation_input_tokens // 0')
+        local cache_read=$(echo "$usage" | jq '.cache_read_input_tokens // 0')
+        echo "$((input_tokens + cache_create + cache_read)):$cache_create:$cache_read"
+        return 0
+    fi
+    return 1
+}
+
+# Try transcript first (accurate, filters sidechains), then fall back to current_usage
+TOKEN_DATA=""
+if [ -n "$TRANSCRIPT_PATH" ]; then
+    TOKEN_DATA=$(calculate_from_transcript "$TRANSCRIPT_PATH")
+fi
+
+if [ -z "$TOKEN_DATA" ]; then
+    TOKEN_DATA=$(calculate_from_usage)
+fi
+
+# Line 1: Model + project + git
+echo -e "\${CYAN}[\${MODEL}]\${RESET} 📁 \${PROJECT_NAME}\${GIT_INFO}"
+
+if [ -n "$TOKEN_DATA" ]; then
+    # Parse token data (format: total:cache_create:cache_read)
+    CURRENT_TOKENS=$(echo "$TOKEN_DATA" | cut -d: -f1)
+    CACHE_CREATE_TOKENS=$(echo "$TOKEN_DATA" | cut -d: -f2)
+    CACHE_READ_TOKENS=$(echo "$TOKEN_DATA" | cut -d: -f3)
+
+    # Auto-compact threshold: Claude Code triggers at ~95% of context window
+    AUTOCOMPACT_THRESHOLD=$((CONTEXT_SIZE * 95 / 100))
+
+    # Calculate percentage against autocompact threshold
+    PERCENT_TO_COMPACT=$((CURRENT_TOKENS * 100 / AUTOCOMPACT_THRESHOLD))
+
+    # Calculate tokens remaining until autocompact
+    TOKENS_TO_COMPACT=$((AUTOCOMPACT_THRESHOLD - CURRENT_TOKENS))
+
+    # Format token count (K for thousands)
+    if [ $CURRENT_TOKENS -ge 1000 ]; then
+        TOKEN_DISPLAY="$((CURRENT_TOKENS / 1000))K"
+    else
+        TOKEN_DISPLAY="\${CURRENT_TOKENS}"
+    fi
+
+    # Calculate cache hit ratio if cache is being used
+    CACHE_INFO=""
+    if [ $CACHE_READ_TOKENS -gt 0 ]; then
+        TOTAL_CACHEABLE=$((CACHE_CREATE_TOKENS + CACHE_READ_TOKENS))
+        if [ $TOTAL_CACHEABLE -gt 0 ]; then
+            CACHE_HIT_RATIO=$((CACHE_READ_TOKENS * 100 / TOTAL_CACHEABLE))
+            CACHE_INFO=" \${DIM}[Cache: \${CACHE_HIT_RATIO}%]\${RESET}"
+        fi
+    fi
+
+    # 5-tier color thresholds with progressive warnings
+    WARNING=""
+    if [ $PERCENT_TO_COMPACT -ge 100 ]; then
+        COLOR=$BRIGHT_RED
+        WARNING=" 💥 COMPACTING"
+    elif [ $PERCENT_TO_COMPACT -ge 90 ]; then
+        COLOR=$RED
+        WARNING=" 🔴 AUTO-COMPACT IMMINENT"
+    elif [ $PERCENT_TO_COMPACT -ge 70 ]; then
+        COLOR=$ORANGE
+        WARNING=" ⚠ COMPACT SOON"
+    elif [ $PERCENT_TO_COMPACT -ge 50 ]; then
+        COLOR=$YELLOW
+    else
+        COLOR=$GREEN
+    fi
+
+    # Create progress bar (20 characters wide) based on autocompact threshold
+    BAR_WIDTH=20
+    FILLED=$((PERCENT_TO_COMPACT * BAR_WIDTH / 100))
+    if [ $FILLED -gt $BAR_WIDTH ]; then
+        FILLED=$BAR_WIDTH
+    fi
+    if [ $FILLED -lt 0 ]; then
+        FILLED=0
+    fi
+    EMPTY=$((BAR_WIDTH - FILLED))
+
+    # Build progress bar with autocompact marker
+    BAR=""
+    for ((i=0; i<FILLED; i++)); do
+        if [ $i -eq $((BAR_WIDTH - 1)) ] && [ $PERCENT_TO_COMPACT -ge 100 ]; then
+            BAR="\${BAR}│"
+        else
+            BAR="\${BAR}█"
+        fi
+    done
+
+    if [ $FILLED -lt $BAR_WIDTH ]; then
+        BAR="\${BAR}│"
+        EMPTY=$((EMPTY - 1))
+    fi
+
+    for ((i=0; i<EMPTY; i++)); do
+        BAR="\${BAR}░"
+    done
+
+    # Line 2: Context bar with absolute tokens and context size
+    echo -e "\${COLOR}[\${BAR}]\${RESET} \${PERCENT_TO_COMPACT}% \${DIM}(\${TOKEN_DISPLAY}/\${CONTEXT_SIZE_DISPLAY})\${RESET}\${CACHE_INFO}\${WARNING}"
+
+    # Line 3: Cost + duration + context remaining
+    LINE3_PARTS=()
+    [ -n "$COST_DISPLAY" ] && LINE3_PARTS+=("$COST_DISPLAY")
+    [ -n "$DURATION_DISPLAY" ] && LINE3_PARTS+=("$DURATION_DISPLAY")
+    CONTEXT_LEFT=$((100 - PERCENT_TO_COMPACT))
+    [ $CONTEXT_LEFT -lt 0 ] && CONTEXT_LEFT=0
+    LINE3_PARTS+=("Context left: \${CONTEXT_LEFT}%")
+
+    # Join parts with " | "
+    LINE3=""
+    for ((i=0; i<\${#LINE3_PARTS[@]}; i++)); do
+        [ $i -gt 0 ] && LINE3="\${LINE3} | "
+        LINE3="\${LINE3}\${LINE3_PARTS[$i]}"
+    done
+    echo -e "\${DIM}\${LINE3}\${RESET}"
+else
+    # No usage data
+    echo -e "\${GREEN}[│░░░░░░░░░░░░░░░░░░░]\${RESET} 0% \${DIM}(0/\${CONTEXT_SIZE_DISPLAY})\${RESET}"
+
+    LINE3_PARTS=()
+    [ -n "$COST_DISPLAY" ] && LINE3_PARTS+=("$COST_DISPLAY")
+    [ -n "$DURATION_DISPLAY" ] && LINE3_PARTS+=("$DURATION_DISPLAY")
+    LINE3_PARTS+=("Context left: 100%")
+    LINE3=""
+    for ((i=0; i<\${#LINE3_PARTS[@]}; i++)); do
+        [ $i -gt 0 ] && LINE3="\${LINE3} | "
+        LINE3="\${LINE3}\${LINE3_PARTS[$i]}"
+    done
+    echo -e "\${DIM}\${LINE3}\${RESET}"
+fi
+`;

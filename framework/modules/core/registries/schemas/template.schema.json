@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-framework.dev/schemas/template.schema.json",
+  "title": "Template Configuration",
+  "description": "Schema for template.config.json files that define template metadata and variables",
+  "type": "object",
+  "required": ["version", "templates"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "Template schema version (e.g., 1.0)"
+    },
+    "templates": {
+      "type": "object",
+      "description": "Template definitions keyed by template filename",
+      "additionalProperties": {
+        "$ref": "#/$defs/templateDefinition"
+      },
+      "minProperties": 1
+    },
+    "autoNumbering": {
+      "$ref": "#/$defs/autoNumberingConfig"
+    },
+    "defaults": {
+      "type": "object",
+      "description": "Global defaults applied to all templates in this config",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "templateDefinition": {
+      "type": "object",
+      "description": "Configuration for a single template file",
+      "required": ["output", "variables"],
+      "additionalProperties": false,
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output path pattern with {{variable}} placeholders (e.g., '{{name}}.md')",
+          "minLength": 1
+        },
+        "variables": {
+          "type": "object",
+          "description": "Variable configuration for this template",
+          "required": ["required"],
+          "additionalProperties": false,
+          "properties": {
+            "required": {
+              "type": "array",
+              "description": "Variables that must be provided when rendering",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+              },
+              "uniqueItems": true
+            },
+            "optional": {
+              "type": "array",
+              "description": "Variables that may be provided (defaults applied if missing)",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+              },
+              "uniqueItems": true,
+              "default": []
+            },
+            "computed": {
+              "type": "array",
+              "description": "Variables computed by the engine (date, number, uuid, user)",
+              "items": {
+                "type": "string",
+                "enum": ["date", "datetime", "year", "number", "uuid", "user"]
+              },
+              "uniqueItems": true,
+              "default": []
+            }
+          }
+        },
+        "defaults": {
+          "type": "object",
+          "description": "Default values for optional variables",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "validation": {
+          "type": "object",
+          "description": "Validation rules for variables",
+          "additionalProperties": {
+            "$ref": "#/$defs/variableValidation"
+          }
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of this template"
+        }
+      }
+    },
+    "variableValidation": {
+      "type": "object",
+      "description": "Validation rules for a single variable",
+      "additionalProperties": false,
+      "properties": {
+        "pattern": {
+          "type": "string",
+          "description": "Regex pattern the value must match"
+        },
+        "minLength": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Minimum string length"
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum string length"
+        },
+        "enum": {
+          "type": "array",
+          "description": "Allowed values",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "autoNumberingConfig": {
+      "type": "object",
+      "description": "Configuration for automatic sequential numbering",
+      "required": ["pattern", "padding"],
+      "additionalProperties": false,
+      "properties": {
+        "pattern": {
+          "type": "string",
+          "description": "Filename pattern with {num} placeholder (e.g., 'STORY-{num}')",
+          "pattern": ".*\\{num\\}.*"
+        },
+        "padding": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "default": 3,
+          "description": "Zero-padding width for numbers (e.g., 3 = 001, 002)"
+        },
+        "startFrom": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 1,
+          "description": "Starting number if no existing files found"
+        }
+      }
+    }
+  }
+}

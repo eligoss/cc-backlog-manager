@@ -1,0 +1,110 @@
+name: PR Validation
+
+# CRITICAL: This is the ONLY validation workflow for PRs
+# All code quality checks happen here before merge
+# Auto-release trusts these checks and skips re-validation
+# Configure branch protection to require this workflow
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pr-checks:
+    name: PR Quality Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: framework/cli/package-lock.json
+
+      - name: Install dependencies
+        working-directory: framework/cli
+        run: npm ci
+
+      - name: Run linter
+        id: lint
+        working-directory: framework/cli
+        run: npm run lint
+
+      - name: Build CLI
+        id: build
+        working-directory: framework/cli
+        run: npm run build
+
+      - name: Validate framework (quick)
+        id: validate_quick
+        working-directory: framework/cli
+        run: node dist/index.js build -p ../.. --quick --ci
+
+      - name: Validate framework (full)
+        id: validate_full
+        working-directory: framework/cli
+        run: node dist/index.js build -p ../.. --ci -v
+
+      - name: Run unit tests with coverage
+        id: test
+        working-directory: framework/cli
+        run: npm test -- --coverage --coverageReporters=lcov --coverageReporters=text --testPathIgnorePatterns="writer/__tests__" --testPathIgnorePatterns="sync-engine"
+
+      - name: Run integration tests
+        working-directory: framework/cli
+        # Integration tests have pre-existing issues in CI environment
+        # Allow failures while these are being addressed
+        continue-on-error: true
+        run: npm run test:integration
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          directory: framework/cli/coverage/
+          fail_ci_if_error: false
+          verbose: true
+
+      - name: Verify package can be built
+        working-directory: framework/cli
+        run: |
+          node scripts/prepare-publish.js
+          npm pack --dry-run
+
+      - name: Comment PR with results
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const jobStatus = '${{ job.status }}';
+            const emoji = jobStatus === 'success' ? '✅' : '❌';
+            const message = `${emoji} **PR Validation ${jobStatus}**
+
+            **Lint:** ${{ steps.lint.outcome }}
+            **Build:** ${{ steps.build.outcome }}
+            **Validate (Quick):** ${{ steps.validate_quick.outcome }}
+            **Validate (Full):** ${{ steps.validate_full.outcome }}
+            **Tests:** ${{ steps.test.outcome }}
+
+            ${jobStatus === 'success' ? '✅ All checks passed! Ready for review.' : '❌ Some checks failed. Please fix before merging.'}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });

@@ -1,0 +1,172 @@
+name: Auto Release
+run-name: "Auto Release (${{ contains(github.event.head_commit.message, 'BREAKING CHANGE') && 'skip - use manual' || contains(github.event.head_commit.message, '[minor]') && 'minor' || startsWith(github.event.head_commit.message, 'Add ') && 'minor' || startsWith(github.event.head_commit.message, 'Implement ') && 'minor' || startsWith(github.event.head_commit.message, 'Introduce ') && 'minor' || 'patch' }})"
+
+# Automatically publish patch/minor releases when PR merges to main
+# For major releases, use the manual "Create Release" workflow
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: write
+
+jobs:
+  auto-publish:
+    name: Auto Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Prevent infinite loop: skip if commit is from github-actions (version bump)
+    if: "!contains(github.event.head_commit.message, '[skip ci]') && github.event.head_commit.author.username != 'github-actions[bot]'"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+          cache-dependency-path: framework/cli/package-lock.json
+
+      - name: Upgrade npm
+        run: npm install -g npm@^11.5.1
+
+      - name: Install dependencies
+        working-directory: framework/cli
+        run: npm ci
+
+      - name: Build CLI (for version bump command)
+        working-directory: framework/cli
+        run: npm run build
+
+      # Skip validation - PR checks already verified the code
+      # This workflow trusts that branch protection is configured
+      # and all PR checks passed before merge
+
+      - name: Determine version bump type
+        id: version_type
+        run: |
+          # This project uses traditional commits (no feat:/fix: prefixes)
+          # Check PR labels or commit messages for version hints
+          # Default to patch for safety
+
+          COMMITS=$(git log --pretty=format:"%s" -10)
+
+          # Check for BREAKING CHANGE in commit body (use manual workflow for major)
+          if git log -10 --pretty=format:"%b" | grep -qi "BREAKING CHANGE"; then
+            echo "type=skip" >> $GITHUB_OUTPUT
+            echo "reason=breaking-change" >> $GITHUB_OUTPUT
+            echo "⚠️ BREAKING CHANGE detected - skipping auto-release. Use manual workflow for major version."
+          # Check for [minor] tag in commit messages
+          elif echo "$COMMITS" | grep -qi "\[minor\]"; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+            echo "📦 [minor] tag detected - will bump minor version"
+          # Check for feature-related keywords (Add, Implement, Introduce)
+          elif echo "$COMMITS" | grep -qiE "^(Add|Implement|Introduce) "; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+            echo "📦 Feature keyword detected - will bump minor version"
+          else
+            echo "type=patch" >> $GITHUB_OUTPUT
+            echo "🔧 Defaulting to patch version bump"
+          fi
+
+      - name: Skip if breaking change
+        if: steps.version_type.outputs.type == 'skip'
+        run: |
+          echo "::warning::BREAKING CHANGE detected in commits. Skipping auto-release."
+          echo "Use the manual 'Create Release' workflow to publish a major version."
+          exit 0
+
+      - name: Bump version
+        if: steps.version_type.outputs.type != 'skip'
+        id: bump
+        working-directory: framework/cli
+        run: |
+          VERSION_TYPE="${{ steps.version_type.outputs.type }}"
+          echo "Bumping $VERSION_TYPE version..."
+
+          # Run bump-version and check for errors
+          if ! node dist/index.js bump-version --package-only --type $VERSION_TYPE -p ../..; then
+            echo "❌ Error: Version bump failed"
+            exit 1
+          fi
+
+          # Verify version actually changed
+          NEW_VERSION=$(node -p "require('./package.json').version")
+          echo "New version: $NEW_VERSION"
+
+          if [ -z "$NEW_VERSION" ]; then
+            echo "❌ Error: Could not read new version from package.json"
+            exit 1
+          fi
+
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Configure Git
+        if: steps.version_type.outputs.type != 'skip'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit version bump
+        if: steps.version_type.outputs.type != 'skip'
+        run: |
+          git add .
+          git diff --cached --quiet || git commit -m "chore: bump version to v${{ steps.bump.outputs.version }} [skip ci]"
+
+      - name: Push changes
+        if: steps.version_type.outputs.type != 'skip'
+        run: git push
+
+      - name: Bundle framework for publishing
+        if: steps.version_type.outputs.type != 'skip'
+        working-directory: framework/cli
+        run: node scripts/prepare-publish.js
+
+      - name: Verify package contents
+        if: steps.version_type.outputs.type != 'skip'
+        working-directory: framework/cli
+        run: |
+          echo "Package contents:"
+          npm pack --dry-run 2>&1 | head -50
+          echo ""
+          echo "Verifying required directories..."
+          npm pack --dry-run 2>&1 | grep -q "dist/" || (echo "ERROR: dist/ not found in package" && exit 1)
+          npm pack --dry-run 2>&1 | grep -q "bin/" || (echo "ERROR: bin/ not found in package" && exit 1)
+          npm pack --dry-run 2>&1 | grep -q "framework/" || (echo "ERROR: framework/ not found in package" && exit 1)
+          echo "✅ All required directories present"
+
+      - name: Publish to npm
+        if: steps.version_type.outputs.type != 'skip'
+        working-directory: framework/cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
+
+      - name: Create GitHub Release
+        if: steps.version_type.outputs.type != 'skip'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.bump.outputs.version }}
+          name: Release v${{ steps.bump.outputs.version }}
+          generate_release_notes: true
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify release created
+        if: steps.version_type.outputs.type != 'skip'
+        run: |
+          echo "🎉 Successfully published v${{ steps.bump.outputs.version }}"
+          echo "📦 Package: https://www.npmjs.com/package/cc-agentic-framework"
+          echo "📋 Release: https://github.com/${{ github.repository }}/releases/tag/v${{ steps.bump.outputs.version }}"

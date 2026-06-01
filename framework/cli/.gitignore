@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Bundled framework content (generated at build time)
+framework/
+
+# Test coverage
+coverage/
+
+# Test sandbox directories
+.test-sandbox/
+__test-*
+__fixtures__/*/test-*
+
+# Telemetry (should only exist in project root, not in CLI directory)
+.claude/telemetry/
+src/.claude/telemetry/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Agentic Framework
+telemetry.config.json
+routes.yml.backup
+
+# Telemetry data (do not commit)
+*.telemetry.jsonl
+
+# Serena cache
+.serena/cache/

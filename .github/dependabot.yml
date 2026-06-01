@@ -1,0 +1,56 @@
+# Dependabot configuration
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # npm dependencies for CLI
+  - package-ecosystem: "npm"
+    directory: "/framework/cli"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "eligoss"
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      # Group dev dependencies together
+      dev-dependencies:
+        dependency-type: "development"
+        patterns:
+          - "@types/*"
+          - "jest*"
+          - "ts-jest"
+          - "typescript"
+          - "eslint*"
+          - "@eslint/*"
+          - "typescript-eslint"
+          - "tsx"
+      # Group OpenTelemetry packages together
+      opentelemetry:
+        patterns:
+          - "@opentelemetry/*"
+      # Group Anthropic/MCP packages together
+      anthropic:
+        patterns:
+          - "@anthropic-ai/*"
+          - "@modelcontextprotocol/*"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"

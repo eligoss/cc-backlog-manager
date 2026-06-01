@@ -1,0 +1,209 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-framework.dev/schemas/agents.schema.json",
+  "title": "Agentic Framework Agents Registry",
+  "description": "Schema for agents.json registry that defines all available agents with their capabilities, context needs, and SDK configuration",
+  "type": "object",
+  "required": ["version", "agents"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Registry version (semantic version)"
+    },
+    "agents": {
+      "type": "array",
+      "description": "List of all agent definitions",
+      "items": {
+        "$ref": "#/definitions/AgentDefinition"
+      }
+    }
+  },
+  "definitions": {
+    "AgentDefinition": {
+      "type": "object",
+      "required": ["id", "module", "file", "capability-needs", "context-category-needs", "token-budget"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^ai-[a-z][a-z0-9-]*$",
+          "description": "Unique agent identifier (e.g., ai-framework-manager, ai-app-developer)"
+        },
+        "module": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "Module ID that provides this agent"
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^(\\.claude/commands/|ai/agents/|framework/modules/[a-z-]+/agents/).+\\.md$",
+          "description": "Path to agent markdown file relative to project root"
+        },
+        "essential-skills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "description": "Skills that are always loaded for this agent (Tier 1: cannot be omitted, critical for agent function)"
+        },
+        "capability-needs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "description": "Capabilities this agent requires (Tier 2: matched to skills via discovery-map, role-based enhancements)"
+        },
+        "available-skills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "description": "Skills available for on-demand invocation (Tier 3: referenced but not loaded, invoke via Skill tool)"
+        },
+        "context-category-needs": {
+          "type": "object",
+          "description": "Context loading requirements by category and level",
+          "additionalProperties": false,
+          "properties": {
+            "business": {
+              "$ref": "#/definitions/ContextLevel"
+            },
+            "technical": {
+              "$ref": "#/definitions/ContextLevel"
+            },
+            "process": {
+              "$ref": "#/definitions/ContextLevel"
+            }
+          }
+        },
+        "context-files": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z]+-[a-z]+\\.md$"
+          },
+          "description": "Computed list of context files to load (derived from context-category-needs)"
+        },
+        "token-budget": {
+          "type": "integer",
+          "minimum": 500,
+          "maximum": 10000,
+          "description": "Token budget for agent prompt"
+        },
+        "sdk": {
+          "$ref": "#/definitions/SDKConfiguration",
+          "description": "Claude Agent SDK configuration for programmatic execution"
+        }
+      }
+    },
+    "ContextLevel": {
+      "type": "string",
+      "enum": ["basic", "advanced", "expert"],
+      "description": "Context loading level (cumulative: basic < advanced < expert)"
+    },
+    "SDKConfiguration": {
+      "type": "object",
+      "description": "Claude Agent SDK configuration for programmatic agent execution",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this agent is SDK-enabled for programmatic execution"
+        },
+        "model": {
+          "type": "string",
+          "enum": ["opus", "sonnet", "haiku"],
+          "default": "sonnet",
+          "description": "Default model for this agent (can be overridden at runtime)"
+        },
+        "allowed-tools": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SDKTool"
+          },
+          "description": "Whitelist of tools this agent can use (empty = all tools)"
+        },
+        "sub-agents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SubAgentType"
+          },
+          "description": "Phase-specialized sub-agents this agent can invoke"
+        },
+        "execution-mode": {
+          "type": "string",
+          "enum": ["interactive", "autonomous"],
+          "default": "interactive",
+          "description": "Execution mode: interactive (user prompts) or autonomous (batch)"
+        },
+        "max-tokens": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 200000,
+          "description": "Maximum output tokens for generated responses"
+        },
+        "permissions": {
+          "$ref": "#/definitions/SDKPermissions",
+          "description": "Permission settings for tool usage"
+        },
+        "custom-agent-file": {
+          "type": "string",
+          "pattern": "^\\.claude/agents/ai-[a-z][a-z0-9-]*\\.json$",
+          "description": "Path to generated custom agent JSON file (enables Task tool invocation with subagent_type)"
+        }
+      }
+    },
+    "SDKTool": {
+      "type": "string",
+      "enum": [
+        "Read",
+        "Write",
+        "Edit",
+        "Glob",
+        "Grep",
+        "Bash",
+        "WebSearch",
+        "WebFetch",
+        "Task",
+        "TodoWrite",
+        "AskUserQuestion",
+        "NotebookEdit"
+      ],
+      "description": "Claude Agent SDK built-in tool names"
+    },
+    "SubAgentType": {
+      "type": "string",
+      "enum": ["explore", "architect", "reviewer", "implementer"],
+      "description": "Phase-specialized sub-agent types: explore (discovery), architect (design), reviewer (validation), implementer (execution)"
+    },
+    "SDKPermissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["default", "bypassPermissions", "acceptEdits"],
+          "default": "default",
+          "description": "Permission mode for tool usage"
+        },
+        "allowed-bash-commands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Whitelist of allowed bash command patterns (regex)"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "$schema": "../../../../../../core/registries/schemas/template.schema.json",
+  "version": "1.0",
+  "templates": {
+    "part.template.md": {
+      "output": "manuscript/part-{{number}}-{{name}}/PART.md",
+      "description": "Create a new part (story arc)",
+      "variables": {
+        "required": ["name"],
+        "optional": ["title"],
+        "computed": ["number", "date"]
+      },
+      "defaults": {
+        "title": "{{name}}"
+      },
+      "validation": {
+        "name": {
+          "pattern": "^[a-z0-9-]+$",
+          "minLength": 3,
+          "maxLength": 40
+        }
+      }
+    },
+    "chapter.template.md": {
+      "output": "{{partPath}}/chapter-{{number}}-{{name}}/CHAPTER.md",
+      "description": "Create a new chapter within a part",
+      "variables": {
+        "required": ["name", "partPath"],
+        "optional": ["title", "pov"],
+        "computed": ["number", "date"]
+      },
+      "defaults": {
+        "title": "{{name}}",
+        "pov": "protagonist"
+      },
+      "validation": {
+        "name": {
+          "pattern": "^[a-z0-9-]+$",
+          "minLength": 3,
+          "maxLength": 40
+        }
+      }
+    },
+    "scene.template.md": {
+      "output": "{{chapterPath}}/scene-{{number}}-{{name}}.md",
+      "description": "Create a new scene within a chapter",
+      "variables": {
+        "required": ["name", "chapterPath"],
+        "optional": ["title", "sceneType", "pov"],
+        "computed": ["number", "date"]
+      },
+      "defaults": {
+        "title": "{{name}}",
+        "sceneType": "action",
+        "pov": "protagonist"
+      },
+      "validation": {
+        "name": {
+          "pattern": "^[a-z0-9-]+$",
+          "minLength": 3,
+          "maxLength": 40
+        },
+        "sceneType": {
+          "enum": ["action", "dialogue", "introspection", "transition"]
+        }
+      }
+    },
+    "character.template.md": {
+      "output": "characters/{{name}}/profile.md",
+      "description": "Create a character profile",
+      "variables": {
+        "required": ["name"],
+        "optional": ["displayName", "type", "role"],
+        "computed": ["date"]
+      },
+      "defaults": {
+        "displayName": "{{name}}",
+        "type": "supporting",
+        "role": "ally"
+      },
+      "validation": {
+        "name": {
+          "pattern": "^[a-z0-9-]+$",
+          "minLength": 2,
+          "maxLength": 30
+        },
+        "type": {
+          "enum": ["main", "supporting", "minor"]
+        }
+      }
+    }
+  },
+  "autoNumbering": {
+    "parts": {
+      "pattern": "part-{num}",
+      "padding": 3,
+      "startFrom": 1
+    },
+    "chapters": {
+      "pattern": "chapter-{num}",
+      "padding": 3,
+      "startFrom": 1
+    },
+    "scenes": {
+      "pattern": "scene-{num}",
+      "padding": 3,
+      "startFrom": 1
+    }
+  },
+  "defaults": {
+    "status": "draft",
+    "word-count": "0"
+  }
+}

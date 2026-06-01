@@ -1,0 +1,39 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": ".claude/statusline.sh",
+    "padding": 0
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git rm:*)",
+      "Bash(git mv:*)",
+      "Bash(git reset:*)",
+      "Bash(git tag:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(npm install)",
+      "Bash(npx agentic-framework:*)",
+      "Bash(npx jest:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(tree:*)",
+      "Bash(wc:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(chmod:*)",
+      "Bash(echo:*)",
+      "WebSearch"
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../../registries/schemas/template.schema.json",
+  "version": "1.0",
+  "templates": {
+    "SKILL.md": {
+      "output": "SKILL.md",
+      "description": "Create a new skill SKILL.md file with standard structure",
+      "variables": {
+        "required": ["id", "name", "description", "capability"],
+        "optional": ["scope", "applicableProjects", "module", "title"],
+        "computed": ["date"]
+      },
+      "defaults": {
+        "scope": "project",
+        "applicableProjects": "any",
+        "module": "core",
+        "title": "Skill Title"
+      },
+      "validation": {
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "minLength": 3,
+          "maxLength": 50
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "minLength": 3,
+          "maxLength": 50
+        },
+        "capability": {
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "scope": {
+          "enum": ["generic", "project", "shared"]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "jiraProject": "YOUR_PROJECT_KEY",
+  "jiraBaseUrl": "https://YOUR_INSTANCE.atlassian.net",
+  "envFile": ".env",
+  "components": [],
+  "defaults": {
+    "ticketPath": "./backlog/tickets",
+    "epicPath": "./backlog/epics",
+    "sprintPath": "./backlog/sprints",
+    "milestonePath": "./backlog/milestones"
+  }
+}
