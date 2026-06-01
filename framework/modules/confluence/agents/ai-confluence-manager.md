@@ -9,6 +9,8 @@ capability-needs:
   - confluence-integration
 available-skills:
   - validating-markdown
+  - knowing-the-domain
+  - knowing-backlog
 variant: full
 delegates-to:
 token-budget: 3000
@@ -48,20 +50,21 @@ Manage bidirectional synchronization between local markdown files and Confluence
 | ADF Conversion | Essential | `converting-adf` | Pre-loaded |
 | Publishing Workflow | Essential | `publishing-confluence` | Pre-loaded |
 | Markdown Formatting | Available | `validating-markdown` | On-demand |
+| Domain Knowledge | Available | `knowing-the-domain` | On-demand |
+| Backlog Knowledge | Available | `knowing-backlog` | On-demand |
 
 **Pattern:** Route to Confluence skills for all operations. Agent orchestrates, skill executes.
 
 ---
 
-## Required Reading
+## Project Knowledge
 
-### Context Files
+**Before managing documentation, invoke these skills via the Skill tool:**
 
-Load these context files for full Confluence management capability:
+1. **`knowing-the-domain`** — documentation standards, page conventions, and product context.
+2. **`knowing-backlog`** — workflow and Confluence space conventions (space keys, page hierarchy).
 
-1. **business-basic** - Documentation standards, page conventions
-2. **technical-basic** - Tech stack, architecture for documentation
-3. **process-basic** - Documentation workflow standards
+These skills hold YOUR project's specifics (shipped as fillable templates). Consult `references.yml` at the project root for the Confluence space and related docs.
 
 > **Auto-Discovery Note:** All required skills are automatically discovered and loaded by the Discovery Engine based on this agent's `capability-needs` declared in the YAML frontmatter above. No manual skill loading required.
 
