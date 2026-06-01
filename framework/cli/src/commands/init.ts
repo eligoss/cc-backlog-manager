@@ -11,6 +11,7 @@ import {
 import { generateRegistries } from "../lib/registry-generator.js";
 import { ManifestManager } from "../lib/manifest-manager.js";
 import { SyncEngine } from "../lib/sync-engine.js";
+import { deployReferencesLibrary } from "../lib/references-library.js";
 import { recordInitCommand } from "../lib/telemetry/instrumentation/cli-instrumentation.js";
 import { scaffoldBacklogConfig } from "../lib/backlog-scaffold.js";
 import {
@@ -261,6 +262,9 @@ export async function executeInit(config: InitConfig): Promise<void> {
     spinner.fail("Failed to install templates");
     throw error;
   }
+
+  // Deploy the external references library (copy-once)
+  await deployReferencesLibrary(projectPath, installedModules);
 
   // Install schemas
   spinner.start("Installing schemas...");

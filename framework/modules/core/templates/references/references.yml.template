@@ -1,0 +1,33 @@
+# External References Library
+#
+# A curated index of external docs, API references, and related codebases that the
+# project-knowledge skills (knowing-the-codebase / knowing-the-domain / knowing-backlog)
+# point at. Fill this in for your project and keep it current. This file is yours —
+# `agentic-framework sync` will NOT overwrite it once created.
+
+version: "1.0"
+
+# Documentation sites, guides, and specs.
+docs:
+  # - name: Internal Architecture Guide
+  #   url: https://...
+  #   note: Source of truth for service boundaries
+
+# External / third-party API references.
+apis:
+  # - name: Payments API
+  #   url: https://...
+  #   note: Auth via bearer token; see knowing-the-codebase
+
+# Related codebases and repositories.
+codebases:
+  # - name: Frontend repo
+  #   url: https://github.com/org/frontend
+  #   note: React app consuming this backend
+
+# Backlog / project-management links (Jira board, Confluence space).
+backlog:
+  # - name: Jira board
+  #   url: https://your-org.atlassian.net/jira/...
+  # - name: Confluence space
+  #   url: https://your-org.atlassian.net/wiki/...
