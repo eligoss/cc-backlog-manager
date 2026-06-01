@@ -25,10 +25,6 @@ describe('affected-modules', () => {
         expect(mapFileToModule('framework/modules/coding/module.json')).toBe('coding');
       });
 
-      it('should map framework/modules/reporting/ files to reporting module', () => {
-        expect(mapFileToModule('framework/modules/reporting/module.json')).toBe('reporting');
-      });
-
       it('should map framework/modules/writer/ files to writer module', () => {
         expect(mapFileToModule('framework/modules/writer/module.json')).toBe('writer');
       });

@@ -57,7 +57,6 @@ const FILE_TO_MODULE_MAPPING: Array<{ pattern: RegExp; moduleId: string }> = [
   { pattern: /^framework\/modules\/backlog\//, moduleId: 'backlog' },
   { pattern: /^framework\/modules\/confluence\//, moduleId: 'confluence' },
   { pattern: /^framework\/modules\/coding\//, moduleId: 'coding' },
-  { pattern: /^framework\/modules\/reporting\//, moduleId: 'reporting' },
   { pattern: /^framework\/modules\/writer\//, moduleId: 'writer' },
   { pattern: /^framework\/modules\/planning\//, moduleId: 'planning' },
   { pattern: /^framework\/modules\/core\//, moduleId: 'core' },
@@ -111,9 +110,6 @@ export const MODULE_TEST_PATTERNS: Record<string, string[]> = {
   ],
   coding: [
     // Coding module has no specific tests yet
-  ],
-  reporting: [
-    // Reporting module has no specific tests yet
   ],
   core: [
     // Core module tests - match directories that are framework infrastructure

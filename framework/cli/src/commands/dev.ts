@@ -246,8 +246,7 @@ export async function devCommand(options: DevOptions): Promise<void> {
       jira: '1.0.0',
       confluence: '1.0.0',
       planning: '1.0.0',
-      coding: '1.0.0',
-      reporting: '1.0.0'
+      coding: '1.0.0'
     },
     selfDev: true,
     framework: {
