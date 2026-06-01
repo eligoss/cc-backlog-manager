@@ -5,7 +5,7 @@
  */
 
 import fs from 'fs-extra';
-import { generateRegistries, regenerateContextRegistry } from '../registry-generator.js';
+import { generateRegistries } from '../registry-generator.js';
 import { DiscoveryEngine } from '../discovery-engine.js';
 import type { ModuleManifest } from '../module-loader.js';
 
@@ -29,7 +29,6 @@ describe('generateRegistries', () => {
       loadModules: jest.fn().mockResolvedValue(new Map()),
       getAllAgents: jest.fn().mockResolvedValue([]),
       getAllSkills: jest.fn().mockResolvedValue([]),
-      getContextFilesForAgent: jest.fn().mockReturnValue([]),
     } as any));
   });
 
@@ -39,16 +38,15 @@ describe('generateRegistries', () => {
     expect(mockedFs.ensureDir).toHaveBeenCalledWith('/test/project/.claude/registries');
   });
 
-  it('should generate all five registry files', async () => {
+  it('should generate all four registry files', async () => {
     await generateRegistries('/test/project', []);
 
-    expect(mockedFs.writeJson).toHaveBeenCalledTimes(5);
+    expect(mockedFs.writeJson).toHaveBeenCalledTimes(4);
 
     const filePaths = mockedFs.writeJson.mock.calls.map(call => call[0]);
     expect(filePaths).toContain('/test/project/.claude/registries/agents.json');
     expect(filePaths).toContain('/test/project/.claude/registries/skills.json');
     expect(filePaths).toContain('/test/project/.claude/registries/discovery-map.json');
-    expect(filePaths).toContain('/test/project/.claude/registries/context.json');
     expect(filePaths).toContain('/test/project/.claude/registries/commands.json');
   });
 
@@ -79,7 +77,6 @@ describe('generateRegistries', () => {
       id: 'ai-test-agent',
       moduleId: 'core',
       capabilityNeeds: ['code-implementation'],
-      contextCategoryNeeds: { business: 'basic' },
       tokenBudget: 3000,
       variant: 'full',
       essentialSkills: ['verifying-quality'],
@@ -93,7 +90,6 @@ describe('generateRegistries', () => {
       loadModules: jest.fn().mockResolvedValue(new Map()),
       getAllAgents: jest.fn().mockResolvedValue([mockAgentDef]),
       getAllSkills: jest.fn().mockResolvedValue([]),
-      getContextFilesForAgent: jest.fn().mockReturnValue(['business-basic.md']),
     } as any));
 
     const modules: ModuleManifest[] = [
@@ -129,7 +125,6 @@ describe('generateRegistries', () => {
       loadModules: jest.fn().mockResolvedValue(new Map()),
       getAllAgents: jest.fn().mockResolvedValue([]),
       getAllSkills: jest.fn().mockResolvedValue([mockSkillDef]),
-      getContextFilesForAgent: jest.fn().mockReturnValue([]),
     } as any));
 
     const modules: ModuleManifest[] = [
@@ -156,7 +151,6 @@ describe('generateRegistries', () => {
       id: 'ai-test-agent',
       moduleId: 'core',
       capabilityNeeds: ['code-implementation'],
-      contextCategoryNeeds: {},
       tokenBudget: 3000,
       sourcePath: '/test/agent.md',
     };
@@ -172,7 +166,6 @@ describe('generateRegistries', () => {
       loadModules: jest.fn().mockResolvedValue(new Map()),
       getAllAgents: jest.fn().mockResolvedValue([mockAgentDef]),
       getAllSkills: jest.fn().mockResolvedValue([mockSkillDef]),
-      getContextFilesForAgent: jest.fn().mockReturnValue([]),
     } as any));
 
     const modules: ModuleManifest[] = [
@@ -201,7 +194,6 @@ describe('generateRegistries', () => {
         id: 'agent-core',
         moduleId: 'core',
         capabilityNeeds: [],
-        contextCategoryNeeds: {},
         tokenBudget: 3000,
         sourcePath: '/test/agent1.md',
       },
@@ -209,7 +201,6 @@ describe('generateRegistries', () => {
         id: 'agent-coding',
         moduleId: 'coding',
         capabilityNeeds: [],
-        contextCategoryNeeds: {},
         tokenBudget: 3000,
         sourcePath: '/test/agent2.md',
       },
@@ -219,7 +210,6 @@ describe('generateRegistries', () => {
       loadModules: jest.fn().mockResolvedValue(new Map()),
       getAllAgents: jest.fn().mockResolvedValue(mockAgents),
       getAllSkills: jest.fn().mockResolvedValue([]),
-      getContextFilesForAgent: jest.fn().mockReturnValue([]),
     } as any));
 
     // Only install 'core' module
@@ -242,66 +232,11 @@ describe('generateRegistries', () => {
     expect(agentsCall![1].agents[0].id).toBe('agent-core');
   });
 
-  it('should include context files that exist', async () => {
-    mockedFs.pathExists.mockResolvedValue(true);
-
-    await generateRegistries('/test/project', []);
-
-    const contextCall = mockedFs.writeJson.mock.calls.find(
-      call => String(call[0]).includes('context.json')
-    );
-
-    // Should include standard context files that exist
-    expect(contextCall![1].context.length).toBeGreaterThan(0);
-  });
-
-  it('should not include context files that do not exist', async () => {
-    mockedFs.pathExists.mockResolvedValue(false);
-
-    await generateRegistries('/test/project', []);
-
-    const contextCall = mockedFs.writeJson.mock.calls.find(
-      call => String(call[0]).includes('context.json')
-    );
-
-    // No context files exist, so array should be empty
-    expect(contextCall![1].context).toEqual([]);
-  });
-
-  it('should include module-specific context files', async () => {
-    mockedFs.pathExists.mockResolvedValue(true);
-
-    const modules: ModuleManifest[] = [
-      {
-        id: 'jira',
-        version: '1.0.0',
-        _sourcePath: '/test/framework/modules/jira',
-        context: {
-          technical: ['jira-integration.md'],
-        },
-      },
-    ];
-
-    await generateRegistries('/test/project', modules);
-
-    const contextCall = mockedFs.writeJson.mock.calls.find(
-      call => String(call[0]).includes('context.json')
-    );
-
-    const moduleContext = contextCall![1].context.find(
-      (c: any) => c.module === 'jira'
-    );
-
-    expect(moduleContext).toBeDefined();
-    expect(moduleContext.id).toBe('jira-integration');
-  });
-
   it('should omit optional fields when empty', async () => {
     const mockAgentDef = {
       id: 'simple-agent',
       moduleId: 'core',
       capabilityNeeds: [],
-      contextCategoryNeeds: {},
       tokenBudget: 1000,
       variant: 'slim',
       essentialSkills: [], // Empty
@@ -315,7 +250,6 @@ describe('generateRegistries', () => {
       loadModules: jest.fn().mockResolvedValue(new Map()),
       getAllAgents: jest.fn().mockResolvedValue([mockAgentDef]),
       getAllSkills: jest.fn().mockResolvedValue([]),
-      getContextFilesForAgent: jest.fn().mockReturnValue([]),
     } as any));
 
     const modules: ModuleManifest[] = [
@@ -337,40 +271,5 @@ describe('generateRegistries', () => {
     expect(agent['available-skills']).toBeUndefined();
     expect(agent['delegates-to']).toBeUndefined();
     expect(agent['parent-agent']).toBeUndefined();
-  });
-});
-
-describe('regenerateContextRegistry', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockedFs.ensureDir.mockResolvedValue(undefined as any);
-    mockedFs.writeJson.mockResolvedValue(undefined);
-    mockedFs.pathExists.mockResolvedValue(true);
-  });
-
-  it('should create registries directory', async () => {
-    await regenerateContextRegistry('/test/project', []);
-
-    expect(mockedFs.ensureDir).toHaveBeenCalledWith('/test/project/.claude/registries');
-  });
-
-  it('should only generate context.json', async () => {
-    await regenerateContextRegistry('/test/project', []);
-
-    expect(mockedFs.writeJson).toHaveBeenCalledTimes(1);
-    expect(mockedFs.writeJson).toHaveBeenCalledWith(
-      '/test/project/.claude/registries/context.json',
-      expect.any(Object),
-      expect.any(Object)
-    );
-  });
-
-  it('should include existing context files', async () => {
-    mockedFs.pathExists.mockResolvedValue(true);
-
-    await regenerateContextRegistry('/test/project', []);
-
-    const contextCall = mockedFs.writeJson.mock.calls[0];
-    expect(contextCall[1].context.length).toBeGreaterThan(0);
   });
 });

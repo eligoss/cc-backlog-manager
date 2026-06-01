@@ -10,8 +10,6 @@ import {
   FullAgentSchema,
   SlimAgentSchema,
   AgentSchemaLoose,
-  ContextLevelSchema,
-  ContextCategorySchema,
   AgentVariantSchema,
 } from "../agent.schema.js";
 
@@ -22,10 +20,6 @@ describe("Agent Schema", () => {
         agent: "ai-architect",
         role: "Architecture design and decisions",
         "capability-needs": ["architecture-design", "code-review"],
-        "context-category-needs": {
-          business: "basic",
-          technical: "advanced",
-        },
         "token-budget": 3000,
       };
 
@@ -44,17 +38,6 @@ describe("Agent Schema", () => {
       expect(result.success).toBe(true);
     });
 
-    it("should allow optional context-category-needs", () => {
-      const agent = {
-        agent: "ai-architect",
-        role: "Architecture design",
-        "capability-needs": ["architecture-design"],
-        // No context-category-needs
-      };
-
-      const result = AgentSchema.safeParse(agent);
-      expect(result.success).toBe(true);
-    });
   });
 
   describe("Agent name validation", () => {
@@ -89,55 +72,6 @@ describe("Agent Schema", () => {
         const result = AgentSchema.safeParse(agent);
         expect(result.success).toBe(true);
       }
-    });
-  });
-
-  describe("Context category needs validation", () => {
-    it("should validate valid context categories", () => {
-      const agent = {
-        agent: "ai-test",
-        role: "Test role",
-        variant: "full",
-        "capability-needs": ["test"],
-        "context-category-needs": {
-          business: "basic",
-          technical: "advanced",
-          process: "expert",
-        },
-      };
-
-      const result = AgentSchema.safeParse(agent);
-      expect(result.success).toBe(true);
-    });
-
-    it("should reject invalid context levels", () => {
-      const agent = {
-        agent: "ai-test",
-        role: "Test role",
-        variant: "full",
-        "capability-needs": ["test"],
-        "context-category-needs": {
-          business: "invalid", // Not a valid level
-        },
-      };
-
-      const result = AgentSchema.safeParse(agent);
-      expect(result.success).toBe(false);
-    });
-
-    it("should reject invalid context categories", () => {
-      const agent = {
-        agent: "ai-test",
-        role: "Test role",
-        variant: "full",
-        "capability-needs": ["test"],
-        "context-category-needs": {
-          unknown: "basic", // Not a valid category
-        },
-      };
-
-      const result = AgentSchema.safeParse(agent);
-      expect(result.success).toBe(false);
     });
   });
 
@@ -223,20 +157,6 @@ describe("Agent Schema", () => {
   });
 
   describe("Individual enum schemas", () => {
-    it("should validate context levels", () => {
-      expect(ContextLevelSchema.safeParse("basic").success).toBe(true);
-      expect(ContextLevelSchema.safeParse("advanced").success).toBe(true);
-      expect(ContextLevelSchema.safeParse("expert").success).toBe(true);
-      expect(ContextLevelSchema.safeParse("invalid").success).toBe(false);
-    });
-
-    it("should validate context categories", () => {
-      expect(ContextCategorySchema.safeParse("business").success).toBe(true);
-      expect(ContextCategorySchema.safeParse("technical").success).toBe(true);
-      expect(ContextCategorySchema.safeParse("process").success).toBe(true);
-      expect(ContextCategorySchema.safeParse("invalid").success).toBe(false);
-    });
-
     it("should validate agent variants", () => {
       expect(AgentVariantSchema.safeParse("full").success).toBe(true);
       expect(AgentVariantSchema.safeParse("slim").success).toBe(true);

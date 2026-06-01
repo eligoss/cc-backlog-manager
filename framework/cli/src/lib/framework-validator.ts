@@ -4,7 +4,7 @@ import { DiscoveryEngine } from './discovery-engine.js';
 
 export interface ValidationIssue {
   type: 'error' | 'warning';
-  category: 'capability' | 'context' | 'module' | 'skill' | 'agent';
+  category: 'capability' | 'module' | 'skill' | 'agent';
   message: string;
   details?: {
     agentId?: string;
@@ -34,7 +34,6 @@ export interface ValidationReport {
   overall: boolean;
   timestamp: string;
   capabilityResolution: ValidationResult;
-  contextExistence: ValidationResult;
   moduleDeclarations: ValidationResult;
   skillCapabilities: ValidationResult;
   agentVariants: ValidationResult;
@@ -95,77 +94,6 @@ export class FrameworkValidator {
         checked,
         passed,
         failed: checked - passed,
-      },
-    };
-  }
-
-  /**
-   * Validate that context files referenced by agents exist
-   */
-  async validateContextExistence(): Promise<ValidationResult> {
-    const issues: ValidationIssue[] = [];
-    let checked = 0;
-    let passed = 0;
-    const contextFiles = new Set<string>();
-
-    try {
-      const agents = await this.engine.getAllAgents();
-
-      for (const agent of agents) {
-        if (!agent.contextCategoryNeeds || Object.keys(agent.contextCategoryNeeds).length === 0) {
-          continue;
-        }
-
-        checked++;
-
-        for (const [category, level] of Object.entries(agent.contextCategoryNeeds)) {
-          // Check all cumulative files for this level
-          const hierarchy = ['basic', 'advanced', 'expert'];
-          const levelIndex = hierarchy.indexOf(level);
-          const filesToCheck = levelIndex === -1
-            ? [`${category}-${level}.md`]
-            : hierarchy.slice(0, levelIndex + 1).map(l => `${category}-${l}.md`);
-
-          for (const filename of filesToCheck) {
-            const contextPath = path.join(this.projectPath, 'ai', 'context', filename);
-
-            contextFiles.add(contextPath);
-
-            if (!(await fs.pathExists(contextPath))) {
-              issues.push({
-                type: 'error',
-                category: 'context',
-                message: `Agent '${agent.id}' requires context file '${filename}' for cumulative loading at level '${level}'`,
-                details: {
-                  agentId: agent.id,
-                  file: contextPath,
-                },
-              });
-            }
-          }
-        }
-      }
-
-      // Count passed as those with all context files found
-      if (checked > 0) {
-        passed = checked - (issues.filter((i) => i.category === 'context').length / checked);
-        passed = Math.floor(passed);
-      }
-    } catch (error) {
-      issues.push({
-        type: 'error',
-        category: 'context',
-        message: `Failed to validate context existence: ${error instanceof Error ? error.message : String(error)}`,
-      });
-    }
-
-    return {
-      valid: issues.length === 0,
-      issues,
-      stats: {
-        checked,
-        passed,
-        failed: issues.filter((i) => i.category === 'context').length,
       },
     };
   }
@@ -395,18 +323,6 @@ export class FrameworkValidator {
               details: { agentId: agent.id, tokenBudget: agent.tokenBudget },
             });
           }
-
-          // Context levels must be 'basic'
-          for (const [category, level] of Object.entries(agent.contextCategoryNeeds || {})) {
-            if (level !== 'basic') {
-              issues.push({
-                type: 'error',
-                category: 'agent',
-                message: `Slim agent '${agent.id}' must use 'basic' context level for '${category}', found '${level}'`,
-                details: { agentId: agent.id, category, level },
-              });
-            }
-          }
         }
 
         // Full agent validations
@@ -608,18 +524,16 @@ export class FrameworkValidator {
   async validateAll(): Promise<ValidationReport> {
     const results = await Promise.all([
       this.validateCapabilityResolution(),
-      this.validateContextExistence(),
       this.validateModuleDeclarations(),
       this.validateSkillCapabilities(),
       this.validateAgentVariants(),
       this.validateEssentialAndAvailableSkills(),
     ]);
 
-    const [capabilityResolution, contextExistence, moduleDeclarations, skillCapabilities, agentVariants, essentialAndAvailableSkills] = results;
+    const [capabilityResolution, moduleDeclarations, skillCapabilities, agentVariants, essentialAndAvailableSkills] = results;
 
     const overall =
       capabilityResolution.valid &&
-      contextExistence.valid &&
       moduleDeclarations.valid &&
       skillCapabilities.valid &&
       agentVariants.valid &&
@@ -629,7 +543,6 @@ export class FrameworkValidator {
       overall,
       timestamp: new Date().toISOString(),
       capabilityResolution,
-      contextExistence,
       moduleDeclarations,
       skillCapabilities,
       agentVariants,

@@ -140,7 +140,6 @@ export function generatePlannedActions(info: ExistingProjectInfo): PlannedAction
   actions.push({ file: '.claude/commands/', action: 'CREATE' });
   actions.push({ file: '.claude/skills/', action: 'CREATE' });
   actions.push({ file: '.claude/skills/project/', action: 'CREATE' });
-  actions.push({ file: '.claude/context/', action: 'CREATE', description: 'skip existing files' });
   actions.push({ file: '.claude/registries/', action: 'CREATE' });
 
   // settings.local.json

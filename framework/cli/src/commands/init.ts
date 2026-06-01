@@ -8,10 +8,7 @@ import {
   getFrameworkRoot,
   ModuleManifest,
 } from "../lib/module-loader.js";
-import {
-  generateRegistries,
-  regenerateContextRegistry,
-} from "../lib/registry-generator.js";
+import { generateRegistries } from "../lib/registry-generator.js";
 import { ManifestManager } from "../lib/manifest-manager.js";
 import { SyncEngine } from "../lib/sync-engine.js";
 import { recordInitCommand } from "../lib/telemetry/instrumentation/cli-instrumentation.js";
@@ -22,7 +19,6 @@ import {
   appendGitignore,
   mergeCLAUDEmd,
   mergeSettingsLocal,
-  createContextFilesWithSkip,
   backupAndCreateRoutesYml,
   ExistingProjectInfo,
   McpWizardConfig,
@@ -370,35 +366,6 @@ export async function executeInit(config: InitConfig): Promise<void> {
     throw error;
   }
 
-  // Create context templates (skip existing)
-  spinner.start("Creating context templates...");
-  try {
-    const { created, skipped } = await createContextFilesWithSkip(
-      projectPath,
-      getContextTemplate,
-    );
-    if (skipped.length > 0) {
-      spinner.succeed(
-        `Context templates created (${created.length} new, ${skipped.length} skipped)`,
-      );
-    } else {
-      spinner.succeed("Context templates created");
-    }
-  } catch (error) {
-    spinner.fail("Failed to create context templates");
-    throw error;
-  }
-
-  // Regenerate context.json now that context files exist
-  spinner.start("Updating context registry...");
-  try {
-    await regenerateContextRegistry(projectPath, installedModules);
-    spinner.succeed("Context registry updated");
-  } catch (error) {
-    spinner.fail("Failed to update context registry");
-    throw error;
-  }
-
   // Create/merge entry point files
   spinner.start(
     existing.hasClaudeMd
@@ -522,17 +489,14 @@ export async function executeInit(config: InitConfig): Promise<void> {
     ),
   );
   console.log(
-    chalk.dim("  2. Edit .claude/context/*.md files with your project details"),
+    chalk.dim("  2. Add custom skills to .claude/skills/project/ (optional)"),
   );
   console.log(
-    chalk.dim("  3. Add custom skills to .claude/skills/project/ (optional)"),
-  );
-  console.log(
-    chalk.dim("  4. Use /ai-* slash commands to interact with agents"),
+    chalk.dim("  3. Use /ai-* slash commands to interact with agents"),
   );
   if (mcp?.enabled) {
     console.log(
-      chalk.dim("  5. Seed MCP knowledge bases: agentic-framework mcp seed\n"),
+      chalk.dim("  4. Seed MCP knowledge bases: agentic-framework mcp seed\n"),
     );
   } else {
     console.log("");
@@ -544,7 +508,6 @@ export async function executeInit(config: InitConfig): Promise<void> {
   console.log(
     chalk.dim("\nProject-owned directories (preserved during updates):"),
   );
-  console.log(chalk.dim("  - .claude/context/ (your domain knowledge)"));
   console.log(chalk.dim("  - .claude/skills/project/ (your custom skills)\n"));
 
   // Record telemetry
@@ -560,7 +523,6 @@ async function createProjectStructure(projectPath: string): Promise<void> {
     ".claude/skills",
     ".claude/skills/project",
     ".claude/templates",
-    ".claude/context",
     ".claude/registries",
     ".claude/hooks",
   ];
@@ -746,15 +708,13 @@ ${agentList}
 
 ## Quick Start
 
-1. Fill in context files in \`.claude/context/\`
-2. Use slash commands to interact with agents
-3. Add more modules with \`agentic-framework add <module>\`
+1. Use slash commands to interact with agents
+2. Add more modules with \`agentic-framework add <module>\`
 
 ## Navigation
 
 - \`.claude/agents/\` - Agent documentation
 - \`.claude/skills/\` - Skill documentation
-- \`.claude/context/\` - Project-specific context
 - \`.claude/registries/\` - Discovery metadata`;
 
   // Merge or create CLAUDE.md
@@ -773,7 +733,6 @@ paths:
     - README.md
 
   ai:
-    context: .claude/context/
     registries: .claude/registries/
     project-skills: .claude/skills/project/
 
@@ -797,9 +756,8 @@ ${moduleList}
 
 ## Getting Started
 
-1. Edit context files in \`.claude/context/\` with your project details
-2. Use agent slash commands for AI assistance
-3. Add more modules as needed
+1. Use agent slash commands for AI assistance
+2. Add more modules as needed
 
 ## Adding Modules
 
@@ -820,160 +778,4 @@ agentic-framework validate # Validate configuration
 
     await fs.writeFile(path.join(projectPath, "README.md"), readme);
   }
-}
-
-/**
- * Get context template content for a file
- */
-function getContextTemplate(filename: string): string {
-  const templates: Record<string, string> = {
-    "business-basic.md": `# Business Context - Basic
-
-<!-- TEMPLATE: Fill in your product and business information -->
-
-## Product Overview
-
-<!-- Describe what your product does and its core value proposition -->
-
-## Target Users
-
-<!-- Who are your primary users? What are their key needs? -->
-
-## Core Features
-
-<!-- List the main features of your product -->
-`,
-    "business-advanced.md": `# Business Context - Advanced
-
-<!-- TEMPLATE: Fill in strategic business information -->
-
-## Business Model
-
-<!-- How does your product generate value? -->
-
-## Competitive Landscape
-
-<!-- Who are your competitors? What differentiates you? -->
-
-## Growth Strategy
-
-<!-- What are your expansion plans? -->
-`,
-    "business-expert.md": `# Business Context - Expert
-
-<!-- TEMPLATE: Fill in deep business domain knowledge -->
-
-## Domain Vocabulary
-
-<!-- Key terms and definitions specific to your domain -->
-
-## Business Rules
-
-<!-- Critical business logic and constraints -->
-
-## Compliance Requirements
-
-<!-- Regulatory and compliance considerations -->
-`,
-    "technical-basic.md": `# Technical Context - Basic
-
-<!-- TEMPLATE: Fill in your technical stack information -->
-
-## Tech Stack
-
-<!-- Languages, frameworks, databases, etc. -->
-
-## Repository Structure
-
-<!-- Key directories and their purposes -->
-
-## Development Setup
-
-<!-- How to get started developing -->
-`,
-    "technical-advanced.md": `# Technical Context - Advanced
-
-<!-- TEMPLATE: Fill in architecture and patterns -->
-
-## Architecture Overview
-
-<!-- System architecture and key components -->
-
-## Design Patterns
-
-<!-- Patterns used in the codebase -->
-
-## API Design
-
-<!-- API conventions and standards -->
-`,
-    "technical-expert.md": `# Technical Context - Expert
-
-<!-- TEMPLATE: Fill in deep technical knowledge -->
-
-## Performance Considerations
-
-<!-- Performance bottlenecks and optimizations -->
-
-## Security Architecture
-
-<!-- Security measures and threat model -->
-
-## Scaling Strategy
-
-<!-- How the system scales -->
-`,
-    "process-basic.md": `# Process Context - Basic
-
-<!-- TEMPLATE: Fill in your development workflow -->
-
-## Development Workflow
-
-<!-- How code goes from idea to production -->
-
-## Code Review Process
-
-<!-- How code reviews are conducted -->
-
-## Deployment Process
-
-<!-- How deployments are handled -->
-`,
-    "process-advanced.md": `# Process Context - Advanced
-
-<!-- TEMPLATE: Fill in team and project processes -->
-
-## Team Structure
-
-<!-- How the team is organized -->
-
-## Sprint/Iteration Process
-
-<!-- How work is planned and executed -->
-
-## Quality Gates
-
-<!-- Quality checks before release -->
-`,
-    "process-expert.md": `# Process Context - Expert
-
-<!-- TEMPLATE: Fill in advanced process knowledge -->
-
-## Incident Management
-
-<!-- How incidents are handled -->
-
-## Technical Debt Management
-
-<!-- How technical debt is tracked and addressed -->
-
-## Knowledge Sharing
-
-<!-- How knowledge is documented and shared -->
-`,
-  };
-
-  return (
-    templates[filename] || `# ${filename}\n\n<!-- TEMPLATE: Add content -->\n`
-  );
 }

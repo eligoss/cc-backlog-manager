@@ -139,7 +139,6 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
 
       const totalIssues =
         validationReport.capabilityResolution.issues.length +
-        validationReport.contextExistence.issues.length +
         validationReport.moduleDeclarations.issues.length +
         validationReport.skillCapabilities.issues.length;
 

@@ -74,20 +74,6 @@ describe('Framework Integrity (Integration)', () => {
       }
     });
 
-    it('should have agents with valid context-category-needs declarations', async () => {
-      const agents = await engine.getAllAgents();
-      const validLevels = ['basic', 'advanced', 'expert'];
-      const validCategories = ['business', 'technical', 'process'];
-
-      for (const agent of agents) {
-        if (!agent.contextCategoryNeeds) continue;
-
-        for (const [category, level] of Object.entries(agent.contextCategoryNeeds)) {
-          expect(validCategories).toContain(category);
-          expect(validLevels).toContain(level);
-        }
-      }
-    });
   });
 
   describe('Module Declarations', () => {
@@ -154,12 +140,6 @@ describe('Framework Integrity (Integration)', () => {
 
       // Agent variants should pass
       expect(report.agentVariants.valid).toBe(true);
-
-      // Context existence may fail for framework source testing (expected)
-      // This is validated separately in the "Context Files" describe block
-      if (!report.contextExistence.valid) {
-        console.log('Note: Context existence validation failed (expected for framework source testing)');
-      }
     });
 
     it('should report validation statistics', async () => {
@@ -167,7 +147,6 @@ describe('Framework Integrity (Integration)', () => {
 
       console.log('Framework Validation Stats:');
       console.log(`  Capability Resolution: ${report.capabilityResolution.stats.passed}/${report.capabilityResolution.stats.checked}`);
-      console.log(`  Context Files: ${report.contextExistence.stats.passed}/${report.contextExistence.stats.checked} (deployment artifacts)`);
       console.log(`  Module Declarations: ${report.moduleDeclarations.stats.passed}/${report.moduleDeclarations.stats.checked}`);
       console.log(`  Skill Capabilities: ${report.skillCapabilities.stats.passed}/${report.skillCapabilities.stats.checked}`);
       console.log(`  Agent Variants: ${report.agentVariants.stats.passed}/${report.agentVariants.stats.checked}`);

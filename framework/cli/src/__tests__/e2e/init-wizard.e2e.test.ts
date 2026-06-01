@@ -7,15 +7,12 @@
  * difficult to test in Jest's CommonJS environment.
  */
 
-import path from 'path';
-import fs from 'fs-extra';
 import { createSandbox, TestSandbox } from '../../lib/__tests__/test-utils/sandbox.js';
 import { detectExistingProject, hasExistingFiles, generatePlannedActions } from '../../lib/wizard/detection.js';
 import {
   appendGitignore,
   mergeCLAUDEmd,
   mergeSettingsLocal,
-  createContextFilesWithSkip,
   backupAndCreateRoutesYml,
   FRAMEWORK_SEPARATOR,
 } from '../../lib/wizard/file-handlers.js';
@@ -302,59 +299,6 @@ describe('E2E: Init Wizard File Handlers', () => {
       const settings = await sandbox.readJson<Record<string, unknown>>('.claude/settings.local.json');
       expect(settings.customSetting).toBe('user-value');
       expect((settings.nested as Record<string, Record<string, number>>).deep.value).toBe(42);
-    });
-  });
-
-  describe('Context Files', () => {
-    const getTemplate = (name: string) => `# Template for ${name}\n\n<!-- Add content -->\n`;
-
-    it('should create all context files in empty directory', async () => {
-      const result = await createContextFilesWithSkip(sandbox.path, getTemplate);
-
-      expect(result.created.length).toBe(9);
-      expect(result.skipped.length).toBe(0);
-
-      const expectedFiles = [
-        'business-basic.md',
-        'business-advanced.md',
-        'business-expert.md',
-        'technical-basic.md',
-        'technical-advanced.md',
-        'technical-expert.md',
-        'process-basic.md',
-        'process-advanced.md',
-        'process-expert.md',
-      ];
-
-      for (const file of expectedFiles) {
-        expect(await sandbox.exists(`.claude/context/${file}`)).toBe(true);
-      }
-    });
-
-    it('should skip existing files', async () => {
-      await sandbox.createDir('.claude/context');
-      await sandbox.createFile('.claude/context/business-basic.md', '# My Custom Content\n');
-
-      const result = await createContextFilesWithSkip(sandbox.path, getTemplate);
-
-      expect(result.skipped).toContain('business-basic.md');
-      expect(result.created).not.toContain('business-basic.md');
-
-      const content = await sandbox.readFile('.claude/context/business-basic.md');
-      expect(content).toBe('# My Custom Content\n');
-    });
-
-    it('should create missing files while preserving existing', async () => {
-      await sandbox.createDir('.claude/context');
-      await sandbox.createFile('.claude/context/business-basic.md', '# Custom');
-      await sandbox.createFile('.claude/context/technical-basic.md', '# Tech');
-
-      const result = await createContextFilesWithSkip(sandbox.path, getTemplate);
-
-      expect(result.skipped).toContain('business-basic.md');
-      expect(result.skipped).toContain('technical-basic.md');
-      expect(result.created).toContain('process-basic.md');
-      expect(result.created.length).toBe(7);
     });
   });
 

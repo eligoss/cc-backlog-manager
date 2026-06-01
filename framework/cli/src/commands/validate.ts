@@ -156,7 +156,6 @@ export async function validateCommand(options: ValidateOptions): Promise<void> {
       {
         valid: report.overall,
         capabilityResolution: report.capabilityResolution.valid,
-        contextExistence: report.contextExistence.valid,
         moduleDeclarations: report.moduleDeclarations.valid,
         skillCapabilities: report.skillCapabilities.valid
       },
@@ -227,13 +226,6 @@ function printReport(report: ValidationReport, verbose: boolean): void {
   console.log(`${icon(cap.valid)} Capability Resolution: ${cap.stats.passed}/${cap.stats.checked} capabilities resolved`);
   if (verbose && cap.issues.length > 0) {
     cap.issues.forEach(i => console.log(`   - ${i.message}`));
-  }
-
-  // Context Existence
-  const ctx = report.contextExistence;
-  console.log(`${icon(ctx.valid)} Context Files: ${ctx.stats.passed}/${ctx.stats.checked} context files exist`);
-  if (verbose && ctx.issues.length > 0) {
-    ctx.issues.forEach(i => console.log(`   - ${i.message}`));
   }
 
   // Module Declarations

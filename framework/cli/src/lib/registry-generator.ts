@@ -22,9 +22,6 @@ export async function generateRegistries(
   // Generate discovery-map.json
   await generateDiscoveryMap(registriesPath, modules);
 
-  // Generate context.json with file existence validation
-  await generateContextRegistry(registriesPath, modules, projectPath);
-
   // Generate commands.json
   await generateCommandsRegistry(registriesPath, modules);
 
@@ -205,17 +202,12 @@ async function generateAgentsRegistry(
 
   // Build agents array from parsed definitions
   const agents = agentDefs.map(agent => {
-    // Compute cumulative context files
-    const contextFiles = discoveryEngine.getContextFilesForAgent(agent);
-
     // Build base agent object
     const agentObj: Record<string, unknown> = {
       id: agent.id,
       module: agent.moduleId,
       file: `.claude/commands/${agent.id}.md`,
       'capability-needs': agent.capabilityNeeds,
-      'context-category-needs': agent.contextCategoryNeeds,
-      'context-files': contextFiles,
       'token-budget': agent.tokenBudget,
       variant: agent.variant || 'full',
     };
@@ -367,132 +359,3 @@ async function generateDiscoveryMap(
   );
 }
 
-/**
- * Standard context file definitions for the 3x3 matrix:
- * - Categories: business, technical, process
- * - Levels: basic, advanced, expert (cumulative loading)
- */
-const STANDARD_CONTEXT_FILES = [
-  // Business context
-  {
-    id: 'business-basic',
-    category: 'business',
-    level: 'basic',
-    location: '.claude/context/business-basic.md',
-    responsibility: 'Product overview, user roles, key features',
-  },
-  {
-    id: 'business-advanced',
-    category: 'business',
-    level: 'advanced',
-    location: '.claude/context/business-advanced.md',
-    responsibility: 'Business strategy, market context, competitive landscape',
-  },
-  {
-    id: 'business-expert',
-    category: 'business',
-    level: 'expert',
-    location: '.claude/context/business-expert.md',
-    responsibility: 'Strategic vision, long-term planning, business architecture',
-  },
-  // Technical context
-  {
-    id: 'technical-basic',
-    category: 'technical',
-    level: 'basic',
-    location: '.claude/context/technical-basic.md',
-    responsibility: 'Tech stack, architecture overview',
-  },
-  {
-    id: 'technical-advanced',
-    category: 'technical',
-    level: 'advanced',
-    location: '.claude/context/technical-advanced.md',
-    responsibility: 'Design patterns, integration points, technical debt',
-  },
-  {
-    id: 'technical-expert',
-    category: 'technical',
-    level: 'expert',
-    location: '.claude/context/technical-expert.md',
-    responsibility: 'Architecture decisions, system evolution, technical strategy',
-  },
-  // Process context
-  {
-    id: 'process-basic',
-    category: 'process',
-    level: 'basic',
-    location: '.claude/context/process-basic.md',
-    responsibility: 'Workflow, team structure',
-  },
-  {
-    id: 'process-advanced',
-    category: 'process',
-    level: 'advanced',
-    location: '.claude/context/process-advanced.md',
-    responsibility: 'Development processes, quality gates, release management',
-  },
-  {
-    id: 'process-expert',
-    category: 'process',
-    level: 'expert',
-    location: '.claude/context/process-expert.md',
-    responsibility: 'Process optimization, team scaling, operational excellence',
-  },
-];
-
-async function generateContextRegistry(
-  registriesPath: string,
-  modules: ModuleManifest[],
-  projectPath: string
-): Promise<void> {
-  const contextFiles: Record<string, unknown>[] = [];
-
-  // Add standard context files (only if they exist)
-  for (const contextDef of STANDARD_CONTEXT_FILES) {
-    const contextFilePath = path.join(projectPath, contextDef.location);
-    if (await fs.pathExists(contextFilePath)) {
-      contextFiles.push({ ...contextDef });
-    }
-  }
-
-  // Add module-specific context files (only if they exist)
-  for (const module of modules) {
-    if (module.context) {
-      for (const [category, files] of Object.entries(module.context)) {
-        for (const file of files || []) {
-          const contextFilePath = path.join(projectPath, 'ai', 'context', file);
-          // Only add if the file actually exists
-          if (await fs.pathExists(contextFilePath)) {
-            contextFiles.push({
-              id: file.replace('.md', ''),
-              category,
-              level: 'advanced',
-              location: `.claude/context/${file}`,
-              module: module.id,
-            });
-          }
-        }
-      }
-    }
-  }
-
-  await fs.writeJson(
-    path.join(registriesPath, 'context.json'),
-    { version: '1.0.0', context: contextFiles },
-    { spaces: 2 }
-  );
-}
-
-/**
- * Regenerate only context.json registry.
- * Used after context files are created during init.
- */
-export async function regenerateContextRegistry(
-  projectPath: string,
-  modules: ModuleManifest[]
-): Promise<void> {
-  const registriesPath = path.join(projectPath, '.claude', 'registries');
-  await fs.ensureDir(registriesPath);
-  await generateContextRegistry(registriesPath, modules, projectPath);
-}
