@@ -493,14 +493,19 @@ export async function executeInit(config: InitConfig): Promise<void> {
     ),
   );
   console.log(
-    chalk.dim("  2. Add custom skills to .claude/skills/project/ (optional)"),
+    chalk.dim(
+      "  2. Fill in project knowledge: .claude/skills/knowing-the-codebase|knowing-the-domain|knowing-backlog and references.yml",
+    ),
   );
   console.log(
-    chalk.dim("  3. Use /ai-* slash commands to interact with agents"),
+    chalk.dim("  3. Add custom skills to .claude/skills/project/ (optional)"),
+  );
+  console.log(
+    chalk.dim("  4. Use /ai-* slash commands to interact with agents"),
   );
   if (mcp?.enabled) {
     console.log(
-      chalk.dim("  4. Seed MCP knowledge bases: agentic-framework mcp seed\n"),
+      chalk.dim("  5. Seed MCP knowledge bases: agentic-framework mcp seed\n"),
     );
   } else {
     console.log("");
@@ -714,6 +719,16 @@ ${agentList}
 
 1. Use slash commands to interact with agents
 2. Add more modules with \`agentic-framework add <module>\`
+
+## Project Knowledge
+
+Before any project work, invoke the relevant project-knowledge skill via the Skill tool:
+
+- **knowing-the-codebase** — tech stack, architecture, conventions, testing & CI, git workflow (before writing code or designing).
+- **knowing-the-domain** — platform, business domain, users, product context (before product/ticket/doc work).
+- **knowing-backlog** — Jira project, workflow, ticket conventions, integration config (before backlog/Confluence work).
+
+These ship as fillable templates in \`.claude/skills/\` — fill them in for your project. External docs, APIs, and related codebases are indexed in \`references.yml\` at the project root.
 
 ## Navigation
 
