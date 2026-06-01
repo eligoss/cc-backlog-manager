@@ -64,6 +64,14 @@
 - Modify: `framework/modules/core/module.json`
 - Modify: `framework/modules/core/registries/skill-triggers.json`
 
+- [ ] **Step 0: Verify `scope: project` is permitted before authoring**
+
+The `knowing-*` skills use `scope: project` (existing skills use `scope: generic`). Confirm this is valid before creating three files with it:
+```bash
+cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && grep -n "SkillScopeSchema" src/lib/schemas/skill.schema.ts
+```
+Read its definition. If it is `z.string()` → no constraint, proceed. If it is `z.enum([...])` **without** `'project'`, add `'project'` to the enum now (legitimate scope for these skills) and note it for Task 2's commit. The DiscoveryEngine's custom frontmatter parser (used for `skills.json` generation) does not run Zod, so generation is unaffected either way — this check is for any validation path that does.
+
 - [ ] **Step 1: Create `knowing-the-codebase/SKILL.md`**
 
 Create `framework/modules/core/skills/knowing-the-codebase/SKILL.md`:
@@ -244,7 +252,7 @@ Jira, or publishing to Confluence.
 See `references.yml` for links to the Jira board, Confluence space, and process docs.
 ```
 
-- [ ] **Step 4: Register the skills + capabilities in `core/module.json`, and remove Plan 2 orphans**
+- [ ] **Step 4: Register the new skills + capabilities in `core/module.json`** (additions only — orphan cleanup is a separate commit in Step 10)
 
 In `framework/modules/core/module.json`, in `provides.skills`, append the three new skill ids (after `"gathering-intelligence"`):
 
@@ -255,15 +263,7 @@ In `framework/modules/core/module.json`, in `provides.skills`, append the three 
       "knowing-backlog"
 ```
 
-In `provides.capabilities`: **add** the three new capabilities and **remove** the three orphaned `context-*` capabilities (Plan 2 residue — their provider skills `using-context`/`building-context` were deleted in Plan 2, leaving these unprovided). Remove these three lines:
-
-```json
-      "context-authoring",
-      "context-validation",
-      "context-loading-knowledge",
-```
-
-And add these three (e.g. after `"intelligence-gathering"`):
+In `provides.capabilities`, **add** the three new capabilities (e.g. after `"intelligence-gathering"`):
 
 ```json
       "intelligence-gathering",
@@ -272,7 +272,7 @@ And add these three (e.g. after `"intelligence-gathering"`):
       "backlog-knowledge"
 ```
 
-> **Why remove the orphans:** spec §6 requires "no dangling reference." These produce `Module declares capability but no skill provides it` validator *warnings* (not errors), but cleaning them while already editing this block satisfies §6 and keeps the manifest honest.
+(Leave the orphaned `context-*` capabilities in place for now — they are removed in their own commit at Step 10 to keep bisect clean.)
 
 - [ ] **Step 5: Add skill-reminder triggers for the three skills**
 
@@ -380,8 +380,24 @@ cd /Users/antonborodulin/Projects/cc-backlog-manager && git add framework/module
 
 - Add knowing-the-codebase, knowing-the-domain, knowing-backlog skills
 - Register skills + capabilities in core module manifest
-- Add skill-reminder triggers for the three skills
-- Remove orphaned context-* capabilities (Plan 2 residue)"
+- Add skill-reminder triggers for the three skills"
+```
+
+- [ ] **Step 10: Remove orphaned `context-*` capabilities (Plan 2 residue) — separate commit**
+
+The `context-authoring`, `context-validation`, `context-loading-knowledge` capabilities in `core/module.json` were provided by `using-context`/`building-context`, both deleted in Plan 2 — now unprovided (validator *warnings*). First confirm nothing else references them:
+```bash
+cd /Users/antonborodulin/Projects/cc-backlog-manager && grep -rn -e "context-authoring" -e "context-validation" -e "context-loading-knowledge" framework/modules framework/cli/src
+```
+Expected: only matches in `framework/modules/core/module.json` (and possibly test fixtures asserting the orphan warnings — update those to drop the orphans). Remove these three lines from `provides.capabilities`:
+```json
+      "context-authoring",
+      "context-validation",
+      "context-loading-knowledge",
+```
+Re-run the validator integration test (`npx jest --config jest.integration.config.cjs framework-validator`), then commit:
+```bash
+cd /Users/antonborodulin/Projects/cc-backlog-manager && git add framework/modules/core/module.json framework/cli/src && git commit -m "chore(core): remove orphaned context-* capabilities (Plan 2 residue)"
 ```
 
 ---
@@ -655,42 +671,72 @@ backlog:
   #   url: https://your-org.atlassian.net/wiki/...
 ```
 
-- [ ] **Step 2: Locate the init e2e test and write a failing assertion**
+- [ ] **Step 2: Export `deployReferencesLibrary` and write a unit test that exercises the copy-once guard directly**
 
-Find the init e2e test:
-```bash
-cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && grep -rln "init" src --include="*.e2e.test.ts" && grep -rln "describe.*init\|runInit\|init(" src/__tests__/e2e 2>/dev/null
-```
-In the init e2e test (the one that runs a full `init` into a temp dir and asserts created files), add an assertion that `references.yml` exists at the project root after init, and that a second `init`/`sync` does not overwrite a modified `references.yml`:
+> **Why a unit test on the helper (not `syncAll`):** the copy-once guard lives in `deployReferencesLibrary`, which **only `init` calls** — `syncAll`/`syncSkills` never touch `references.yml`. A test that edits the file then calls `syncAll` would pass trivially (nothing touches it) and prove nothing. The guard is exercised only by invoking the deploy path **twice**. So export the helper and test it directly.
+
+In `init.ts`, mark the helper exported (`export async function deployReferencesLibrary(...)`). Create/extend a unit test (e.g. `framework/cli/src/commands/__tests__/init.references.test.ts`) — match the repo's temp-dir setup pattern:
 
 ```typescript
-it('deploys references.yml to project root and does not clobber it on re-sync', async () => {
-  // (after the standard init into `projectDir` that the suite already performs)
-  const refsPath = path.join(projectDir, 'references.yml');
-  expect(await fs.pathExists(refsPath)).toBe(true);
+import fs from 'fs-extra';
+import path from 'path';
+import os from 'os';
+import { deployReferencesLibrary } from '../init.js';
 
-  await fs.writeFile(refsPath, 'version: "1.0"\n# user-edited\n');
-  await syncEngine.syncAll(installedModules); // or the suite's re-sync entry point
-  const content = await fs.readFile(refsPath, 'utf-8');
-  expect(content).toContain('# user-edited');
+describe('deployReferencesLibrary', () => {
+  let projectPath: string;
+  let coreSourcePath: string;
+  let modules: any[];
+
+  beforeEach(async () => {
+    projectPath = await fs.mkdtemp(path.join(os.tmpdir(), 'refs-proj-'));
+    coreSourcePath = await fs.mkdtemp(path.join(os.tmpdir(), 'refs-core-'));
+    const tplDir = path.join(coreSourcePath, 'templates', 'references');
+    await fs.ensureDir(tplDir);
+    await fs.writeFile(path.join(tplDir, 'references.yml.template'), 'version: "1.0"\n# template\n');
+    modules = [{ id: 'core', _sourcePath: coreSourcePath }];
+  });
+
+  afterEach(async () => {
+    await fs.remove(projectPath);
+    await fs.remove(coreSourcePath);
+  });
+
+  it('creates references.yml at project root on first deploy', async () => {
+    await deployReferencesLibrary(projectPath, modules);
+    const refs = path.join(projectPath, 'references.yml');
+    expect(await fs.pathExists(refs)).toBe(true);
+    expect(await fs.readFile(refs, 'utf-8')).toContain('# template');
+  });
+
+  it('does not overwrite an existing references.yml on a second deploy', async () => {
+    await deployReferencesLibrary(projectPath, modules);
+    const refs = path.join(projectPath, 'references.yml');
+    await fs.writeFile(refs, 'version: "1.0"\n# user-edited\n');
+    await deployReferencesLibrary(projectPath, modules); // second invocation hits the guard
+    expect(await fs.readFile(refs, 'utf-8')).toContain('# user-edited');
+  });
 });
 ```
 
-> Adapt to the suite's actual init/sync invocation + variable names. If the suite has no obvious re-sync step, split into two assertions: (a) init creates `references.yml`; (b) a unit test on the deploy helper covers skip-if-exists.
+Also keep a lightweight e2e assertion (in the existing init e2e suite) that `references.yml` exists at the project root after a real `init` — locate it with:
+```bash
+cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && grep -rln "init" src --include="*.e2e.test.ts"
+```
 
-- [ ] **Step 3: Run the e2e test — expect fail**
+- [ ] **Step 3: Run the unit test — expect fail (import error)**
 
 ```bash
-cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && npx jest --config jest.e2e.config.cjs init 2>&1 | tail -20
+cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && npx jest init.references 2>&1 | tail -15
 ```
-Expected: FAIL — `references.yml` does not exist (init does not deploy it yet).
+Expected: FAIL — `deployReferencesLibrary` is not exported / does not exist yet.
 
-- [ ] **Step 4: Add the deploy step to `init.ts`**
+- [ ] **Step 4: Add the (exported) deploy helper to `init.ts`**
 
-In `framework/cli/src/commands/init.ts`, add a copy-once deploy of `references.yml` to the project root. Add this helper near the other file-creation helpers (e.g. after `createProjectStructure`), resolving the template from the installed `core` module's source path:
+In `framework/cli/src/commands/init.ts`, add a copy-once deploy of `references.yml` to the project root. Add this **exported** helper near the other file-creation helpers (e.g. after `createProjectStructure`), resolving the template from the installed `core` module's source path:
 
 ```typescript
-async function deployReferencesLibrary(
+export async function deployReferencesLibrary(
   projectPath: string,
   modules: ModuleManifest[],
 ): Promise<void> {
@@ -723,24 +769,29 @@ Call it during init, right after templates are installed (after the `syncTemplat
 
 > Confirm `ModuleManifest` is imported in `init.ts` (it is used for `installedModules`) and that `_sourcePath` is populated on installed modules (it is — `syncSkills`/`syncTemplates` rely on it). If `installedModules` is named differently at that point in the function, use the actual variable.
 
-- [ ] **Step 5: Run the e2e test — expect pass**
+- [ ] **Step 5: Run unit + e2e — expect pass**
 
 ```bash
-cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && npx jest --config jest.e2e.config.cjs init 2>&1 | tail -20
+cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && npx jest init.references 2>&1 | tail -10 && npx jest --config jest.e2e.config.cjs init 2>&1 | tail -15
 ```
-Expected: PASS.
+Expected: unit PASS (both helper tests), e2e PASS (`references.yml` present after real init).
 
-- [ ] **Step 6: Type-check, lint, unit**
+- [ ] **Step 6: Type-check, lint**
 
 ```bash
-cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && npx tsc --noEmit && npx eslint src/commands/init.ts --quiet && npx jest init 2>&1 | tail -10
+cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && npx tsc --noEmit && npx eslint src/commands/init.ts --quiet
 ```
-Expected: 0 errors, unit PASS.
+Expected: 0 errors.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 7: Confirm source survived, then commit**
 
+The e2e run may trigger prepare-publish/teardown reversion (MEMORY.md). Verify the edit is still in source BEFORE committing:
 ```bash
-cd /Users/antonborodulin/Projects/cc-backlog-manager && git add framework/modules/core/templates/references framework/cli/src/commands/init.ts framework/cli/src/__tests__ && git commit -m "feat(cli): deploy references.yml library on init (copy-once)"
+cd /Users/antonborodulin/Projects/cc-backlog-manager && grep -n "export async function deployReferencesLibrary" framework/cli/src/commands/init.ts && grep -n "deployReferencesLibrary(projectPath" framework/cli/src/commands/init.ts
+```
+Expected: both match (definition + call site). If missing, re-apply the edit before committing. Then:
+```bash
+cd /Users/antonborodulin/Projects/cc-backlog-manager && git add framework/modules/core/templates/references framework/cli/src/commands/init.ts framework/cli/src/commands/__tests__ framework/cli/src/__tests__ && git commit -m "feat(cli): deploy references.yml library on init (copy-once)"
 ```
 
 ---
@@ -981,8 +1032,13 @@ cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && npx tsc --
 ```
 Expected: 0 errors, unit PASS.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 7: Confirm source survived, then commit**
 
+The e2e run may trigger source reversion (MEMORY.md). Verify the generated-CLAUDE.md edit is still in source BEFORE committing:
+```bash
+cd /Users/antonborodulin/Projects/cc-backlog-manager && grep -n "## Project Knowledge" framework/cli/src/commands/init.ts && grep -n "Fill in project knowledge" framework/cli/src/commands/init.ts
+```
+Expected: both match. If missing, re-apply before committing. Then:
 ```bash
 cd /Users/antonborodulin/Projects/cc-backlog-manager && git add framework/cli/src/commands/init.ts framework/cli/src/__tests__ && git commit -m "feat(cli): instruct knowing-* skills + references.yml in generated CLAUDE.md and init next-steps"
 ```
