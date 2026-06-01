@@ -150,6 +150,64 @@
         "plan.*sprint",
         "break.*epic"
       ]
+    },
+    "knowing-the-codebase": {
+      "description": "Project-specific tech stack, architecture, code conventions, testing/CI, and git workflow",
+      "triggers": [
+        "codebase",
+        "architecture",
+        "tech stack",
+        "code convention",
+        "implement",
+        "refactor",
+        "testing",
+        "ci pipeline",
+        "git workflow"
+      ],
+      "prompt-patterns": [
+        "implement.*feature",
+        "write.*code",
+        "design.*architecture",
+        "how.*built"
+      ]
+    },
+    "knowing-the-domain": {
+      "description": "Project-specific platform, business domain, users, and product context",
+      "triggers": [
+        "domain",
+        "business",
+        "product",
+        "users",
+        "platform",
+        "feature",
+        "stakeholder",
+        "use case"
+      ],
+      "prompt-patterns": [
+        "what.*product",
+        "business.*requirement",
+        "user.*need"
+      ]
+    },
+    "knowing-backlog": {
+      "description": "Project-specific Jira project, workflow states, ticket conventions, and Jira/Confluence config",
+      "triggers": [
+        "ticket",
+        "backlog",
+        "jira",
+        "epic",
+        "story",
+        "sprint",
+        "definition of ready",
+        "definition of done",
+        "confluence"
+      ],
+      "prompt-patterns": [
+        "create.*ticket",
+        "write.*story",
+        "decompose.*epic",
+        "sync.*jira"
+      ]
     }
   }
 }

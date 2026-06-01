@@ -23,7 +23,10 @@
       "building-framework",
       "managing-versions",
       "building-agents",
-      "gathering-intelligence"
+      "gathering-intelligence",
+      "knowing-the-codebase",
+      "knowing-the-domain",
+      "knowing-backlog"
     ],
     "capabilities": [
       "framework-governance",
@@ -44,7 +47,10 @@
       "agent-design",
       "framework-development",
       "planning-phases",
-      "intelligence-gathering"
+      "intelligence-gathering",
+      "codebase-knowledge",
+      "domain-knowledge",
+      "backlog-knowledge"
     ],
     "scripts": [],
     "guards": [],
