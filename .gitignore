@@ -141,10 +141,6 @@ telemetry.config.json
 .security-key
 logs/security/
 
-# Superpowers design specs and implementation plans (local working docs)
-docs/superpowers/specs/
-docs/superpowers/plans/
-
 # Framework manifest - local project state, should not be committed
 .agentic-framework.json
 .serena/cache
