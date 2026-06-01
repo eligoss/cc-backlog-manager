@@ -116,14 +116,17 @@ grep -n "subagent-context-loader" framework/cli/src/lib/__tests__/sync-engine.in
 ```
 If a test asserts the hook is synced/registered, update it to reflect that `SubagentStart` now contains only `skill-reminder.sh` (adjust the expected scripts array / count). If no match, skip.
 
-- [ ] **Step 6: Build + targeted tests, expect green**
+- [ ] **Step 6: Build + unit + integration suites, expect green**
+
+Removing the hook from `SubagentStart` changes the deployed `settings.json`. The settings/hook-merge tests (~352 MCP tests covering hook merging/setup/seeding, plus init/sync) are mostly `.integration` and assert on script arrays / counts / snapshots that **do not contain the string `subagent-context-loader`** — so a name-grep cannot catch them. The gate must run the suites the breakage lives in:
 
 ```bash
 cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli
 npm run build
-npx jest sync-engine hooks 2>&1 | tail -15
+npm test 2>&1 | tail -6
+npm run test:integration 2>&1 | tail -6
 ```
-Expected: `tsc` exits 0; sync-engine/hook suites pass.
+Expected: `tsc` exits 0; unit and integration suites pass. If a test asserts `SubagentStart` has 2 scripts (or a total hook/script count, or a settings snapshot), update it to the post-removal reality (only `skill-reminder.sh`).
 
 - [ ] **Step 7: Confirm no dangling hook reference**
 
@@ -227,9 +230,11 @@ Expected: `tsc` exits 0; all three suites pass.
 
 ```bash
 cd /Users/antonborodulin/Projects/cc-backlog-manager
-grep -rln "contextCategoryNeeds\|getCumulativeContextFiles\|getContextFilesForAgent\|validateContextExistence" framework/cli/src || echo "code clean"
+grep -rln "contextCategoryNeeds\|getCumulativeContextFiles\|getContextFilesForAgent\|validateContextExistence" framework/cli/src framework/modules/core/registries || echo "code clean"
 ```
 Expected: `code clean`. (`context.json` may still appear in deploy/sync code that lists registry filenames — handle only if it points at the deleted generation; otherwise note and defer to Task 3 verification.)
+
+**Registries note (verified at authoring):** `framework/modules/core/registries/` contains only the hand-maintained `skill-triggers.json` — `agents.json` / `skills.json` / `discovery-map.json` / `context.json` are **generated into the gitignored bundle**, not committed to source. So there is no stale committed `agents.json` to clean here; the generated `agents.json` simply stops emitting `context-category-needs` once Task 2 Step 2 removes the emission. The committed `skill-triggers.json` (which still has a `building-context` entry) is handled in Task 3.
 
 - [ ] **Step 9: Commit**
 
@@ -259,6 +264,15 @@ cd /Users/antonborodulin/Projects/cc-backlog-manager
 git rm -r framework/modules/core/templates/context
 git rm -r framework/modules/core/skills/using-context framework/modules/core/skills/building-context
 ```
+
+- [ ] **Step 1b: Remove the deleted skills' entries from `skill-triggers.json`**
+
+`framework/modules/core/registries/skill-triggers.json` is the one hand-maintained committed registry. It carries a `"building-context": { ... }` trigger entry (whose triggers include `"context-category-needs"`). Remove the entire `"building-context"` block (and a `"using-context"` block if present), fixing trailing commas. Verify:
+```bash
+node -e "JSON.parse(require('fs').readFileSync('framework/modules/core/registries/skill-triggers.json','utf8')); console.log('valid json')"
+grep -n "using-context\|building-context\|context-category-needs" framework/modules/core/registries/skill-triggers.json || echo "skill-triggers clean"
+```
+Expected: `valid json`, `skill-triggers clean`.
 
 - [ ] **Step 2: Remove `context:` blocks from all 4 module.json AND the schema property (same step)**
 
@@ -315,7 +329,7 @@ Expected: `tsc` exits 0; `eslint` no errors; all three suites pass.
 cd /Users/antonborodulin/Projects/cc-backlog-manager
 test ! -d framework/modules/core/templates/context && echo "templates removed"
 test ! -d framework/modules/core/skills/using-context && test ! -d framework/modules/core/skills/building-context && echo "context skills removed"
-grep -rln "context-category-needs\|contextCategoryNeeds\|ContextLevel\|getCumulativeContextFiles\|getContextFilesForAgent\|validateContextExistence\|subagent-context-loader" framework/modules framework/cli/src || echo "context system clean"
+grep -rln "context-category-needs\|contextCategoryNeeds\|ContextLevel\|getCumulativeContextFiles\|getContextFilesForAgent\|validateContextExistence\|subagent-context-loader\|using-context\|building-context" framework/modules framework/cli/src || echo "context system clean"
 # context.json should no longer be generated; confirm no source emits it
 grep -rln "context\.json" framework/cli/src || echo "no context.json emission"
 ```
