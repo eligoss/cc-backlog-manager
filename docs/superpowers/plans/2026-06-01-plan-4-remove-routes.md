@@ -8,7 +8,7 @@
 
 **Tech Stack:** TypeScript (ESM, strict), Jest (unit + integration + e2e), Commander CLI, `fs-extra`, `yaml`. Source of truth: `framework/cli/src` + `framework/modules`. The `framework/cli/framework/` bundle and `.claude/` are gitignored build/deploy output — never edit them.
 
-**Scope note:** This is the first of three plans that finish the simplification (spec §6.1, §8, §9). **Plan 5** removes the `validate` + `bump-version` commands and cleans up their backing skills/capabilities (`managing-versions`; note `validating-links` is also used by `build-engine`, so it likely survives). **Plan 6** re-baselines to v1.0.0 and rewrites user-facing docs (CLAUDE.md, README, docs/*, integrations/openclaw). Docs are deliberately **last** — they must describe a final CLI surface. Stale docs between plans are acceptable (they are stale now).
+**Scope note:** This is the first of three plans that finish the simplification (spec §6.1, §8, §9). This plan removes the routes **code mechanism** only. **Plan 5** removes the `validate` + `bump-version` commands and cleans up their backing skills/capabilities (`managing-versions`; note `validating-links` is also used by `build-engine`, so it likely survives). **Plan 6** re-baselines to v1.0.0 and rewrites all user-facing + knowledge **prose** that still references routes/the old system — CLAUDE.md, README, docs/*, integrations/openclaw, **and routes mentions inside `framework/modules` prose** (the `using-framework` skill — whose entire premise is "routes for navigation, registry for metadata" and which needs rethinking/trimming now that routes.yml is gone — plus passing routes references in agent prompts and other skill docs). Docs/prose are deliberately **last** — they must describe a final CLI surface. Stale prose between plans is acceptable (it is stale now). **Plan 4 does NOT touch any `framework/modules` markdown prose.**
 
 ---
 
@@ -188,6 +188,8 @@ Run: `cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && grep
 
 - [ ] **Step 2: `path-resolver.ts` — make it DEFAULT_PATHS-only**
 
+> **Ordering:** do Step 2b (update the two external `resolve()` callers) **together with or before** deleting `resolve()` here, so you are not staring at a spurious "callers of deleted method" error. `tsc` need not be green until the Step 4 gate, but front-loading 2b keeps the error list honest.
+
 Remove the `RoutesConfig` interface, the `routesConfig` constructor parameter/field, the `resolve(dotPath)` method (which read routes), and `parseRoutesYml`. Each semantic accessor (`getTicketPath`, `getPlanPath`, `getContextPath`, `getAgentPath`, `getSkillPath`, …) currently does `const x = this.resolve('…') || path.join(projectRoot, DEFAULT_PATHS.…)`; simplify each to `path.join(this.projectRoot, DEFAULT_PATHS.…)` (with the existing category/ticket-type joins preserved). Update `createPathResolverSync` (and any async factory) to no longer accept/pass `routesConfig`.
 
 > `getContextPath()`/`DEFAULT_PATHS.context` are vestigial (context system removed) but harmless — leave the default in place; deleting `getContextPath` is out of scope (no caller cleanup here). If `tsc` shows `getContextPath` has zero callers, you may delete it; otherwise leave it.
@@ -222,13 +224,15 @@ In `path-resolver.test.ts`: remove tests that pass a `routesConfig` / assert rou
 
 From repo root: `git rm routes.yml`.
 
-- [ ] **Step 2: Full grep sweep — no dangling routes references in source**
+- [ ] **Step 2: Full grep sweep — no dangling routes references in CODE**
 
-Run from repo root:
+Run from repo root (scoped to TypeScript source, excluding tests):
 ```
-grep -rn -e "routes.yml" -e "routes sync" -e "routesConfig" -e "RoutesConfig" -e "RoutesValidator" -e "backupAndCreateRoutesYml" -e "hasRoutesYml" framework/cli/src framework/modules | grep -v "/__tests__/"
+grep -rn -e "routes.yml" -e "routes sync" -e "routesConfig" -e "RoutesConfig" -e "RoutesValidator" -e "backupAndCreateRoutesYml" -e "hasRoutesYml" framework/cli/src --include="*.ts" | grep -v "/__tests__/"
 ```
-Expect: no matches. (Doc/comment mentions in user-facing markdown under `docs/`, `CLAUDE.md`, `README.md` are **Plan 6's** job — do not touch here. The grep above is scoped to `framework/cli/src` + `framework/modules` source only.)
+Expect: **no matches** in code. 
+
+**Deliberately NOT swept here (Plan 6 owns it):** `framework/modules/**/*.md` prose still references routes — the `using-framework` skill (all 5 files, incl. `ROUTES-REGISTRY-DESIGN.md`), `ai-framework-manager`/`ai-backlog-manager`/`ai-confluence-manager`/`ai-app-developer` agent prompts, and other skill docs (`building-framework`, `committing-code`, `using-mcp`, `verifying-quality`). These are knowledge **prose**, not the code mechanism — rewriting them (and rethinking `using-framework`) is Plan 6's doc-rewrite scope. Do NOT edit module markdown in this plan. (Likewise user-facing `docs/`, `CLAUDE.md`, `README.md` → Plan 6.)
 
 - [ ] **Step 3: Full gate — tsc, lint, all three suites**
 
