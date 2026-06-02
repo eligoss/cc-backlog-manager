@@ -164,17 +164,12 @@ describe('Command Options Interfaces', () => {
         versions: true,
       };
 
-      const routesValidation: ValidateOptions = {
-        routes: true,
-      };
-
       const linksValidation: ValidateOptions = {
         links: true,
       };
 
       expect(fullValidation.strict).toBe(true);
       expect(versionValidation.versions).toBe(true);
-      expect(routesValidation.routes).toBe(true);
       expect(linksValidation.links).toBe(true);
     });
   });

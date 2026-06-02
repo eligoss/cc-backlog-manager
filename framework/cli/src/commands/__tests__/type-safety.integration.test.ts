@@ -84,11 +84,6 @@ describe('CLI Type Safety Integration Tests', () => {
       expect(result.stdout).toContain('--versions');
     });
 
-    it('should accept --routes option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('--routes');
-    });
-
     it('should accept --links option', () => {
       const result = execCLI('validate --help');
       expect(result.stdout).toContain('--links');

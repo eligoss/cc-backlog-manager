@@ -102,7 +102,6 @@
   "entry-points": {
     "hooks": {
       "pre-commit": [
-        "agentic-framework routes check",
         "agentic-framework validate --links",
         "agentic-framework sync --skills --check",
         "agentic-framework sync --agents --check",

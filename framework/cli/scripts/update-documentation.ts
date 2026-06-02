@@ -82,29 +82,6 @@ const commandMappings: CommandMapping[] = [
     available: true,
   },
 
-  // Routes
-  {
-    pattern: /python3 src\/framework\/update_routes\.py\s+--apply/g,
-    replacement: 'agentic-framework routes sync',
-    description: 'Sync routes.yml',
-    category: 'routes',
-    available: true,
-  },
-  {
-    pattern: /python3 src\/framework\/update_routes\.py\s+--report/g,
-    replacement: 'agentic-framework routes check',
-    description: 'Check routes.yml',
-    category: 'routes',
-    available: true,
-  },
-  {
-    pattern: /python3 src\/framework\/update_routes\.py/g,
-    replacement: 'agentic-framework routes check',
-    description: 'Check routes.yml (default)',
-    category: 'routes',
-    available: true,
-  },
-
   // Planning (module-specific - keep as-is for now)
   // These are intentionally not mapped as they're module-specific
 ];
