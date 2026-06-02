@@ -15,7 +15,6 @@ import { validateCommand } from "./commands/validate.js";
 import { updateCommand } from "./commands/update.js";
 import { statusCommand } from "./commands/status.js";
 import { syncCommand } from "./commands/sync.js";
-import { createBumpVersionCommand } from "./commands/bump-version.js";
 import { createDevCommand } from "./commands/dev.js";
 import { createAgentCommand } from "./commands/agent/index.js";
 import { createImportJiraCommand } from "./commands/backlog/import-jira.js";
@@ -178,9 +177,6 @@ program
   .option("--check", "Check if sync is needed (exit code 2 if needed)")
   .option("-f, --force", "Continue on errors")
   .action(syncCommand);
-
-// Bump version command
-program.addCommand(createBumpVersionCommand());
 
 // Dev command
 program.addCommand(createDevCommand());

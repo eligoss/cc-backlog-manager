@@ -25,7 +25,6 @@ import { validateCommand } from "../../commands/validate.js";
 import { updateCommand } from "../../commands/update.js";
 import { statusCommand } from "../../commands/status.js";
 import { syncCommand } from "../../commands/sync.js";
-import { bumpVersion } from "../../commands/bump-version.js";
 import { devCommand } from "../../commands/dev.js";
 
 // ============================================================================
@@ -385,59 +384,6 @@ export const syncTool = defineTool(
 );
 
 // ============================================================================
-// Bump Version Command
-// ============================================================================
-
-const BumpVersionSchema = z.object({
-  projectRoot: z.string().default(".").describe("Project root path"),
-  type: z
-    .enum(["major", "minor", "patch"])
-    .optional()
-    .describe("Version bump type"),
-  version: z
-    .string()
-    .optional()
-    .describe("Set specific version (X.Y.Z format)"),
-  dryRun: z
-    .boolean()
-    .default(false)
-    .describe("Show what would change without modifying files"),
-});
-
-export const bumpVersionTool = defineTool(
-  "agentic_bump_version",
-  "Bump framework version across all modules",
-  BumpVersionSchema,
-  async (args) => {
-    try {
-      const result = await bumpVersion({
-        projectRoot: args.projectRoot,
-        type: args.type,
-        version: args.version,
-        dryRun: args.dryRun,
-      });
-
-      return successResult(
-        {
-          currentVersion: result.currentVersion,
-          newVersion: result.newVersion,
-          filesUpdated: result.filesUpdated,
-          updatedFiles: result.updatedFiles,
-        },
-        `Version bumped: ${result.currentVersion} → ${result.newVersion}`,
-        `${result.filesUpdated} files ${result.dryRun ? "would be updated" : "updated"}`,
-      );
-    } catch (error) {
-      return errorResult(
-        ErrorCodes.COMMAND_FAILED,
-        error instanceof Error ? error.message : "Bump version failed",
-        "Check that you are in a framework project and the version format is correct",
-      );
-    }
-  },
-);
-
-// ============================================================================
 // Build Command
 // ============================================================================
 
@@ -584,7 +530,6 @@ export const frameworkTools = [
   updateTool,
   statusTool,
   syncTool,
-  bumpVersionTool,
   buildTool,
   devTool,
 ];

@@ -241,16 +241,6 @@ export interface UpdateOptions {
   dryRun: boolean;
 }
 
-/**
- * Options for bump-version command
- */
-export interface BumpVersionOptions extends BaseCommandOptions {
-  /** Version bump type: major, minor, patch */
-  type?: string;
-  /** Specific version to set */
-  version?: string;
-}
-
 // =============================================================================
 // Agent Commands
 // =============================================================================

@@ -124,15 +124,6 @@ jest.mock('../../commands/sync.js', () => ({
   }),
 }));
 
-jest.mock('../../commands/bump-version.js', () => ({
-  bumpVersion: jest.fn(async () => ({
-    currentVersion: '1.2.0',
-    newVersion: '1.3.0',
-    filesUpdated: 5,
-    updatedFiles: [],
-    dryRun: false,
-  })),
-}));
 
 jest.mock('../../commands/dev.js', () => ({
   devCommand: jest.fn(async () => {

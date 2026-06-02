@@ -20,7 +20,6 @@ jest.mock('../../commands/validate.js', () => ({ validateCommand: jest.fn() }));
 jest.mock('../../commands/update.js', () => ({ updateCommand: jest.fn() }));
 jest.mock('../../commands/status.js', () => ({ statusCommand: jest.fn() }));
 jest.mock('../../commands/sync.js', () => ({ syncCommand: jest.fn() }));
-jest.mock('../../commands/bump-version.js', () => ({ bumpVersion: jest.fn() }));
 jest.mock('../../commands/dev.js', () => ({ devCommand: jest.fn() }));
 jest.mock('../../commands/backlog/create-ticket.js', () => ({
   createCreateTicketCommand: jest.fn()
@@ -107,7 +106,7 @@ import type { MCPTool } from '../types.js';
 describe('MCP Tools Integration', () => {
   describe('Tool Aggregation', () => {
     it('should aggregate exactly 38 tools', () => {
-      expect(allTools.length).toBe(38);
+      expect(allTools.length).toBe(37);
     });
 
     it('should have all tools with unique names', () => {
@@ -123,7 +122,7 @@ describe('MCP Tools Integration', () => {
     });
 
     it('should report correct total tool count', () => {
-      expect(getToolCount()).toBe(38);
+      expect(getToolCount()).toBe(37);
     });
   });
 
@@ -131,8 +130,8 @@ describe('MCP Tools Integration', () => {
     const categories = getToolsByCategory();
 
     describe('Framework Tools', () => {
-      it('should have 12 framework tools', () => {
-        expect(categories.framework.length).toBe(12);
+      it('should have 11 framework tools', () => {
+        expect(categories.framework.length).toBe(11);
       });
 
       it('should include expected framework tools', () => {
@@ -146,7 +145,6 @@ describe('MCP Tools Integration', () => {
         expect(names).toContain('agentic_update');
         expect(names).toContain('agentic_status');
         expect(names).toContain('agentic_sync');
-        expect(names).toContain('agentic_bump_version');
         expect(names).toContain('agentic_build');
         expect(names).toContain('agentic_dev');
       });
@@ -388,12 +386,12 @@ describe('MCP Tools Integration', () => {
     });
 
     it('should register all tools without error', () => {
-      expect(registeredToolCount).toBe(38);
+      expect(registeredToolCount).toBe(37);
     });
 
     it('should list all registered tools', () => {
       const registeredTools = toolRegistry.getAll();
-      expect(registeredTools.length).toBe(38);
+      expect(registeredTools.length).toBe(37);
     });
 
     it('should retrieve tools by name', () => {
@@ -409,14 +407,14 @@ describe('MCP Tools Integration', () => {
 
     it('should get all tool names', () => {
       const names = toolRegistry.getNames();
-      expect(names.length).toBe(38);
+      expect(names.length).toBe(37);
       expect(names).toContain('agentic_init');
       expect(names).toContain('agentic_validate');
     });
 
     it('should generate valid MCP metadata', () => {
       const metadata = toolRegistry.getMetadata();
-      expect(metadata.length).toBe(38);
+      expect(metadata.length).toBe(37);
 
       metadata.forEach((meta) => {
         expect(meta.name).toBeDefined();
@@ -451,7 +449,7 @@ describe('MCP Tools Integration', () => {
         categories.agent.length +
         categories.create.length;
 
-      expect(totalInCategories).toBe(38);
+      expect(totalInCategories).toBe(37);
     });
 
     it('should have no duplicate tools across categories', () => {
