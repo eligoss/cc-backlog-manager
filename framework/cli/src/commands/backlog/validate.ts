@@ -89,11 +89,10 @@ async function runValidateCommand(
 
   // Resolve backlog path:
   // - If explicit path provided (not default), use it as override
-  // - Otherwise, try routes.yml resolution first, then fall back to ./backlog
-  //   (matching create-ticket behavior for consistency)
+  // - Otherwise, fall back to the project's default backlog directory
   const isDefaultPath = backlogPath === './backlog';
   const resolvedPath = isDefaultPath
-    ? ctx.paths.resolve('backlog') || path.join(ctx.projectRoot, 'backlog')
+    ? path.join(ctx.projectRoot, 'backlog')
     : path.resolve(backlogPath);
 
   // Check if backlog directory exists

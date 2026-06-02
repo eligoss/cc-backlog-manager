@@ -8,8 +8,6 @@
  */
 
 import path from 'path';
-import fs from 'fs-extra';
-import yaml from 'yaml';
 import chalk from 'chalk';
 import {
   findProjectRoot,
@@ -23,7 +21,6 @@ import {
   createPathResolver,
   createPathResolverSync,
   type PathResolver,
-  type RoutesConfig,
 } from './path-resolver.js';
 import type { FrameworkManifest } from './manifest-manager.js';
 
@@ -68,7 +65,7 @@ export interface GetCliContextOptions extends CliContextOptions {
  *
  * - Project root detection with multiple strategies
  * - Framework manifest access (if present)
- * - Semantic path resolution via routes.yml
+ * - Semantic path resolution for framework directories
  * - Both async and sync variants
  *
  * @example
@@ -109,7 +106,6 @@ export class CliContext {
   /**
    * Method used to detect the project root.
    * - 'manifest': Found .agentic-framework.json
-   * - 'routes': Found routes.yml + CLAUDE.md
    * - 'git+claude': Found .git + CLAUDE.md
    * - 'cwd': No markers found
    */
@@ -198,14 +194,8 @@ export class CliContext {
     // Find project root synchronously
     const projectContext = findProjectRoot(startPath);
 
-    // Load routes config synchronously
-    const routesConfig = loadRoutesConfigSync(projectContext.projectRoot);
-
-    // Create path resolver with pre-loaded config
-    const pathResolver = createPathResolverSync(
-      projectContext.projectRoot,
-      routesConfig
-    );
+    // Create path resolver
+    const pathResolver = createPathResolverSync(projectContext.projectRoot);
 
     return new CliContext(projectContext, pathResolver);
   }
@@ -353,42 +343,6 @@ export class CliContext {
    */
   getFrameworkVersion(): string | null {
     return this.manifest?.framework?.version ?? null;
-  }
-}
-
-/**
- * Load routes.yml configuration synchronously.
- *
- * @param projectRoot - Absolute path to the project root
- * @returns Parsed RoutesConfig or null if not found/invalid
- */
-function loadRoutesConfigSync(projectRoot: string): RoutesConfig | null {
-  const routesFilePath = path.join(projectRoot, 'routes.yml');
-
-  try {
-    if (!fs.pathExistsSync(routesFilePath)) {
-      return null;
-    }
-
-    const content = fs.readFileSync(routesFilePath, 'utf-8');
-    const parsed = yaml.parse(content);
-
-    if (!parsed || typeof parsed !== 'object') {
-      return null;
-    }
-
-    // Validate that paths is an object if present
-    if (parsed.paths && typeof parsed.paths !== 'object') {
-      return null;
-    }
-
-    return {
-      paths: parsed.paths || {},
-      meta: parsed.meta,
-    };
-  } catch {
-    // Return null on any parsing error - graceful degradation
-    return null;
   }
 }
 
