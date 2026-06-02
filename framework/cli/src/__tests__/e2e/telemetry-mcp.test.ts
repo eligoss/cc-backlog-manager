@@ -514,7 +514,7 @@ describe('E2E: MCP Telemetry Workflows', () => {
           success: true,
           data: { version: '1.0.0' },
         })),
-        defineTool('agentic_validate', 'Validate project', z.object({}), async () => ({
+        defineTool('agentic_build', 'Validate project', z.object({}), async () => ({
           success: true,
           data: { valid: true },
         })),
@@ -527,7 +527,7 @@ describe('E2E: MCP Telemetry Workflows', () => {
       await toolRegistry.execute('agentic_list', {});
       await toolRegistry.execute('agentic_add', { module: 'jira' });
       await toolRegistry.execute('agentic_status', {});
-      await toolRegistry.execute('agentic_validate', {});
+      await toolRegistry.execute('agentic_build', {});
 
       await new Promise(resolve => setTimeout(resolve, 200));
       await telemetry.flush();
@@ -542,7 +542,7 @@ describe('E2E: MCP Telemetry Workflows', () => {
       expect(toolNames).toContain('agentic_list');
       expect(toolNames).toContain('agentic_add');
       expect(toolNames).toContain('agentic_status');
-      expect(toolNames).toContain('agentic_validate');
+      expect(toolNames).toContain('agentic_build');
 
       // Verify all successful
       expect(events.every(e => e.success)).toBe(true);

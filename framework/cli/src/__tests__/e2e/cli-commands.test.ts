@@ -5,7 +5,6 @@
  */
 
 import { Command } from 'commander';
-import { createBumpVersionCommand } from '../../commands/bump-version.js';
 import { createImportJiraCommand } from '../../commands/backlog/import-jira.js';
 import { createUpdateFieldsCommand } from '../../commands/backlog/update-fields.js';
 import { createValidateCommand } from '../../commands/backlog/validate.js';
@@ -17,12 +16,6 @@ import { createCreatePlanCommand } from '../../commands/planning/create-plan.js'
 
 describe('E2E: CLI Commands', () => {
   describe('Command Registration', () => {
-    it('should register bump-version command', () => {
-      const command = createBumpVersionCommand();
-      expect(command).toBeInstanceOf(Command);
-      expect(command.name()).toBe('bump-version');
-    });
-
     it('should register backlog:import command', () => {
       const command = createImportJiraCommand();
       expect(command).toBeInstanceOf(Command);
@@ -73,13 +66,6 @@ describe('E2E: CLI Commands', () => {
   });
 
   describe('Command Help Output', () => {
-    it('should display help for bump-version command', () => {
-      const command = createBumpVersionCommand();
-      const helpOutput = command.helpInformation();
-      expect(helpOutput).toContain('bump-version');
-      expect(helpOutput).toContain('Bump framework version');
-    });
-
     it('should display help for backlog:import command', () => {
       const command = createImportJiraCommand();
       const helpOutput = command.helpInformation();
@@ -102,19 +88,6 @@ describe('E2E: CLI Commands', () => {
   });
 
   describe('Command Options', () => {
-    it('should have required options for bump-version', () => {
-      const command = createBumpVersionCommand();
-      const options = command.options;
-
-      const typeOption = options.find(opt => opt.long === '--type');
-      const versionOption = options.find(opt => opt.long === '--set-version');
-      const dryRunOption = options.find(opt => opt.long === '--dry-run');
-
-      expect(typeOption).toBeDefined();
-      expect(versionOption).toBeDefined();
-      expect(dryRunOption).toBeDefined();
-    });
-
     it('should have required options for backlog:import', () => {
       const command = createImportJiraCommand();
       const options = command.options;
