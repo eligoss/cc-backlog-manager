@@ -17,7 +17,6 @@ import type {
   BacklogValidateOptions,
   JiraSyncOptions,
   JiraExportOptions,
-  ValidateOptions,
   InitOptions,
   AddOptions,
   RemoveOptions,
@@ -149,28 +148,6 @@ describe('Command Options Interfaces', () => {
       expect(env).toBe('.env');
       expect(force).toBe(false);
       expect(dryRun).toBe(false);
-    });
-  });
-
-  describe('ValidateOptions', () => {
-    it('should handle all validation modes', () => {
-      const fullValidation: ValidateOptions = {
-        strict: true,
-        json: false,
-        verbose: true,
-      };
-
-      const versionValidation: ValidateOptions = {
-        versions: true,
-      };
-
-      const linksValidation: ValidateOptions = {
-        links: true,
-      };
-
-      expect(fullValidation.strict).toBe(true);
-      expect(versionValidation.versions).toBe(true);
-      expect(linksValidation.links).toBe(true);
     });
   });
 

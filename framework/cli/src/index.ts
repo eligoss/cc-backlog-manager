@@ -11,7 +11,6 @@ import { addCommand } from "./commands/add.js";
 import { removeCommand } from "./commands/remove.js";
 import { listCommand } from "./commands/list.js";
 import { infoCommand } from "./commands/info.js";
-import { validateCommand } from "./commands/validate.js";
 import { updateCommand } from "./commands/update.js";
 import { statusCommand } from "./commands/status.js";
 import { syncCommand } from "./commands/sync.js";
@@ -119,17 +118,6 @@ program
   .command("info <module>")
   .description("Show detailed information about a module")
   .action(infoCommand);
-
-program
-  .command("validate")
-  .description("Validate framework integrity")
-  .option("-p, --path <path>", "Project path", ".")
-  .option("--strict", "Exit with error code on validation failures")
-  .option("--json", "Output results as JSON")
-  .option("-v, --verbose", "Show detailed validation information")
-  .option("--versions", "Validate version consistency only")
-  .option("--links", "Validate markdown links only")
-  .action(validateCommand);
 
 // Build command - unified validation with compile-time-like checking
 program.addCommand(createBuildCommand());

@@ -349,7 +349,6 @@ describe('Type Safety Regression Tests', () => {
         'BaseCommandOptions',
         'CreateTicketOptions',
         'JiraSyncOptions',
-        'ValidateOptions',
         'InitOptions',
       ];
 

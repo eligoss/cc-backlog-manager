@@ -63,33 +63,6 @@ describe('CLI Type Safety Integration Tests', () => {
     }
   });
 
-  describe('validate command options', () => {
-    it('should accept --verbose option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('-v, --verbose');
-    });
-
-    it('should accept --strict option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('--strict');
-    });
-
-    it('should accept --json option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('--json');
-    });
-
-    it('should accept --versions option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('--versions');
-    });
-
-    it('should accept --links option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('--links');
-    });
-  });
-
   describe('backlog create-ticket command options', () => {
     it('should require --type option', () => {
       const result = execCLI('backlog create-ticket --help');
@@ -215,7 +188,7 @@ describe('Boolean Option Handling', () => {
    */
 
   it('should treat --verbose as true when flag is present', () => {
-    const result = execCLI('validate --verbose --help');
+    const result = execCLI('build --verbose --help');
     // Just checking it doesn't error - the flag should be accepted
     expect(result.exitCode).toBe(0);
   });
@@ -240,7 +213,7 @@ describe('String Option Handling', () => {
   });
 
   it('should accept path options with special characters', () => {
-    const result = execCLI('validate --help');
+    const result = execCLI('build --help');
     expect(result.exitCode).toBe(0);
   });
 });

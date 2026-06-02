@@ -188,20 +188,6 @@ export interface ImportReportsOptions extends ExternalSystemOptions {
 // =============================================================================
 
 /**
- * Options for validate command
- */
-export interface ValidateOptions extends BaseCommandOptions {
-  /** Exit with error code on validation failure */
-  strict?: boolean;
-  /** Output as JSON */
-  json?: boolean;
-  /** Validate version consistency */
-  versions?: boolean;
-  /** Validate markdown links */
-  links?: boolean;
-}
-
-/**
  * Options for init command
  */
 export interface InitOptions {

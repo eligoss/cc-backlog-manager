@@ -88,18 +88,6 @@ jest.mock('../../commands/status.js', () => ({
   }),
 }));
 
-jest.mock('../../commands/validate.js', () => ({
-  validateCommand: jest.fn(async (options) => {
-    if (options.path === '/nonexistent/path/xyz') {
-      console.error('Validation failed: Project not found');
-      process.exit(1);
-    }
-    console.log('Validation passed');
-    console.log('  Agents: 5 validated');
-    console.log('  Skills: 12 validated');
-  }),
-}));
-
 jest.mock('../../commands/info.js', () => ({
   infoCommand: jest.fn(async (moduleName) => {
     if (moduleName === 'nonexistent-module-xyz') {
@@ -144,7 +132,7 @@ jest.mock('../../lib/cli-context.js', () => ({
 }));
 
 // Import tools after all mocks are set up
-import { listTool, statusTool, validateTool, infoTool, buildTool } from '../tools/framework.js';
+import { listTool, statusTool, infoTool, buildTool } from '../tools/framework.js';
 
 describe('Framework MCP Tools - Integration Tests', () => {
   // Increase timeout for integration tests
@@ -152,7 +140,7 @@ describe('Framework MCP Tools - Integration Tests', () => {
 
   describe('Tool Metadata', () => {
     it('all framework tools should have agentic_ prefix', () => {
-      const tools = [listTool, statusTool, validateTool, infoTool];
+      const tools = [listTool, statusTool, infoTool, buildTool];
 
       for (const tool of tools) {
         expect(tool.name).toMatch(/^agentic_/);
@@ -160,7 +148,7 @@ describe('Framework MCP Tools - Integration Tests', () => {
     });
 
     it('all framework tools should have descriptions', () => {
-      const tools = [listTool, statusTool, validateTool, infoTool];
+      const tools = [listTool, statusTool, infoTool, buildTool];
 
       for (const tool of tools) {
         expect(tool.description).toBeTruthy();
@@ -169,7 +157,7 @@ describe('Framework MCP Tools - Integration Tests', () => {
     });
 
     it('all framework tools should have valid input schemas', () => {
-      const tools = [listTool, statusTool, validateTool, infoTool];
+      const tools = [listTool, statusTool, infoTool, buildTool];
 
       for (const tool of tools) {
         expect(tool.inputSchema).toBeDefined();
@@ -313,145 +301,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
     );
   });
 
-  describe('agentic_validate', () => {
-    it(
-      'should return success result when validation passes',
-      async () => {
-        const result = await validateTool.handler({
-          path: '.',
-          strict: false,
-          json: false,
-          verbose: false,
-          versions: false,
-          links: false,
-        });
-
-        expect(isSuccess(result)).toBe(true);
-        if (isSuccess(result)) {
-          expect(result.data?.validated).toBe(true);
-          expect(result.message).toBeTruthy();
-        }
-      },
-      INTEGRATION_TIMEOUT
-    );
-
-    it(
-      'should support strict mode',
-      async () => {
-        const result = await validateTool.handler({
-          path: '.',
-          strict: true,
-          json: false,
-          verbose: false,
-          versions: false,
-          links: false,
-        });
-
-        // Should return a result (success or error)
-        expect(result).toBeDefined();
-        expect(typeof result.success).toBe('boolean');
-      },
-      INTEGRATION_TIMEOUT
-    );
-
-    it(
-      'should support json output mode',
-      async () => {
-        const result = await validateTool.handler({
-          path: '.',
-          strict: false,
-          json: true,
-          verbose: false,
-          versions: false,
-          links: false,
-        });
-
-        expect(result).toBeDefined();
-        if (isSuccess(result)) {
-          expect(result.output).toBeTruthy();
-        }
-      },
-      INTEGRATION_TIMEOUT
-    );
-
-    it(
-      'should support verbose mode',
-      async () => {
-        const result = await validateTool.handler({
-          path: '.',
-          strict: false,
-          json: false,
-          verbose: true,
-          versions: false,
-          links: false,
-        });
-
-        expect(result).toBeDefined();
-        if (isSuccess(result)) {
-          expect(result.output).toBeTruthy();
-        }
-      },
-      INTEGRATION_TIMEOUT
-    );
-
-    it(
-      'should support versions-only validation',
-      async () => {
-        const result = await validateTool.handler({
-          path: '.',
-          strict: false,
-          json: false,
-          verbose: false,
-          versions: true,
-          links: false,
-        });
-
-        expect(result).toBeDefined();
-        expect(typeof result.success).toBe('boolean');
-      },
-      INTEGRATION_TIMEOUT
-    );
-
-    it(
-      'should support links-only validation',
-      async () => {
-        const result = await validateTool.handler({
-          path: '.',
-          strict: false,
-          json: false,
-          verbose: false,
-          versions: false,
-          links: true,
-        });
-
-        expect(result).toBeDefined();
-        expect(typeof result.success).toBe('boolean');
-      },
-      INTEGRATION_TIMEOUT
-    );
-
-    it(
-      'should handle invalid path gracefully',
-      async () => {
-        const result = await validateTool.handler({
-          path: '/nonexistent/path/xyz',
-          strict: false,
-          json: false,
-          verbose: false,
-          versions: false,
-          links: false,
-        });
-
-        expect(isError(result)).toBe(true);
-        if (isError(result)) {
-          expect(result.error.code).toBe('VALIDATION_FAILED');
-          expect(result.error.message).toBeTruthy();
-        }
-      },
-      INTEGRATION_TIMEOUT
-    );
-  });
-
   describe('agentic_info', () => {
     it(
       'should return success result for valid module',
@@ -588,7 +437,7 @@ describe('Framework MCP Tools - Integration Tests', () => {
 
   describe('Multiple tools in sequence', () => {
     it(
-      'should run list, status, and validate in sequence',
+      'should run list and status in sequence',
       async () => {
         // List modules
         const listResult = await listTool.handler({ verbose: false });
@@ -601,17 +450,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
           json: false,
         });
         expect(isSuccess(statusResult)).toBe(true);
-
-        // Validate
-        const validateResult = await validateTool.handler({
-          path: '.',
-          strict: false,
-          json: false,
-          verbose: false,
-          versions: false,
-          links: false,
-        });
-        expect(validateResult).toBeDefined();
       },
       INTEGRATION_TIMEOUT
     );
@@ -656,18 +494,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
     it('should validate input schema for status tool', () => {
       const validInput = { path: '.', verbose: false, json: false };
       expect(() => statusTool.inputSchema.parse(validInput)).not.toThrow();
-    });
-
-    it('should validate input schema for validate tool', () => {
-      const validInput = {
-        path: '.',
-        strict: false,
-        json: false,
-        verbose: false,
-        versions: false,
-        links: false,
-      };
-      expect(() => validateTool.inputSchema.parse(validInput)).not.toThrow();
     });
 
     it('should validate input schema for info tool', () => {

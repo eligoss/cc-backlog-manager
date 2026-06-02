@@ -21,7 +21,6 @@ import { addCommand } from "../../commands/add.js";
 import { removeCommand } from "../../commands/remove.js";
 import { listCommand } from "../../commands/list.js";
 import { infoCommand } from "../../commands/info.js";
-import { validateCommand } from "../../commands/validate.js";
 import { updateCommand } from "../../commands/update.js";
 import { statusCommand } from "../../commands/status.js";
 import { syncCommand } from "../../commands/sync.js";
@@ -193,60 +192,6 @@ export const infoTool = defineTool(
     return successResult(
       { module: args.moduleName },
       `Module '${args.moduleName}' information`,
-      result.output,
-    );
-  },
-);
-
-// ============================================================================
-// Validate Command
-// ============================================================================
-
-const ValidateSchema = z.object({
-  path: z.string().default(".").describe("Project path"),
-  strict: z
-    .boolean()
-    .default(false)
-    .describe("Exit with error on validation failures"),
-  json: z.boolean().default(false).describe("Output as JSON"),
-  verbose: z
-    .boolean()
-    .default(false)
-    .describe("Show detailed validation information"),
-  versions: z
-    .boolean()
-    .default(false)
-    .describe("Validate version consistency only"),
-  links: z.boolean().default(false).describe("Validate markdown links only"),
-});
-
-export const validateTool = defineTool(
-  "agentic_validate",
-  "Validate framework integrity including agents, skills, registries, versions, and links",
-  ValidateSchema,
-  async (args) => {
-    const result = await executeAndCapture(() =>
-      validateCommand({
-        path: args.path,
-        strict: args.strict,
-        json: args.json,
-        verbose: args.verbose,
-        versions: args.versions,
-        links: args.links,
-      }),
-    );
-
-    if (!result.success) {
-      return errorResult(
-        ErrorCodes.VALIDATION_FAILED,
-        "Validation failed",
-        undefined,
-        result.error?.details as string,
-      );
-    }
-    return successResult(
-      { validated: true },
-      "Validation completed",
       result.output,
     );
   },
@@ -526,7 +471,6 @@ export const frameworkTools = [
   removeTool,
   listTool,
   infoTool,
-  validateTool,
   updateTool,
   statusTool,
   syncTool,
