@@ -766,7 +766,7 @@ agentic-framework add confluence
 agentic-framework list     # List available modules
 agentic-framework add      # Add a module
 agentic-framework remove   # Remove a module
-agentic-framework validate # Validate configuration
+agentic-framework build    # Validate configuration
 \`\`\`
 `;
 

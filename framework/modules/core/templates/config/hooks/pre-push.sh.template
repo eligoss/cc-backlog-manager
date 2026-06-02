@@ -294,7 +294,7 @@ if [ "$RUN_LINKS" = "true" ]; then
     cd "$PROJECT_ROOT"
     # Temporarily disable set -e to capture exit code
     set +e
-    node framework/cli/dist/index.js validate --links 2>&1
+    node framework/cli/dist/index.js build 2>&1
     LINK_EXIT_CODE=$?
     set -e
 
