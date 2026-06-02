@@ -13,7 +13,6 @@ import {
   appendGitignore,
   mergeCLAUDEmd,
   mergeSettingsLocal,
-  backupAndCreateRoutesYml,
   FRAMEWORK_SEPARATOR,
 } from '../../lib/wizard/file-handlers.js';
 import { groupModules, getModuleInfo, resolveDependencies, ModuleInfo } from '../../lib/wizard/module-groups.js';
@@ -97,7 +96,6 @@ describe('E2E: Init Wizard File Handlers', () => {
 
       const actionMap = new Map(actions.map((a) => [a.file, a.action]));
       expect(actionMap.get('.agentic-framework.json')).toBe('CREATE');
-      expect(actionMap.get('routes.yml')).toBe('CREATE');
       expect(actionMap.get('CLAUDE.md')).toBe('CREATE');
       expect(actionMap.get('.gitignore')).toBe('CREATE');
     });
@@ -299,33 +297,6 @@ describe('E2E: Init Wizard File Handlers', () => {
       const settings = await sandbox.readJson<Record<string, unknown>>('.claude/settings.local.json');
       expect(settings.customSetting).toBe('user-value');
       expect((settings.nested as Record<string, Record<string, number>>).deep.value).toBe(42);
-    });
-  });
-
-  describe('Routes.yml Handling', () => {
-    it('should create routes.yml if not exists', async () => {
-      const result = await backupAndCreateRoutesYml(sandbox.path, 'version: "1.0"');
-
-      expect(result.action).toBe('created');
-      expect(await sandbox.exists('routes.yml')).toBe(true);
-
-      const content = await sandbox.readFile('routes.yml');
-      expect(content).toBe('version: "1.0"');
-    });
-
-    it('should backup and create new routes.yml if exists', async () => {
-      await sandbox.createFile('routes.yml', 'old: content');
-
-      const result = await backupAndCreateRoutesYml(sandbox.path, 'new: content');
-
-      expect(result.action).toBe('backed_up_and_created');
-      expect(await sandbox.exists('routes.yml')).toBe(true);
-      expect(await sandbox.exists('routes.yml.backup')).toBe(true);
-
-      const newContent = await sandbox.readFile('routes.yml');
-      const backupContent = await sandbox.readFile('routes.yml.backup');
-      expect(newContent).toBe('new: content');
-      expect(backupContent).toBe('old: content');
     });
   });
 

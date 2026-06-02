@@ -8,7 +8,6 @@ export {
   appendGitignore,
   mergeCLAUDEmd,
   mergeSettingsLocal,
-  backupAndCreateRoutesYml,
   FRAMEWORK_SEPARATOR,
 } from './file-handlers.js';
 export { groupModules, getModuleInfo, type ModuleInfo, type ModuleGroup } from './module-groups.js';
