@@ -86,16 +86,6 @@ describe('BoundaryValidator (Integration)', () => {
       expect(validator.classifyZone(filePath)).toBe('instance');
     });
 
-    it('should classify routes.yml as instance zone', async () => {
-      await createTestFixture({
-        'routes.yml': 'version: 1',
-      });
-
-      const validator = new BoundaryValidator(testRoot);
-      const filePath = path.join(testRoot, 'routes.yml');
-
-      expect(validator.classifyZone(filePath)).toBe('instance');
-    });
   });
 
   describe('Reference Extraction', () => {

@@ -135,7 +135,6 @@ export class MarkdownLinkValidator {
   private static readonly FRAMEWORK_ROOT_FILES = [
     "CLAUDE.md",
     "README.md",
-    "routes.yml",
   ];
 
   /** Content paths (non-critical warnings) */

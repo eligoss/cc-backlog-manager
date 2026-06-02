@@ -24,7 +24,6 @@ describe('LinkTransformer', () => {
     // Create some target files
     await fs.writeFile(path.join(frameworkDir, 'README.md'), '# Framework');
     await fs.writeFile(path.join(frameworkDir, 'CLAUDE.md'), '# Claude');
-    await fs.writeFile(path.join(frameworkDir, 'routes.yml'), 'routes:');
     await fs.writeFile(path.join(frameworkDir, 'ai/registries/agents.json'), '{}');
     await fs.writeFile(path.join(frameworkDir, 'ai/context/business-basic.md'), '# Context');
   });
@@ -228,13 +227,6 @@ describe('LinkTransformer', () => {
         const result = transformer.transformContent(content, sourceFile);
         const expectedPath = path.join(frameworkDir, 'CLAUDE.md');
         expect(result).toBe(`[Claude](${expectedPath})`);
-      });
-
-      it('should transform routes.yml links', () => {
-        const content = '[Routes](../../../../framework/routes.yml)';
-        const result = transformer.transformContent(content, sourceFile);
-        const expectedPath = path.join(frameworkDir, 'routes.yml');
-        expect(result).toBe(`[Routes](${expectedPath})`);
       });
 
       it('should handle combined links (file.md#section)', () => {

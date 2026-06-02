@@ -48,11 +48,6 @@ describe('BoundaryValidator', () => {
       expect(validator.classifyZone('/test/project/CLAUDE.md')).toBe('instance');
     });
 
-    it('should classify routes.yml as instance zone', () => {
-      const validator = new BoundaryValidator(projectRoot);
-      expect(validator.classifyZone('/test/project/routes.yml')).toBe('instance');
-    });
-
     it('should classify docs/ as instance zone', () => {
       const validator = new BoundaryValidator(projectRoot);
       expect(validator.classifyZone('/test/project/docs/guide.md')).toBe('instance');

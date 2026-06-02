@@ -4,7 +4,7 @@
  * Validates separation between framework (publishable) and instance (deployed) zones.
  *
  * Rules:
- * 1. Framework files must NOT reference instance paths (.claude/, .claude/, CLAUDE.md, routes.yml)
+ * 1. Framework files must NOT reference instance paths (.claude/, .claude/, CLAUDE.md)
  * 2. Instance files must NOT reference framework paths (framework/)
  * 3. No hardcoded absolute paths (/Users/, /home/, C:\)
  */
@@ -363,7 +363,6 @@ export class BoundaryValidator {
       '.claude/',
       'docs/',
       'CLAUDE.md',
-      'routes.yml',
     ];
   }
 
@@ -572,7 +571,6 @@ export class BoundaryValidator {
       '.claude/**/*.md',
       '.claude/**/*.json',
       'CLAUDE.md',
-      'routes.yml',
     ]);
 
     const allFiles = [...frameworkFiles, ...instanceFiles];
