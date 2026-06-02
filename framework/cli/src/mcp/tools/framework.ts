@@ -7,10 +7,13 @@
  * @module mcp/tools/framework
  */
 
+import * as path from "path";
 import { z } from "zod";
 import { defineTool } from "../tool-registry.js";
 import { executeAndCapture } from "../result-formatter.js";
 import { successResult, errorResult, ErrorCodes } from "../types.js";
+import { CliContext } from "../../lib/cli-context.js";
+import { BuildEngine, type BuildOptions } from "../../lib/build/build-engine.js";
 
 // Import command handlers
 import { initCommand } from "../../commands/init.js";
@@ -472,29 +475,49 @@ export const buildTool = defineTool(
   "Validate framework artifacts with compile-time-like checking (unified validation)",
   BuildSchema,
   async (args) => {
-    // Use validate with strict mode as build equivalent
-    const result = await executeAndCapture(() =>
-      validateCommand({
-        path: args.path,
-        strict: true,
-        json: args.json,
-        verbose: args.verbose,
-      }),
-    );
+    try {
+      const ctx =
+        args.path && args.path !== "."
+          ? await CliContext.create({ path: args.path })
+          : await CliContext.require();
+      const projectPath = ctx.projectRoot;
 
-    if (!result.success) {
+      let frameworkPath: string = projectPath;
+      if (ctx.manifest?.paths?.source) {
+        frameworkPath = path.join(projectPath, ctx.manifest.paths.source);
+      }
+
+      const buildOptions: BuildOptions = {
+        projectPath,
+        frameworkPath,
+        quick: args.quick,
+        externalLinks: args.externalLinks,
+        emitSchemas: args.emitSchemas,
+        schemaOutputDir: args.schemaDir,
+        verbose: args.verbose,
+      };
+
+      const result = await new BuildEngine(buildOptions).build();
+
+      if (!result.success) {
+        return errorResult(
+          ErrorCodes.VALIDATION_FAILED,
+          "Build failed",
+          undefined,
+          `${result.errorCount} error(s), ${result.warningCount} warning(s)`,
+        );
+      }
+      return successResult(
+        { success: true, stats: result.stats },
+        "Build completed successfully",
+      );
+    } catch (error) {
       return errorResult(
-        ErrorCodes.VALIDATION_FAILED,
-        "Build failed",
-        undefined,
-        result.error?.details as string,
+        ErrorCodes.COMMAND_FAILED,
+        error instanceof Error ? error.message : "Build failed",
+        "Check that you are in a framework project",
       );
     }
-    return successResult(
-      { validated: true },
-      "Build completed successfully",
-      result.output,
-    );
   },
 );
 

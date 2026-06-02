@@ -140,8 +140,20 @@ jest.mock('../../commands/dev.js', () => ({
   }),
 }));
 
+const mockBuild = jest.fn();
+jest.mock('../../lib/build/build-engine.js', () => ({
+  BuildEngine: jest.fn().mockImplementation(() => ({ build: mockBuild })),
+}));
+
+jest.mock('../../lib/cli-context.js', () => ({
+  CliContext: {
+    create: jest.fn(async () => ({ projectRoot: '/mock/project', manifest: null })),
+    require: jest.fn(async () => ({ projectRoot: '/mock/project', manifest: null })),
+  },
+}));
+
 // Import tools after all mocks are set up
-import { listTool, statusTool, validateTool, infoTool } from '../tools/framework.js';
+import { listTool, statusTool, validateTool, infoTool, buildTool } from '../tools/framework.js';
 
 describe('Framework MCP Tools - Integration Tests', () => {
   // Increase timeout for integration tests
@@ -488,6 +500,94 @@ describe('Framework MCP Tools - Integration Tests', () => {
         expect(isError(result)).toBe(true);
         if (isError(result)) {
           expect(result.error.code).toBeDefined();
+          expect(result.error.message).toBeTruthy();
+        }
+      },
+      INTEGRATION_TIMEOUT
+    );
+  });
+
+  describe('agentic_build', () => {
+    beforeEach(() => {
+      mockBuild.mockReset();
+    });
+
+    it(
+      'should return success result with stats when build passes',
+      async () => {
+        mockBuild.mockResolvedValue({
+          success: true,
+          errorCount: 0,
+          warningCount: 0,
+          stats: { filesChecked: 3, agentsChecked: 5, skillsChecked: 12 },
+          issues: [],
+        });
+
+        const result = await buildTool.handler({
+          path: '.',
+          quick: false,
+          externalLinks: false,
+          emitSchemas: false,
+          json: false,
+          verbose: false,
+          ci: false,
+        });
+
+        expect(isSuccess(result)).toBe(true);
+        if (isSuccess(result)) {
+          expect(result.data?.success).toBe(true);
+          expect(result.data?.stats).toBeDefined();
+        }
+      },
+      INTEGRATION_TIMEOUT
+    );
+
+    it(
+      'should return error result when build reports failures',
+      async () => {
+        mockBuild.mockResolvedValue({
+          success: false,
+          errorCount: 2,
+          warningCount: 1,
+          stats: { filesChecked: 3, agentsChecked: 5, skillsChecked: 12 },
+          issues: [],
+        });
+
+        const result = await buildTool.handler({
+          path: '.',
+          quick: false,
+          externalLinks: false,
+          emitSchemas: false,
+          json: false,
+          verbose: false,
+          ci: false,
+        });
+
+        expect(isError(result)).toBe(true);
+        if (isError(result)) {
+          expect(result.error.message).toContain('Build failed');
+        }
+      },
+      INTEGRATION_TIMEOUT
+    );
+
+    it(
+      'should return error result when the build engine throws',
+      async () => {
+        mockBuild.mockRejectedValue(new Error('engine exploded'));
+
+        const result = await buildTool.handler({
+          path: '.',
+          quick: false,
+          externalLinks: false,
+          emitSchemas: false,
+          json: false,
+          verbose: false,
+          ci: false,
+        });
+
+        expect(isError(result)).toBe(true);
+        if (isError(result)) {
           expect(result.error.message).toBeTruthy();
         }
       },
