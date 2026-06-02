@@ -15,7 +15,6 @@ import { validateCommand } from "./commands/validate.js";
 import { updateCommand } from "./commands/update.js";
 import { statusCommand } from "./commands/status.js";
 import { syncCommand } from "./commands/sync.js";
-import { routesCheckCommand, routesSyncCommand } from "./commands/routes.js";
 import { createBumpVersionCommand } from "./commands/bump-version.js";
 import { createDevCommand } from "./commands/dev.js";
 import { createAgentCommand } from "./commands/agent/index.js";
@@ -130,7 +129,6 @@ program
   .option("--json", "Output results as JSON")
   .option("-v, --verbose", "Show detailed validation information")
   .option("--versions", "Validate version consistency only")
-  .option("--routes", "Validate routes.yml synchronization only")
   .option("--links", "Validate markdown links only")
   .action(validateCommand);
 
@@ -180,28 +178,6 @@ program
   .option("--check", "Check if sync is needed (exit code 2 if needed)")
   .option("-f, --force", "Continue on errors")
   .action(syncCommand);
-
-// Routes commands
-const routes = program
-  .command("routes")
-  .description("Manage routes.yml synchronization");
-
-routes
-  .command("check")
-  .description("Check if routes.yml is synchronized with filesystem")
-  .option("-p, --path <path>", "Project path", ".")
-  .option("--json", "Output results as JSON")
-  .option("-v, --verbose", "Show detailed information")
-  .action(routesCheckCommand);
-
-routes
-  .command("sync")
-  .description("Synchronize routes.yml with filesystem structure")
-  .option("-p, --path <path>", "Project path", ".")
-  .option("-n, --dry-run", "Preview changes without applying")
-  .option("--json", "Output results as JSON")
-  .option("-v, --verbose", "Show detailed information")
-  .action(routesSyncCommand);
 
 // Bump version command
 program.addCommand(createBumpVersionCommand());

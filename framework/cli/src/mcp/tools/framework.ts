@@ -22,10 +22,6 @@ import { validateCommand } from "../../commands/validate.js";
 import { updateCommand } from "../../commands/update.js";
 import { statusCommand } from "../../commands/status.js";
 import { syncCommand } from "../../commands/sync.js";
-import {
-  routesCheckCommand,
-  routesSyncCommand,
-} from "../../commands/routes.js";
 import { bumpVersion } from "../../commands/bump-version.js";
 import { devCommand } from "../../commands/dev.js";
 
@@ -219,13 +215,12 @@ const ValidateSchema = z.object({
     .boolean()
     .default(false)
     .describe("Validate version consistency only"),
-  routes: z.boolean().default(false).describe("Validate routes.yml only"),
   links: z.boolean().default(false).describe("Validate markdown links only"),
 });
 
 export const validateTool = defineTool(
   "agentic_validate",
-  "Validate framework integrity including agents, skills, registries, versions, routes, and links",
+  "Validate framework integrity including agents, skills, registries, versions, and links",
   ValidateSchema,
   async (args) => {
     const result = await executeAndCapture(() =>
@@ -235,7 +230,6 @@ export const validateTool = defineTool(
         json: args.json,
         verbose: args.verbose,
         versions: args.versions,
-        routes: args.routes,
         links: args.links,
       }),
     );
@@ -382,81 +376,6 @@ export const syncTool = defineTool(
     return successResult(
       { synced: true },
       "Framework synced successfully",
-      result.output,
-    );
-  },
-);
-
-// ============================================================================
-// Routes Check Command
-// ============================================================================
-
-const RoutesCheckSchema = z.object({
-  path: z.string().default(".").describe("Project path"),
-  json: z.boolean().default(false).describe("Output as JSON"),
-  verbose: z
-    .boolean()
-    .default(false)
-    .describe("Show detailed validation information"),
-});
-
-export const routesCheckTool = defineTool(
-  "agentic_routes_check",
-  "Check routes.yml synchronization with filesystem",
-  RoutesCheckSchema,
-  async (args) => {
-    const result = await executeAndCapture(() =>
-      routesCheckCommand({
-        path: args.path,
-        json: args.json,
-        verbose: args.verbose,
-      }),
-    );
-
-    if (!result.success) {
-      return errorResult(
-        ErrorCodes.VALIDATION_FAILED,
-        "Routes check failed",
-        undefined,
-        result.error?.details as string,
-      );
-    }
-    return successResult({ valid: true }, "Routes validated", result.output);
-  },
-);
-
-// ============================================================================
-// Routes Sync Command
-// ============================================================================
-
-const RoutesSyncSchema = z.object({
-  path: z.string().default(".").describe("Project path"),
-  verbose: z.boolean().default(false).describe("Show detailed output"),
-  dryRun: z
-    .boolean()
-    .default(false)
-    .describe("Preview changes without applying"),
-});
-
-export const routesSyncTool = defineTool(
-  "agentic_routes_sync",
-  "Synchronize routes.yml with filesystem structure",
-  RoutesSyncSchema,
-  async (args) => {
-    const result = await executeAndCapture(() =>
-      routesSyncCommand({
-        path: args.path,
-        verbose: args.verbose,
-        dryRun: args.dryRun,
-      }),
-    );
-
-    if (!result.success) {
-      return result;
-    }
-    return successResult(
-      { synced: true },
-      "Routes synchronized",
       result.output,
     );
   },
@@ -642,8 +561,6 @@ export const frameworkTools = [
   updateTool,
   statusTool,
   syncTool,
-  routesCheckTool,
-  routesSyncTool,
   bumpVersionTool,
   buildTool,
   devTool,

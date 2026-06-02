@@ -197,8 +197,6 @@ export interface ValidateOptions extends BaseCommandOptions {
   json?: boolean;
   /** Validate version consistency */
   versions?: boolean;
-  /** Validate routes.yml */
-  routes?: boolean;
   /** Validate markdown links */
   links?: boolean;
 }
@@ -241,14 +239,6 @@ export interface UpdateOptions {
   force: boolean;
   /** Preview changes without applying */
   dryRun: boolean;
-}
-
-/**
- * Options for routes sync command
- */
-export interface RoutesSyncOptions extends BaseCommandOptions {
-  /** Show what would be synced without making changes */
-  dryRun?: boolean;
 }
 
 /**

@@ -1,9 +1,8 @@
 /**
  * Integration Tests: Validate Command Path Resolution
  *
- * Tests for QA-003, QA-004, and QA-006:
+ * Tests for QA-003 and QA-006:
  * - QA-003: `validate --versions` can't find files that exist (wrong path)
- * - QA-004: `validate --routes` looks in wrong directory
  * - QA-006: `bump-version` looks for package.json in wrong path
  *
  * Root cause: Commands were using `frameworkRoot` instead of `projectPath`
@@ -76,43 +75,6 @@ Framework Version: **v1.2.0** | Architecture: **Modular**
     });
   });
 
-  describe('QA-004: Routes Validator Path Resolution', () => {
-    /**
-     * The routes validator should find routes.yml at project root,
-     * not at framework/routes.yml
-     */
-
-    it('should find routes.yml at project root', async () => {
-      await sandbox.createFile('routes.yml', `
-version: 1.0
-paths:
-  backlog: backlog/
-`);
-
-      // Correct location
-      expect(await sandbox.exists('routes.yml')).toBe(true);
-
-      // Wrong path
-      expect(await sandbox.exists('framework/routes.yml')).toBe(false);
-    });
-
-    it('should validate routes.yml structure', async () => {
-      await sandbox.createFile('routes.yml', `
-version: "1.0"
-paths:
-  backlog:
-    tickets:
-      bugs: backlog/tickets/bugs
-      stories: backlog/tickets/stories
-`);
-
-      const content = await sandbox.readFile('routes.yml');
-      expect(content).toContain('version:');
-      expect(content).toContain('paths:');
-      expect(content).toContain('backlog:');
-    });
-  });
-
   describe('QA-006: Bump Version Path Resolution', () => {
     /**
      * bump-version should look for package.json at framework/cli/package.json,
@@ -174,13 +136,12 @@ paths:
     it('should use projectPath for user-facing files', async () => {
       // User-facing files live at project root
       await sandbox.createFile('CLAUDE.md', '# Test');
-      await sandbox.createFile('routes.yml', 'version: 1');
       await sandbox.createFile('README.md', '# Test');
 
       const projectPath = sandbox.path;
 
       expect(path.join(projectPath, 'CLAUDE.md')).toBe(sandbox.resolve('CLAUDE.md'));
-      expect(path.join(projectPath, 'routes.yml')).toBe(sandbox.resolve('routes.yml'));
+      expect(path.join(projectPath, 'README.md')).toBe(sandbox.resolve('README.md'));
     });
 
     it('should use frameworkRoot for framework internal files', async () => {
@@ -198,7 +159,6 @@ paths:
     it('should have all required files at correct locations for validate', async () => {
       // Setup a complete project structure
       await sandbox.createFile('CLAUDE.md', '# Framework v1.2.0');
-      await sandbox.createFile('routes.yml', 'version: 1.0');
       await sandbox.createJson('.agentic-framework.json', {
         framework: { version: '1.2.0' },
         modules: { core: { version: '1.2.0' } },
@@ -214,7 +174,6 @@ paths:
 
       // Verify all files at correct locations
       expect(await sandbox.exists('CLAUDE.md')).toBe(true);
-      expect(await sandbox.exists('routes.yml')).toBe(true);
       expect(await sandbox.exists('.agentic-framework.json')).toBe(true);
       expect(await sandbox.exists('framework/cli/package.json')).toBe(true);
       expect(await sandbox.exists('framework/modules/core/module.json')).toBe(true);

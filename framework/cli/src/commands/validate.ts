@@ -1,7 +1,6 @@
 import { DiscoveryEngine } from '../lib/discovery-engine.js';
 import { FrameworkValidator, ValidationReport } from '../lib/framework-validator.js';
 import { VersionValidator, VersionValidationResult } from '../lib/version-validator.js';
-import { RoutesValidator, RoutesValidationResult } from '../lib/routes-validator.js';
 import { MarkdownLinkValidator, LinkValidationResult } from '../lib/link-validator.js';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -15,7 +14,6 @@ interface ValidateOptions {
   json?: boolean;
   verbose?: boolean;
   versions?: boolean;
-  routes?: boolean;
   links?: boolean;
 }
 
@@ -62,7 +60,7 @@ export async function validateCommand(options: ValidateOptions): Promise<void> {
       // Record telemetry
       const durationMs = Date.now() - startTime;
       await recordValidateCommand(
-        { strict: options.strict, versions: options.versions, routes: options.routes, links: options.links },
+        { strict: options.strict, versions: options.versions, links: options.links },
         { valid: result.valid, brokenLinks: result.brokenLinks.length, antiPatterns: result.antiPatterns.length },
         durationMs,
         result.valid
@@ -72,35 +70,6 @@ export async function validateCommand(options: ValidateOptions): Promise<void> {
         process.exit(1); // Critical errors in framework files - block commits
       }
       // Warnings only in content files - allow commits (exit 0)
-      return;
-    }
-
-    // If --routes flag is set, only validate routes.yml
-    // Routes.yml is always at project root, not framework root
-    if (options.routes) {
-      const routesValidator = new RoutesValidator(projectPath);
-      const result = await routesValidator.validateRoutes();
-
-      // Output
-      if (options.json) {
-        console.log(JSON.stringify(result, null, 2));
-      } else {
-        printRoutesReport(result, options.verbose ?? false);
-      }
-
-      // Record telemetry
-      const durationMs = Date.now() - startTime;
-      await recordValidateCommand(
-        { strict: options.strict, versions: options.versions, routes: options.routes, links: options.links },
-        { valid: result.valid, synced: result.synced.length, missing: result.missing.length, undefined: result.undefined.length },
-        durationMs,
-        result.valid
-      ).catch(() => {});
-
-      // Exit code
-      if (options.strict && !result.valid) {
-        process.exit(1);
-      }
       return;
     }
 
@@ -120,7 +89,7 @@ export async function validateCommand(options: ValidateOptions): Promise<void> {
       // Record telemetry
       const durationMs = Date.now() - startTime;
       await recordValidateCommand(
-        { strict: options.strict, versions: options.versions, routes: options.routes, links: options.links },
+        { strict: options.strict, versions: options.versions, links: options.links },
         { valid: result.valid, sources: result.sources.length, mismatches: result.mismatches?.length || 0 },
         durationMs,
         result.valid
@@ -152,7 +121,7 @@ export async function validateCommand(options: ValidateOptions): Promise<void> {
     // Record telemetry
     const durationMs = Date.now() - startTime;
     await recordValidateCommand(
-      { strict: options.strict, versions: options.versions, routes: options.routes, links: options.links },
+      { strict: options.strict, versions: options.versions, links: options.links },
       {
         valid: report.overall,
         capabilityResolution: report.capabilityResolution.valid,
@@ -171,7 +140,7 @@ export async function validateCommand(options: ValidateOptions): Promise<void> {
     // Record telemetry for error case
     const durationMs = Date.now() - startTime;
     await recordValidateCommand(
-      { strict: options.strict, versions: options.versions, routes: options.routes, links: options.links },
+      { strict: options.strict, versions: options.versions, links: options.links },
       { error: error instanceof Error ? error.message : String(error) },
       durationMs,
       false
@@ -243,66 +212,6 @@ function printReport(report: ValidationReport, verbose: boolean): void {
   }
 
   console.log('\n' + (report.overall ? '✅ All validations passed' : '❌ Validation failed'));
-}
-
-function printRoutesReport(result: RoutesValidationResult, verbose: boolean): void {
-  console.log(chalk.bold('\nRoutes.yml Validation Report\n'));
-  console.log('─'.repeat(80));
-
-  // Summary statistics
-  const totalRoutes = result.synced.length + result.missing.length;
-  const totalDirs = result.synced.length + result.undefined.length;
-
-  console.log(`Total paths in routes.yml: ${totalRoutes}`);
-  console.log(`Total directories in filesystem: ${totalDirs}`);
-  console.log(`Total discrepancies: ${result.missing.length + result.undefined.length}`);
-  console.log();
-
-  // Missing directories (in routes.yml but not filesystem)
-  if (result.missing.length > 0) {
-    console.log(chalk.red(`❌ MISSING (${result.missing.length} paths):`));
-    console.log(chalk.gray('   These paths are defined in routes.yml but don\'t exist in the filesystem:\n'));
-
-    result.missing.forEach(path => {
-      console.log(chalk.red(`   ⚠️  ${path}`));
-    });
-    console.log();
-  }
-
-  // Undefined directories (in filesystem but not routes.yml)
-  if (result.undefined.length > 0) {
-    console.log(chalk.yellow(`✨ UNDEFINED (${result.undefined.length} paths):`));
-    console.log(chalk.gray('   These paths exist in the filesystem but aren\'t defined in routes.yml:\n'));
-
-    result.undefined.forEach(path => {
-      console.log(chalk.yellow(`   ➕ ${path}`));
-    });
-    console.log();
-  }
-
-  // Synced directories
-  if (verbose && result.synced.length > 0) {
-    console.log(chalk.green(`✅ SYNCHRONIZED (${result.synced.length} paths):`));
-    console.log(chalk.gray('   These paths are correctly synchronized:\n'));
-
-    result.synced.forEach(path => {
-      console.log(chalk.green(`   ✓  ${path}`));
-    });
-    console.log();
-  }
-
-  console.log('─'.repeat(80));
-
-  // Overall status
-  if (result.valid) {
-    console.log(chalk.green('\n✅ ALL PATHS SYNCHRONIZED'));
-    console.log(chalk.gray('routes.yml matches current filesystem structure perfectly!'));
-  } else {
-    console.log(chalk.red('\n❌ SYNCHRONIZATION REQUIRED'));
-    console.log(chalk.gray('Run ') + chalk.cyan('agentic-framework routes sync') + chalk.gray(' to fix these issues.'));
-  }
-
-  console.log();
 }
 
 /**

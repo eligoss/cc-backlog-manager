@@ -124,15 +124,6 @@ jest.mock('../../commands/sync.js', () => ({
   }),
 }));
 
-jest.mock('../../commands/routes.js', () => ({
-  routesCheckCommand: jest.fn(async () => {
-    console.log('Routes validated');
-  }),
-  routesSyncCommand: jest.fn(async () => {
-    console.log('Routes synchronized');
-  }),
-}));
-
 jest.mock('../../commands/bump-version.js', () => ({
   bumpVersion: jest.fn(async () => ({
     currentVersion: '1.2.0',
@@ -329,7 +320,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
           json: false,
           verbose: false,
           versions: false,
-          routes: false,
           links: false,
         });
 
@@ -351,7 +341,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
           json: false,
           verbose: false,
           versions: false,
-          routes: false,
           links: false,
         });
 
@@ -371,7 +360,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
           json: true,
           verbose: false,
           versions: false,
-          routes: false,
           links: false,
         });
 
@@ -392,7 +380,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
           json: false,
           verbose: true,
           versions: false,
-          routes: false,
           links: false,
         });
 
@@ -413,26 +400,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
           json: false,
           verbose: false,
           versions: true,
-          routes: false,
-          links: false,
-        });
-
-        expect(result).toBeDefined();
-        expect(typeof result.success).toBe('boolean');
-      },
-      INTEGRATION_TIMEOUT
-    );
-
-    it(
-      'should support routes-only validation',
-      async () => {
-        const result = await validateTool.handler({
-          path: '.',
-          strict: false,
-          json: false,
-          verbose: false,
-          versions: false,
-          routes: true,
           links: false,
         });
 
@@ -451,7 +418,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
           json: false,
           verbose: false,
           versions: false,
-          routes: false,
           links: true,
         });
 
@@ -470,7 +436,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
           json: false,
           verbose: false,
           versions: false,
-          routes: false,
           links: false,
         });
 
@@ -553,7 +518,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
           json: false,
           verbose: false,
           versions: false,
-          routes: false,
           links: false,
         });
         expect(validateResult).toBeDefined();
@@ -610,7 +574,6 @@ describe('Framework MCP Tools - Integration Tests', () => {
         json: false,
         verbose: false,
         versions: false,
-        routes: false,
         links: false,
       };
       expect(() => validateTool.inputSchema.parse(validInput)).not.toThrow();
