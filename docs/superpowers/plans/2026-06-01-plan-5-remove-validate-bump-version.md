@@ -197,6 +197,8 @@ In `src/mcp/tools/framework.ts`: remove `import { validateCommand } from "../../
 
 `npx tsc --noEmit` → clean. The compiler enumerates any remaining `validateCommand`/`VersionValidator` consumer — fix each. (Expect none beyond what Steps 3–4 removed.)
 
+> **Optional, do-not-expand-scope (advisor):** `recordValidateCommand` (in `lib/telemetry/instrumentation/cli-instrumentation.ts`) loses its only caller when `validate.ts` is deleted. It is a harmless dead export — `tsc` will NOT flag it (it is `export`ed). Leaving it is fine; remove it only if trivial and it has zero remaining references (`grep -rn "recordValidateCommand" src --include="*.ts" | grep -v "/__tests__/"`).
+
 - [ ] **Step 6: Update MCP tool-count assertions (37 → 36, framework 11 → 10) + remove validate tests**
 
 In `src/mcp/__tests__/tools.integration.test.ts`: `.toBe(37)` → `.toBe(36)`, framework `.toBe(11)` → `.toBe(10)` (+ title), remove `expect(names).toContain('agentic_validate');`. In `src/mcp/__tests__/framework.integration.test.ts`: remove the entire `describe('agentic_validate', …)` block and any `validateTool` import/usage. In `src/commands/__tests__/type-safety.integration.test.ts`: remove the `validate command options` describe block (the `--versions`/`--links` `execCLI('validate --help')` tests). In `src/types/__tests__/command-options.unit.test.ts`: remove the `ValidateOptions` describe block (the type no longer exists).
@@ -217,9 +219,11 @@ Run: `npx tsc` (emit), then `npx jest validate command-options type-safety comma
 
 **Files:** modify `framework/modules/core/module.json`; delete `framework/modules/core/skills/managing-versions/`; modify `framework/modules/core/registries/skill-triggers.json`.
 
-- [ ] **Step 1: Survey the manifest**
+- [ ] **Step 1: Survey the manifest + surviving-skill frontmatter**
 
 Run: `grep -n "validate\|bump-version\|managing-versions\|version-management\|routes\|validating-links\|link-validation\|pre-commit" framework/modules/core/module.json`.
+
+> **SKILL.md frontmatter is functional config, not prose (advisor):** a *surviving* skill whose `cli-commands:` frontmatter declares a removed command must be repointed/dropped here, not deferred to Plan 6. Verify: `rg -n -e "validate --versions" -e "validate --links" -e "bump-version" framework/modules/*/skills/*/SKILL.md`. **Verified in planning:** the only hits are in `managing-versions/SKILL.md` (deleted wholesale in Step 5); `validating-links/SKILL.md` declares no removed command. If that grep ever returns a hit in a *surviving* skill's frontmatter `cli-commands:` block, repoint it to `build` or drop the declaration (mirroring the Step 2 module.json decision).
 
 - [ ] **Step 2: Edit `provides.cli-commands`**
 
@@ -315,15 +319,19 @@ rg -n -e "validate --versions" -e "validate --links" -e "bump-version" -e "bumpV
 ```
 Triage every hit: functional (hook/template/script/manifest/console/MCP) → fix here; pure markdown prose (`CHANGELOG.md`, `CLAUDE.md`, `README.md`, `framework/cli/README.md`) → confirm Plan 6 scope and leave. Expected remaining: only those four prose files. (`backlog/confluence/planning` validate commands are DIFFERENT, surviving commands — not in scope.)
 
+> **The sweep above excludes `framework/modules/**/*.md`, which would blanket-skip SKILL.md frontmatter (advisor).** Run a dedicated frontmatter sub-sweep so a surviving skill can't point at a removed command undetected: `rg -n -e "validate --versions" -e "validate --links" -e "bump-version" framework/modules/*/skills/*/SKILL.md` → expect **no matches** (managing-versions deleted in Task 4; validating-links never declared them). Any hit in a surviving skill's `cli-commands:` frontmatter is functional → fix here; a hit in a prose body → Plan 6.
+
 - [ ] **Step 2: Test-file sweep for removed identifiers (transpile-only backstop)**
 
 Run: `cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli && grep -rn -e "validateCommand" -e "VersionValidator" -e "ValidateOptions" -e "BumpVersionOptions" -e "bumpVersion" -e "agentic_validate" -e "agentic_bump_version" -e "managing-versions" src --include="*.test.ts"` → expect no matches (Plan 4 lesson: ts-jest transpile-only hides these).
 
-- [ ] **Step 3: Full gate — tsc, lint, all three suites**
+- [ ] **Step 3: Full gate — tsc (emit), lint, all three suites**
+
+> **Emit, not `--noEmit` (advisor):** Task 5 changed compiled source (`sync.ts`/`init.ts`/`status.ts`), and the integration/e2e `execCLI` suites run the compiled `dist/`. Use `npx tsc` (emit — type-checks AND refreshes `dist`, still safe; NOT `npm run build`) so those suites don't run against stale `dist` (the Plan 4 `--routes` stale-dist trap).
 
 ```
 cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli
-npx tsc --noEmit
+npx tsc
 npx eslint . --quiet 2>&1 | tail -5
 npx jest 2>&1 | grep -e "Tests:" -e "Test Suites:" -e "FAIL"
 npx jest --config jest.integration.config.cjs 2>&1 | grep -e "Tests:" -e "Test Suites:" -e "FAIL"
