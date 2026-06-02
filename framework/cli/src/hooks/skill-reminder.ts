@@ -84,16 +84,13 @@ interface DerivedTriggers {
 }
 
 /**
- * Find the framework root by looking for .agentic-framework.json or routes.yml
+ * Find the framework root by looking for .agentic-framework.json
  */
 function findFrameworkRoot(startDir: string): string | null {
   let currentDir = startDir;
 
   while (currentDir !== path.dirname(currentDir)) {
-    if (
-      fs.existsSync(path.join(currentDir, '.agentic-framework.json')) ||
-      fs.existsSync(path.join(currentDir, 'routes.yml'))
-    ) {
+    if (fs.existsSync(path.join(currentDir, '.agentic-framework.json'))) {
       return currentDir;
     }
     currentDir = path.dirname(currentDir);

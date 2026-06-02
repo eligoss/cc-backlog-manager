@@ -63,15 +63,6 @@ function checkGitStatus(): HookMessage[] {
 function checkFrameworkValidation(frameworkRoot: string): HookMessage[] {
   const messages: HookMessage[] = [];
 
-  // Check if routes.yml exists and is readable
-  const routesPath = path.join(frameworkRoot, 'routes.yml');
-  if (!fs.existsSync(routesPath)) {
-    messages.push({
-      level: 'warning',
-      message: 'routes.yml not found - run "agentic-framework routes sync"',
-    });
-  }
-
   // Check if registries exist
   const registryDir = path.join(frameworkRoot, '.claude', 'registries');
   const requiredRegistries = ['agents.json', 'skills.json', 'discovery-map.json'];
@@ -97,10 +88,7 @@ function findFrameworkRoot(startDir: string): string | null {
   let currentDir = startDir;
 
   while (currentDir !== path.dirname(currentDir)) {
-    if (
-      fs.existsSync(path.join(currentDir, '.agentic-framework.json')) ||
-      fs.existsSync(path.join(currentDir, 'routes.yml'))
-    ) {
+    if (fs.existsSync(path.join(currentDir, '.agentic-framework.json'))) {
       return currentDir;
     }
     currentDir = path.dirname(currentDir);

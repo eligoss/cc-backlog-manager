@@ -3,7 +3,6 @@
  *
  * Tests project root detection using multiple marker strategies:
  * - manifest: .agentic-framework.json
- * - routes: routes.yml + CLAUDE.md
  * - git+claude: .git + CLAUDE.md
  * - cwd: fallback when no markers found
  *
@@ -134,55 +133,6 @@ describe('ProjectResolver', () => {
       });
     });
 
-    describe('routes detection', () => {
-      it('should detect project by routes.yml + CLAUDE.md', async () => {
-        await sandbox.createFile('routes.yml', 'paths:\n  backlog:\n    root: ai/backlog');
-        await sandbox.createFile('CLAUDE.md', '# Project');
-
-        const context = findProjectRoot(sandbox.path);
-
-        expect(context.isInsideProject).toBe(true);
-        expect(context.projectRoot).toBe(sandbox.path);
-        expect(context.detectionMethod).toBe('routes');
-        expect(context.manifest).toBeNull(); // No manifest file
-      });
-
-      it('should NOT detect project with only routes.yml (no CLAUDE.md) in isolated dir', async () => {
-        // Use isolated directory outside project to test "no project found" behavior
-        const isolatedDir = await createIsolatedDir('routes-only');
-        try {
-          await fs.writeFile(
-            path.join(isolatedDir, 'routes.yml'),
-            'paths:\n  backlog:\n    root: ai/backlog'
-          );
-
-          const context = findProjectRoot(isolatedDir);
-
-          // Should fall through to cwd detection
-          expect(context.isInsideProject).toBe(false);
-          expect(context.detectionMethod).toBe('cwd');
-        } finally {
-          await cleanupIsolatedDir(isolatedDir);
-        }
-      });
-
-      it('should NOT detect project with only CLAUDE.md (no routes.yml) in isolated dir', async () => {
-        // Use isolated directory outside project to test "no project found" behavior
-        const isolatedDir = await createIsolatedDir('claude-only');
-        try {
-          await fs.writeFile(path.join(isolatedDir, 'CLAUDE.md'), '# Project');
-
-          const context = findProjectRoot(isolatedDir);
-
-          // Should fall through to cwd detection
-          expect(context.isInsideProject).toBe(false);
-          expect(context.detectionMethod).toBe('cwd');
-        } finally {
-          await cleanupIsolatedDir(isolatedDir);
-        }
-      });
-    });
-
     describe('git+claude detection', () => {
       it('should detect project by .git + CLAUDE.md', async () => {
         await sandbox.createDir('.git');
@@ -210,6 +160,22 @@ describe('ProjectResolver', () => {
           await cleanupIsolatedDir(isolatedDir);
         }
       });
+
+      it('should NOT detect project with only CLAUDE.md (no .git) in isolated dir', async () => {
+        // Use isolated directory outside project to test "no project found" behavior
+        const isolatedDir = await createIsolatedDir('claude-only');
+        try {
+          await fs.writeFile(path.join(isolatedDir, 'CLAUDE.md'), '# Project');
+
+          const context = findProjectRoot(isolatedDir);
+
+          // Should fall through to cwd detection
+          expect(context.isInsideProject).toBe(false);
+          expect(context.detectionMethod).toBe('cwd');
+        } finally {
+          await cleanupIsolatedDir(isolatedDir);
+        }
+      });
     });
 
     describe('fallback to cwd', () => {
@@ -230,7 +196,7 @@ describe('ProjectResolver', () => {
     });
 
     describe('detection priority', () => {
-      it('should prefer manifest over routes', async () => {
+      it('should prefer manifest over git+claude', async () => {
         // Create both markers
         await sandbox.createJson('.agentic-framework.json', {
           version: '1.0.0',
@@ -243,23 +209,12 @@ describe('ProjectResolver', () => {
           projectSkills: [],
           settings: { autoSyncSkills: true, linkTransformation: true },
         });
-        await sandbox.createFile('routes.yml', 'paths: {}');
+        await sandbox.createDir('.git');
         await sandbox.createFile('CLAUDE.md', '# Project');
 
         const context = findProjectRoot(sandbox.path);
 
         expect(context.detectionMethod).toBe('manifest');
-      });
-
-      it('should prefer routes over git+claude', async () => {
-        // Create both markers (but not manifest)
-        await sandbox.createDir('.git');
-        await sandbox.createFile('routes.yml', 'paths: {}');
-        await sandbox.createFile('CLAUDE.md', '# Project');
-
-        const context = findProjectRoot(sandbox.path);
-
-        expect(context.detectionMethod).toBe('routes');
       });
     });
 
@@ -463,13 +418,13 @@ describe('ProjectResolver', () => {
     });
 
     it('requireProjectContextAsync should return context when in project', async () => {
-      await sandbox.createFile('routes.yml', 'paths: {}');
+      await sandbox.createDir('.git');
       await sandbox.createFile('CLAUDE.md', '# Project');
 
       const context = await requireProjectContextAsync(sandbox.path);
 
       expect(context.isInsideProject).toBe(true);
-      expect(context.detectionMethod).toBe('routes');
+      expect(context.detectionMethod).toBe('git+claude');
     });
   });
 

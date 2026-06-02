@@ -6,11 +6,10 @@ import { FrameworkManifest, ManifestManager } from './manifest-manager.js';
 /**
  * Detection methods for finding project root, in priority order.
  * - manifest: Found .agentic-framework.json (primary marker, most specific)
- * - routes: Found routes.yml + CLAUDE.md (secondary marker)
  * - git+claude: Found .git + CLAUDE.md (fallback for git repos with framework)
  * - cwd: No markers found, using current working directory
  */
-export type DetectionMethod = 'manifest' | 'routes' | 'git+claude' | 'cwd';
+export type DetectionMethod = 'manifest' | 'git+claude' | 'cwd';
 
 /**
  * Project context containing resolved project information.
@@ -62,21 +61,8 @@ const DETECTION_MARKERS: Array<{
     },
   },
   {
-    method: 'routes',
-    priority: 2,
-    check: async (dir: string) => {
-      const routesPath = path.join(dir, 'routes.yml');
-      const claudePath = path.join(dir, 'CLAUDE.md');
-      const [hasRoutes, hasClaude] = await Promise.all([
-        fs.pathExists(routesPath),
-        fs.pathExists(claudePath),
-      ]);
-      return hasRoutes && hasClaude;
-    },
-  },
-  {
     method: 'git+claude',
-    priority: 3,
+    priority: 2,
     check: async (dir: string) => {
       const gitPath = path.join(dir, '.git');
       const claudePath = path.join(dir, 'CLAUDE.md');
@@ -178,9 +164,8 @@ async function walkUpForProject(
  *
  * Detection strategy (priority order):
  * 1. `.agentic-framework.json` - Primary marker (most specific)
- * 2. `routes.yml` + `CLAUDE.md` - Secondary marker
- * 3. `.git` + `CLAUDE.md` - Fallback for git repos with framework
- * 4. If nothing found, returns current directory with `isInsideProject: false`
+ * 2. `.git` + `CLAUDE.md` - Fallback for git repos with framework
+ * 3. If nothing found, returns current directory with `isInsideProject: false`
  *
  * The result is cached for the session to avoid repeated filesystem scans.
  *
@@ -278,11 +263,6 @@ function checkMarkerSync(dir: string, method: DetectionMethod): boolean {
   switch (method) {
     case 'manifest':
       return fs.pathExistsSync(path.join(dir, '.agentic-framework.json'));
-    case 'routes': {
-      const hasRoutes = fs.pathExistsSync(path.join(dir, 'routes.yml'));
-      const hasClaude = fs.pathExistsSync(path.join(dir, 'CLAUDE.md'));
-      return hasRoutes && hasClaude;
-    }
     case 'git+claude': {
       const hasGit = fs.pathExistsSync(path.join(dir, '.git'));
       const hasClaude = fs.pathExistsSync(path.join(dir, 'CLAUDE.md'));

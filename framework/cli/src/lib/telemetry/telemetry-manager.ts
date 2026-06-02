@@ -34,9 +34,8 @@ import {
  *
  * Detection priority:
  * 1. .agentic-framework.json (framework project)
- * 2. routes.yml + CLAUDE.md (framework project without manifest)
- * 3. .git + CLAUDE.md (git repo with framework)
- * 4. Fallback to process.cwd() if none found
+ * 2. .git + CLAUDE.md (git repo with framework)
+ * 3. Fallback to process.cwd() if none found
  */
 function findProjectRootForTelemetry(startDir: string = process.cwd()): string {
   let currentDir = startDir;
@@ -48,14 +47,8 @@ function findProjectRootForTelemetry(startDir: string = process.cwd()): string {
       return currentDir;
     }
 
-    // Check for routes.yml + CLAUDE.md
-    const hasRoutes = fs.existsSync(path.join(currentDir, 'routes.yml'));
-    const hasClaude = fs.existsSync(path.join(currentDir, 'CLAUDE.md'));
-    if (hasRoutes && hasClaude) {
-      return currentDir;
-    }
-
     // Check for .git + CLAUDE.md (framework development context)
+    const hasClaude = fs.existsSync(path.join(currentDir, 'CLAUDE.md'));
     const hasGit = fs.existsSync(path.join(currentDir, '.git'));
     if (hasGit && hasClaude) {
       return currentDir;
