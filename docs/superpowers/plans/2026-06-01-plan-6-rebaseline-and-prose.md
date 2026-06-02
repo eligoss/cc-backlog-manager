@@ -33,12 +33,13 @@
 
 **Version re-baseline (Task 1):**
 - `framework/cli/package.json` (1.18.0 → 1.0.0)
+- `framework/cli/package-lock.json` (1.18.0 → 1.0.0 at **two** sites: top-level `version` and `packages[""].version`)
 - `framework/modules/core/module.json`, `framework/modules/backlog/module.json`, `framework/modules/coding/module.json`, `framework/modules/confluence/module.json` (1.17.0 → 1.0.0)
 - any CLI `VERSION` constant + any version-asserting test (Task 1 survey finds these)
 
 **Entry-point prose (Tasks 2–3):** `CLAUDE.md`, `README.md`, `framework/cli/README.md`
 
-**Docs (Task 4):** `docs/architecture.md`, `docs/cli-reference.md`, `docs/getting-started.md`, `docs/troubleshooting.md`, `docs/module-development.md`, `docs/patterns/intelligence-gathering-pattern.md`; triage-only: `docs/CLI-QA-ISSUES.md`, `docs/research-markdown-build-systems.md`, `docs/publishing.md`
+**Docs + integration descriptor (Task 4):** `docs/architecture.md`, `docs/cli-reference.md`, `docs/getting-started.md`, `docs/troubleshooting.md`, `docs/module-development.md`, `docs/patterns/intelligence-gathering-pattern.md`, `integrations/openclaw/{manifest.json,README.md}` (reference the pruned `writer`/`reporting` modules + `ai-book-writer`/`ai-report-manager` agents — spec §6.1); triage-only: `docs/CLI-QA-ISSUES.md`, `docs/research-markdown-build-systems.md`, `docs/publishing.md`
 
 **Module prose + the `using-framework` rethink (Task 5):**
 - Decision target: `framework/modules/core/skills/using-framework/` (`SKILL.md`, `BEST-PRACTICES.md`, `EXAMPLES.md`, `ROUTES-REGISTRY-DESIGN.md`, `DISCOVERY-ENGINE-ARCHITECTURE.md`)
@@ -67,9 +68,9 @@ rg -n "\.version|getVersion|VERSION|--version|package.json" framework/cli/src --
 ```
 Classify each hit: a **version declaration** (package.json/module.json), a **doc literal** (CLAUDE.md/README — handled in Tasks 2–3, but you may do them here for atomicity), or a **test assertion**. Note any test that reads `package.json.version` or asserts `1.18.0`.
 
-- [ ] **Step 2: Set package.json to 1.0.0**
+- [ ] **Step 2: Set package.json + package-lock.json to 1.0.0**
 
-Edit `framework/cli/package.json`: `"version": "1.18.0"` → `"version": "1.0.0"`.
+Edit `framework/cli/package.json`: `"version": "1.18.0"` → `"version": "1.0.0"`. Then update `framework/cli/package-lock.json` at **both** sites (top-level `version` line 3, and `packages[""].version` line ~9) — both `1.18.0` → `1.0.0`. (jest/tsc won't catch a stale lockfile, but `npm ci` would reject the mismatch.)
 
 - [ ] **Step 3: Set all four module manifests to 1.0.0**
 
@@ -83,11 +84,12 @@ If Step 1 surfaced a test asserting `1.18.0`/`1.17.0` (e.g. a `--version` e2e or
 
 ```
 cd /Users/antonborodulin/Projects/cc-backlog-manager/framework/cli
-node -e "console.log(require('./package.json').version)"   # expect 1.0.0
+node -e "console.log(require('./package.json').version, require('./package-lock.json').version)"   # both 1.0.0
 node -e "['core','backlog','coding','confluence'].forEach(m=>console.log(m, require('../modules/'+m+'/module.json').version))"  # all 1.0.0
 npx tsc                                                     # emit, refresh dist
 node dist/index.js --version                               # expect 1.0.0
 ```
+> `module.schema.json` constrains `version` to semver only (no floor), so `1.0.0` is valid — no schema edit needed.
 
 - [ ] **Step 6: Run version-touching suites**
 
@@ -95,7 +97,7 @@ node dist/index.js --version                               # expect 1.0.0
 
 - [ ] **Step 7: Commit**
 
-From repo root: `git add framework/cli/package.json framework/modules/*/module.json` (+ any updated test) and `git commit -m "chore: re-baseline framework version to v1.0.0"`.
+From repo root: `git add framework/cli/package.json framework/cli/package-lock.json framework/modules/*/module.json` (+ any updated test) and `git commit -m "chore: re-baseline framework version to v1.0.0"`.
 
 ---
 
@@ -157,16 +159,20 @@ Ensure the module list / feature overview reflects `core, backlog, coding, confl
 
 ---
 
-## Task 4: Rewrite `docs/*`
+## Task 4: Rewrite `docs/*` and the `integrations/openclaw` descriptor
 
 > Triage each doc: **align** (rewrite to current reality) for the canonical guides; **leave or annotate** for historical/research artifacts.
 
-**Files (align):** `docs/architecture.md`, `docs/cli-reference.md`, `docs/getting-started.md`, `docs/troubleshooting.md`, `docs/module-development.md`, `docs/patterns/intelligence-gathering-pattern.md`.
+**Files (align):** `docs/architecture.md`, `docs/cli-reference.md`, `docs/getting-started.md`, `docs/troubleshooting.md`, `docs/module-development.md`, `docs/patterns/intelligence-gathering-pattern.md`, `integrations/openclaw/{manifest.json,README.md}`.
 **Files (triage — may leave as historical):** `docs/CLI-QA-ISSUES.md`, `docs/research-markdown-build-systems.md`, `docs/publishing.md`.
 
-- [ ] **Step 1: Survey each**
+- [ ] **Step 1: Survey each (widened for context-file prose)**
 
-`rg -n "routes\.yml|routes sync|agentic-framework validate|bump-version|context-category-needs|Context Level|\.claude/context|writer|reporting" docs/`.
+```
+rg -n "routes\.yml|routes sync|agentic-framework validate|bump-version|context-category-needs|Context Level|\.claude/context|writer|reporting" docs/ integrations/openclaw/
+rg -n -e "(business|technical|process)-(basic|advanced)" -e "templates/context" -e "context level" docs/
+```
+> The second sweep is **noisy** — it also catches incidental uses of "basic/advanced". **Triage each hit:** a reference to a *context file* (`technical-advanced.md`, "review the business-basic context", `.claude/context/*`) → fix; an incidental word ("basic usage", "advanced options") → leave.
 
 - [ ] **Step 2: `docs/cli-reference.md`**
 
@@ -180,13 +186,17 @@ Remove the routes.yml navigation subsystem description and the context-level-sys
 
 Replace `routes sync`/`routes.yml` setup/troubleshooting steps and `validate`/`bump-version` guidance with `build`. Remove context-file customization instructions (`.claude/context/*.md`) in getting-started; replace with "fill in the `knowing-*` skills + `references.yml`". In module-development, drop `context.json`/`context-category-needs` authoring guidance.
 
-- [ ] **Step 5: Triage the historical docs**
+- [ ] **Step 5: `integrations/openclaw/{manifest.json,README.md}` — drop pruned modules/agents**
+
+The openclaw manifest + README reference removed modules (`writer`, `reporting`) and agents (`ai-book-writer`, `ai-report-manager`). Remove those agent/module entries from `manifest.json` (it's an integration descriptor, not framework `src` logic — editing it is in-scope per spec §6.1) and the corresponding rows from `README.md`, leaving only surviving agents/modules (`core`, `backlog`, `coding`, `confluence`). Validate JSON after: `node -e "JSON.parse(require('fs').readFileSync('integrations/openclaw/manifest.json','utf8'));console.log('OK')"`.
+
+- [ ] **Step 6: Triage the historical docs**
 
 For `docs/CLI-QA-ISSUES.md`, `docs/research-markdown-build-systems.md`, `docs/publishing.md`: if a doc is a dated research/QA artifact, leave it (optionally add a one-line "historical — predates v1.0.0 simplification" note at top). If `docs/publishing.md` documents the *current* publish flow and mentions removed commands, align it. Decide per file; record the decision.
 
-- [ ] **Step 6: Verify + commit**
+- [ ] **Step 7: Verify + commit**
 
-`rg -n "routes\.yml|routes sync|agentic-framework validate|bump-version|context-category-needs" docs/ | grep -v "CLI-QA-ISSUES\|research-markdown"` → none in the aligned guides. `git add docs && git commit -m "docs: align docs/ with simplified framework (remove routes/context/validate/bump prose)"`.
+`rg -n "routes\.yml|routes sync|agentic-framework validate|bump-version|context-category-needs|writer|reporting" docs/ integrations/openclaw/ | grep -v "CLI-QA-ISSUES\|research-markdown"` → none in the aligned guides/descriptor. `git add docs integrations && git commit -m "docs: align docs/ and openclaw integration with simplified framework"`.
 
 ---
 
@@ -203,7 +213,9 @@ For `docs/CLI-QA-ISSUES.md`, `docs/research-markdown-build-systems.md`, `docs/pu
 ```
 rg -n "routes\.yml|routes sync|routes/registry|ROUTES-REGISTRY|context-category-needs|Context Level|\.claude/context" framework/modules/core/skills framework/modules/core/agents framework/modules/core/templates
 rg -n "routes\.yml|routes sync|agentic-framework validate|bump-version" framework/modules/{backlog,coding,confluence}/agents framework/modules/*/skills
+rg -n -e "(business|technical|process)-(basic|advanced)" -e "templates/context" framework/modules --glob '*.md'
 ```
+> The third sweep is **noisy** (incidental "basic/advanced"). Triage: context-file references (`technical-advanced.md`, "review the business-basic context") → fix; incidental words → leave. (Planning note: `business-basic`/`technical-advanced` prose appears in `using-framework/*`, `building-framework/{EXAMPLES,GOVERNANCE-RULES,REGISTRY-GUIDE}.md` — verify each is a context-file reference before editing.)
 
 - [ ] **Step 2: Rework `using-framework`**
 
@@ -240,7 +252,7 @@ rg -n "routes\.yml|routes sync|ROUTES-REGISTRY|context-category-needs|Context Le
 
 - [ ] **Step 2: Add the v1.0.0 entry**
 
-Prepend a `## [1.0.0] - 2026-06-01` section summarizing the simplification as a single re-baseline: **Removed** — context-level system (`.claude/context`, `context.json`, `context-category-needs`, context loaders), internal `routes.yml` + `routes sync`, `validate` + `bump-version` commands and MCP tools, `version-validator`, `managing-versions` skill + `version-management` capability, `writer`/`reporting` modules, iOS coding artifacts. **Added** — `knowing-the-codebase`/`knowing-the-domain`/`knowing-backlog` knowledge skills, `references.yml` external-reference library. **Changed** — `build` (BuildEngine) is the unified validation entry point; hooks point at `build`; Trust Directive relaxed. Keep prior historical entries below it (do not delete history); the v1.0.0 entry marks the identity reset.
+Prepend a `## [1.0.0] - 2026-06-01` section. **Open it with a one-line reset note** so the chronology reads correctly above the higher-numbered historical entries (e.g. *"v1.0.0 re-baselines this fork (`cc-backlog-manager`); entries below this line belong to the pre-fork `agentic-development-framework` lineage."*). Then summarize the simplification as a single re-baseline: **Removed** — context-level system (`.claude/context`, `context.json`, `context-category-needs`, context loaders), internal `routes.yml` + `routes sync`, `validate` + `bump-version` commands and MCP tools, `version-validator`, `managing-versions` skill + `version-management` capability, `writer`/`reporting` modules, iOS coding artifacts. **Added** — `knowing-the-codebase`/`knowing-the-domain`/`knowing-backlog` knowledge skills, `references.yml` external-reference library. **Changed** — `build` (BuildEngine) is the unified validation entry point; hooks point at `build`; Trust Directive relaxed. Keep prior historical entries below it (do not delete history); the v1.0.0 entry marks the identity reset.
 
 - [ ] **Step 3: Verify + commit**
 
@@ -258,8 +270,10 @@ Read the new entry for accuracy against Plans 1–5. `git add CHANGELOG.md && gi
 rg -n "routes\.yml|routes sync|agentic-framework routes|context-category-needs|ContextLevel|Context Level System|agentic-framework validate|agentic-framework bump|bump-version" \
   . --glob '!node_modules' --glob '!**/dist/**' --glob '!framework/cli/framework/**' --glob '!docs/superpowers/**' \
   | grep -v "backlog validate\|confluence validate\|template validate\|backlog/validate\|confluence/validate"
+rg -n -e "(business|technical|process)-(basic|advanced)" -e "templates/context" -e "ROUTES-REGISTRY" \
+  . --glob '*.md' --glob '!node_modules' --glob '!docs/superpowers/**' --glob '!CHANGELOG.md'
 ```
-Triage every remaining hit: an aligned doc/skill → fix now; an intentionally-historical artifact (`CHANGELOG.md` describing the removal, `docs/CLI-QA-ISSUES.md`, research docs) → acceptable, leave. The goal is **zero stale prose that misdescribes the current system as present.**
+Triage every remaining hit: an aligned doc/skill → fix now; an intentionally-historical artifact (`CHANGELOG.md` describing the removal, `docs/CLI-QA-ISSUES.md`, research docs) → acceptable, leave; an incidental "basic/advanced" word → leave. The goal is **zero stale prose that misdescribes the current system as present.**
 
 - [ ] **Step 2: Version sweep**
 
@@ -302,9 +316,9 @@ Use **superpowers:finishing-a-development-branch**. Surface for sign-off: (a) th
 
 ## Self-Review (writing-plans checklist)
 
-- **Spec coverage:** §6.1 "Plan 4 (re-baseline + doc rewrite)" → Tasks 1–6; §8 Trust Directive relaxation → Task 2 Step 2; §10 step 6 (re-baseline v1.0.0, update CLAUDE.md/README) → Tasks 1–3; §11 "repo identity reset to v1.0.0 with updated entry-point docs" → Tasks 1–4, 7. Agent `Required Reading` rewrite (§6.1 Plan-3 item) confirmed **already done** in Plans 1–3 → explicitly out of scope.
+- **Spec coverage:** §6.1 "Plan 4 (re-baseline + doc rewrite)" — `CLAUDE.md`/`README.md`/`docs/*`/`CHANGELOG.md` → Tasks 2,3,4,6; **`integrations/openclaw/*`** (verified present, references pruned `writer`/`reporting`) → Task 4 Step 5; `routes.yml` already removed in Plan 4. §8 Trust Directive relaxation → Task 2 Step 2; §10 step 6 (re-baseline v1.0.0, update CLAUDE.md/README) → Tasks 1–3; §11 "repo identity reset to v1.0.0 with updated entry-point docs" → Tasks 1–4, 7. Agent `Required Reading` rewrite (§6.1 Plan-3 item) confirmed **already done** in Plans 1–3 → explicitly out of scope. `framework/modules/core/templates/context/` confirmed **already absent** (functional removal done earlier) → not a Plan 6 item.
 - **Disambiguation correctness:** every task that greps `validate`/`routes` states the surviving-vs-removed filter (`backlog/confluence/template validate` survive; framework `validate`/`bump-version`/`routes` removed). The recurring Plan 4/5 trap (surviving look-alikes) is guarded.
-- **Version consistency:** current versions enumerated (cli 1.18.0, modules 1.17.0, CLAUDE.md v1.9.0) → all 1.0.0; Task 1 surveys for version-asserting tests before swapping; mocked MCP `1.2.0`/`1.3.0` explicitly excluded.
+- **Version consistency:** current versions enumerated (cli `package.json` + `package-lock.json` 1.18.0 ×2 sites, four modules 1.17.0, CLAUDE.md v1.9.0) → all 1.0.0; `module.schema.json` allows semver `1.0.0` (no floor); Task 1 surveys for version-asserting tests before swapping; mocked MCP `1.2.0`/`1.3.0` explicitly excluded.
 - **Design decision flagged:** `using-framework` rework (default) vs delete (alternative) is called out in Task 5 and routed to user sign-off in Task 7 Step 6.
 - **No functional edits:** the plan is prose + version literals only; a guard note tells the executor to stop if an edit would change a functional value (that was Plans 1–5).
 - **Placeholder scan:** no TBD/TODO; each task has concrete files, survey greps, transformation instructions, and verification. Prose edits are inherently descriptive, so steps specify *what references to remove/repoint and what the new reality is*, with grep sweeps + build + full gate as the backstop.
