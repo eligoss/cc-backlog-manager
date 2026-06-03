@@ -148,8 +148,8 @@ export class MarkdownLinkValidator {
   /** Markdown link regex: [text](path) */
   private static readonly LINK_PATTERN = /\[([^\]]+)\]\(([^)]+)\)/g;
 
-  /** Backticked path regex */
-  private static readonly BACKTICK_PATTERN = /`([a-zA-Z0-9_\-/]+\.md)`/g;
+  /** Backticked path regex — requires a separator; bare `SKILL.md` filename mentions are a doc convention, not unlinked refs */
+  private static readonly BACKTICK_PATTERN = /`([a-zA-Z0-9_\-/]*\/[a-zA-Z0-9_\-/]*\.md)`/g;
 
   /** Unlinked "See:" reference regex */
   private static readonly SEE_PATTERN = /See:\s+([a-zA-Z0-9_\-/]+\.md)/g;
