@@ -23,8 +23,7 @@
 #   RUN_LINT=false          - Skip linting
 #   RUN_TESTS=false         - Skip unit and integration tests
 #   RUN_BUILD=false         - Skip build verification and schema generation
-#   RUN_VALIDATE=false      - Skip quick and full framework validation
-#   RUN_LINKS=false         - Skip markdown link validation
+#   RUN_VALIDATE=false      - Skip quick and full framework validation (incl. links)
 #
 # Example: RUN_TESTS=false git push
 #
@@ -55,7 +54,6 @@ RUN_LINT=${RUN_LINT:-true}
 RUN_TESTS=${RUN_TESTS:-true}
 RUN_BUILD=${RUN_BUILD:-true}
 RUN_VALIDATE=${RUN_VALIDATE:-true}
-RUN_LINKS=${RUN_LINKS:-true}
 
 # Find project root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -281,39 +279,6 @@ if [ "$RUN_VALIDATE" = "true" ]; then
     cd "$PROJECT_ROOT/framework/cli"
 else
     echo -e "${YELLOW}Phase 5b: Skipping framework full validation (RUN_VALIDATE=false)${NC}"
-fi
-
-echo ""
-
-# ============================================
-# Phase 6: Validate Markdown Links
-# ============================================
-if [ "$RUN_LINKS" = "true" ]; then
-    echo -e "${BLUE}Phase 6: Validating markdown links...${NC}"
-
-    cd "$PROJECT_ROOT"
-    # Temporarily disable set -e to capture exit code
-    set +e
-    node framework/cli/dist/index.js build 2>&1
-    LINK_EXIT_CODE=$?
-    set -e
-
-    if [ $LINK_EXIT_CODE -eq 0 ]; then
-        echo -e "${GREEN}✓ Link validation passed${NC}"
-    elif [ $LINK_EXIT_CODE -eq 2 ]; then
-        # Exit code 2 = warnings only (anti-patterns in content files)
-        echo -e "${YELLOW}⚠ Link validation passed with warnings${NC}"
-    else
-        # Exit code 1 = critical errors (broken links)
-        echo ""
-        echo -e "${RED}✗ Link validation failed${NC}"
-        echo ""
-        echo -e "${RED}Push aborted: Fix broken links and try again${NC}"
-        echo "To skip link check: RUN_LINKS=false git push"
-        exit 1
-    fi
-else
-    echo -e "${YELLOW}Phase 6: Skipping link validation (RUN_LINKS=false)${NC}"
 fi
 
 echo ""
