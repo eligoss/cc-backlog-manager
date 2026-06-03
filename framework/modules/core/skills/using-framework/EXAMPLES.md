@@ -32,7 +32,8 @@
 ```
 
 **Step 3: The Discovery Engine loads those three skills**
-```
+
+```text
 Agent: ai-architect
 Auto-loaded skills:
   - building-framework     (architecture-design)

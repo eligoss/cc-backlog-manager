@@ -114,7 +114,7 @@ The Discovery Engine queries `discovery-map.json` at agent invocation time — n
 
 ### Where Does This Information Live?
 
-```
+```text
 What is this component?         → agents.json / skills.json (registry)
 What capabilities does it need? → capability-needs in agent YAML
 What skill provides capability? → discovery-map.json

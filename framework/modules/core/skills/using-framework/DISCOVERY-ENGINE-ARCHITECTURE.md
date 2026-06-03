@@ -62,6 +62,7 @@ The framework implements **discovery-driven architecture** where agents and skil
 **Pattern:** Agents declare abstract capabilities in YAML frontmatter, not hardcoded skill references
 
 **Example: ai-architect.md**
+
 ```yaml
 ---
 agent: ai-architect
@@ -87,6 +88,7 @@ token-budget: 15000
 **Pattern:** Skills declare what capabilities they provide in `skills.json`
 
 **Example: skills.json entry**
+
 ```json
 {
   "id": "building-framework",
@@ -114,6 +116,7 @@ token-budget: 15000
 **Pattern:** `discovery-map.json` is single source of truth for capability routing
 
 **Example: discovery-map.json entry**
+
 ```json
 {
   "capability": "framework-governance",

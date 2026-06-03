@@ -459,6 +459,7 @@ Once pattern is chosen, design the components:
 - verifying-quality - Quality validation standards
 
 ### Module Documentation
+
 - **Coding Module Manifest:** module.json
 - **Architecture Agent:** ai-architect
 

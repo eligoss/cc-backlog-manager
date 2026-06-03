@@ -533,6 +533,7 @@ Working on framework improvement with versioning
 - Create new features
 
 **Run framework build** (if available)
+
 ```bash
 # Regenerate registries and validate
 agentic-framework build

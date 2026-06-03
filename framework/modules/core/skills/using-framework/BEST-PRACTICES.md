@@ -20,6 +20,7 @@
 - Skip the `location` field — discovery relies on it
 
 **Good Entry:**
+
 ```json
 {
   "id": "verifying-quality",
@@ -45,6 +46,7 @@
 - Let the YAML frontmatter and agents.json drift out of sync
 
 **Good Entry:**
+
 ```json
 {
   "id": "ai-architect",
@@ -72,6 +74,7 @@
 - Leave missing capabilities (referenced in capability-needs but not mapped)
 
 **Good Entry:**
+
 ```json
 {
   "capability": "architecture-design",

@@ -473,6 +473,7 @@ When implementing code, also verify compliance with these essentials:
 - validating-markdown - Documentation standards
 
 ### Module Documentation
+
 - **Coding Module Manifest:** module.json
 - **Developer Agent:** ai-app-developer
 
