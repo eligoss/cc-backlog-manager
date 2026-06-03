@@ -1,5 +1,7 @@
 # CLI QA Issues Report
 
+> **Historical (pre-v1.0.0):** This QA log references the `validate`, `routes`, and `bump-version` commands, which were removed in the v1.0.0 simplification. Retained as a historical testing record.
+
 **Testing Date**: 2025-12-29
 **CLI Version**: 1.0.0
 **Node Version**: v24.10.0

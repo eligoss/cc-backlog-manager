@@ -43,7 +43,7 @@ agentic-framework init my-project
 agentic-framework init my-app --modules core,coding,backlog
 
 # Full-featured project
-agentic-framework init enterprise-app --modules core,coding,backlog,jira,confluence,reporting
+agentic-framework init enterprise-app --modules core,coding,backlog,confluence
 ```
 
 **What Gets Created:**
@@ -55,12 +55,11 @@ my-project/
 │   └── skills/             # Skills for Claude
 ├── .claude/
 │   ├── agents/             # Agent markdown files
-│   ├── skills/             # Skill documentation
-│   ├── context/            # Context templates (fill these in!)
+│   ├── skills/             # Skill documentation (incl. knowing-* knowledge skills)
 │   └── registries/         # Discovery metadata
 ├── src/                    # Source files (optional)
 ├── CLAUDE.md               # Claude entry point
-├── routes.yml              # Filesystem navigation
+├── references.yml          # Curated external doc/codebase references
 └── .gitignore
 ```
 
@@ -113,7 +112,7 @@ agentic-framework remove <module-name> [options]
 - Regenerates registries
 
 **Protected (Not Removed):**
-- Context files (`.claude/context/`) - may be user-customized
+- Knowledge skills (`.claude/skills/knowing-*`) - may be user-customized
 - Hooks (`.claude/hooks/`) - framework infrastructure
 
 **Examples:**
@@ -214,33 +213,32 @@ agentic-framework init my-project --modules core,coding,backlog
 
 ### Documentation-Heavy Project
 ```bash
-agentic-framework init my-project --modules core,confluence,reporting
+agentic-framework init my-project --modules core,confluence
 ```
 - Confluence integration
-- Report generation
-- Good for: Documentation projects, status reporting
+- Good for: Documentation projects
 
 ### Full-Featured Project
 ```bash
-agentic-framework init my-project --modules core,coding,backlog,jira,confluence,reporting
+agentic-framework init my-project --modules core,coding,backlog,confluence
 ```
 - All capabilities
 - Good for: Enterprise projects with full tooling needs
 
 ## After Initialization
 
-### 1. Fill Context Templates
+### 1. Fill Knowledge Skills
 
-The most important step after initialization is filling in the context templates:
+The most important step after initialization is filling in the project knowledge skills:
 
 ```
-.claude/context/
-├── business-basic.md     # Product overview, user roles
-├── technical-basic.md    # Tech stack, architecture
-└── process-basic.md      # Workflow, team structure
+.claude/skills/
+├── knowing-the-codebase/   # Tech stack, architecture, conventions, testing & CI
+├── knowing-the-domain/     # Business domain, users, product context
+└── knowing-backlog/        # Backlog conventions, ticket patterns, sizing
 ```
 
-Each file contains `<!-- TEMPLATE: ... -->` markers to guide you.
+Also add external doc and related-codebase pointers to `references.yml`.
 
 ### 2. Verify Installation
 

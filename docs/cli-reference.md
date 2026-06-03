@@ -29,16 +29,15 @@ All CLI commands work from any subdirectory within a project. The CLI automatica
 
 **Detection Priority:**
 1. `.agentic-framework.json` - Primary marker
-2. `routes.yml` + `CLAUDE.md` - Secondary marker
-3. `.git` + `CLAUDE.md` - Fallback for git repos
+2. `.git` + `CLAUDE.md` - Fallback for git repos
 
 ```bash
 # Works from any subdirectory:
 cd /my-project/.claude/backlog/tickets/stories
 agentic-framework status  # Finds project root automatically
 
-# Path resolution uses routes.yml with sensible defaults
-agentic-framework backlog validate  # Uses routes.yml backlog.tickets path
+# Path resolution uses sensible built-in defaults
+agentic-framework backlog validate  # Resolves the backlog tickets path automatically
 ```
 
 ## Command Categories
@@ -62,8 +61,6 @@ Validate artifact structure and content against schemas and best practices.
 | `backlog validate` | building-tickets | backlog | Validate ticket files against v10.1.1 standards |
 | `backlog diff` | organizing-backlog | backlog | Compare local tickets against Jira remote state |
 | `confluence validate` | converting-adf | confluence | Validate markdown for ADF conversion |
-| `validate --links` | validating-links | core | Validate markdown links in documentation |
-| `validate --versions` | managing-versions | core | Validate version consistency across modules |
 
 ### Sync Commands
 
@@ -89,7 +86,6 @@ Update configurations and migrate data structures.
 
 | Command | Skill | Module | Description |
 |---------|-------|--------|-------------|
-| `bump-version` | managing-versions | core | Bump framework version |
 | `backlog migrate-milestones` | organizing-backlog | backlog | Migrate milestone structure |
 | `backlog update-fields` | organizing-backlog | backlog | Update ticket field mappings |
 
@@ -129,7 +125,7 @@ agentic-framework build [options]
 **What It Validates:**
 
 1. **Schema Validation**
-   - Agent frontmatter (name, capability-needs, context-category-needs, variant)
+   - Agent frontmatter (name, capability-needs, variant)
    - Skill frontmatter (id, name, capabilities-provided)
    - Type checking with Zod schemas
 
@@ -571,81 +567,6 @@ agentic-framework confluence validate ./page.md --fix
 agentic-framework confluence validate ./page.md --strict
 ```
 
-### Core Module Commands
-
-#### `validate --links`
-
-Validate markdown links in documentation.
-
-**Skill:** validating-links
-
-**Usage:**
-```bash
-agentic-framework validate --links [path]
-```
-
-**Examples:**
-```bash
-# Validate all links in current directory
-agentic-framework validate --links
-
-# Validate links in specific directory
-agentic-framework validate --links ./docs
-```
-
-#### `validate --versions`
-
-Validate version consistency across modules.
-
-**Skill:** managing-versions
-
-**Usage:**
-```bash
-agentic-framework validate --versions
-```
-
-**Examples:**
-```bash
-# Validate all module versions
-agentic-framework validate --versions
-```
-
-#### `bump-version`
-
-Bump framework version.
-
-**Skill:** managing-versions
-
-**Usage:**
-```bash
-agentic-framework bump-version [type] [options]
-```
-
-**Arguments:**
-- `type`: Version bump type (major, minor, patch)
-
-**Options:**
-- `--dry-run`: Preview version changes without applying
-- `--module <name>`: Bump specific module version
-
-**Examples:**
-```bash
-# Bump patch version
-agentic-framework bump-version patch
-
-# Bump minor version
-agentic-framework bump-version minor
-
-# Bump major version
-agentic-framework bump-version major
-
-# Dry run
-agentic-framework bump-version minor --dry-run
-
-# Bump specific module
-agentic-framework bump-version patch --module backlog
-```
-
 ## Other Core Commands
 
 These commands are provided by the core module:
@@ -657,12 +578,10 @@ These commands are provided by the core module:
 | `remove` | Remove module from project |
 | `list` | List available modules |
 | `info` | Show module information |
-| `build` | **Unified validation** with compile-time-like checking (recommended) |
-| `validate` | Legacy validation (use `build` instead) |
+| `build` | **Unified validation** with compile-time-like checking |
 | `update` | Update framework dependencies |
 | `status` | Show framework status |
 | `sync` | Sync framework configuration |
-| `routes` | Manage routes.yml |
 
 ### Add Command Details
 
@@ -751,8 +670,8 @@ Validation commands typically support `--strict` mode:
 # Strict plan validation
 agentic-framework backlog validate --strict
 
-# Strict link validation
-agentic-framework validate --links --strict
+# Strict artifact validation (schema + links)
+agentic-framework build --ci
 ```
 
 ### Path Pattern
@@ -793,7 +712,7 @@ set -e
 agentic-framework backlog validate --strict
 
 # Will exit on broken links
-agentic-framework validate --links
+agentic-framework build
 
 echo "All validations passed!"
 ```

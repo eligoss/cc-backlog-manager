@@ -31,15 +31,6 @@
       "autonomous": true
     },
     {
-      "id": "ai-ios-developer",
-      "name": "iOS Developer",
-      "description": "Swift/SwiftUI development with Apple HIG compliance",
-      "model": "sonnet",
-      "module": "coding",
-      "capabilities": ["ios-development", "ios-testing", "hig-compliance"],
-      "autonomous": true
-    },
-    {
       "id": "ai-confluence-manager",
       "name": "Confluence Manager",
       "description": "Page publishing, space organization, and ADF conversion",
@@ -64,24 +55,6 @@
       "model": "sonnet",
       "module": "core",
       "capabilities": ["framework-development", "code-implementation"],
-      "autonomous": true
-    },
-    {
-      "id": "ai-report-manager",
-      "name": "Report Manager",
-      "description": "Project status reports, metrics collection, and documentation",
-      "model": "sonnet",
-      "module": "reporting",
-      "capabilities": ["report-generation", "metrics-collection", "status-reporting"],
-      "autonomous": true
-    },
-    {
-      "id": "ai-book-writer",
-      "name": "Book Writer",
-      "description": "Fantasy book writing with world-building and prose generation",
-      "model": "sonnet",
-      "module": "writer",
-      "capabilities": ["book-organization", "prose-generation", "world-building"],
       "autonomous": true
     }
   ],

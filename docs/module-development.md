@@ -97,10 +97,6 @@ role: My Agent Role
 capability-needs:
   - my-capability-1
   - quality-assurance
-context-category-needs:
-  business: basic
-  technical: advanced
-  process: basic
 token-budget: 2500
 ---
 
