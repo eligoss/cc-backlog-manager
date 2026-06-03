@@ -1,7 +1,7 @@
 {
   "$schema": "../core/registries/schemas/module.schema.json",
   "id": "confluence",
-  "version": "1.17.0",
+  "version": "1.0.0",
   "name": "Confluence Integration",
   "description": "Confluence documentation integration for page creation, publishing, and markdown-to-ADF conversion",
   "provides": {

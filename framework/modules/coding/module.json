@@ -1,7 +1,7 @@
 {
   "$schema": "../core/registries/schemas/module.schema.json",
   "id": "coding",
-  "version": "1.17.0",
+  "version": "1.0.0",
   "name": "Development & Coding",
   "description": "Software development agents for architecture design, code implementation, and quality assurance",
   "provides": {

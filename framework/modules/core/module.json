@@ -1,7 +1,7 @@
 {
   "$schema": "./registries/schemas/module.schema.json",
   "id": "core",
-  "version": "1.17.0",
+  "version": "1.0.0",
   "name": "Framework Core",
   "description": "Core framework infrastructure including framework management agents, shared skills, and essential utilities",
   "provides": {
