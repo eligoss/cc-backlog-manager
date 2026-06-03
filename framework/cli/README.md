@@ -163,33 +163,29 @@ agentic-framework info <module>
 
 ### Framework Validation
 
-#### `validate`
+#### `build`
 
-Validate framework integrity and configuration.
+Validate framework artifacts (agent/skill schemas + markdown links) — the unified validation entry point.
 
 ```bash
-agentic-framework validate [options]
+agentic-framework build [options]
 
 Options:
-  -p, --project <path>   Project path (default: current directory)
-  --strict               Enable strict validation mode
-  --versions             Validate version consistency across modules
-  --capabilities         Validate capability resolution
-  --context              Validate context files
-  --routes               Validate routes.yml configuration
+  -p, --path <path>     Project path (default: current directory)
+  -q, --quick           Quick mode: schema validation only (skip links)
+  --external-links      Also check external URLs (slower)
+  --json                Output results as JSON
+  -v, --verbose         Show detailed output with suggestions
 ```
 
 **Examples:**
 
 ```bash
-# Basic validation
-agentic-framework validate
+# Full validation (schema + links)
+agentic-framework build
 
-# Strict mode with all checks
-agentic-framework validate --strict
-
-# Check version consistency
-agentic-framework validate --versions
+# Quick schema-only check
+agentic-framework build --quick
 ```
 
 ### Framework Maintenance
@@ -225,40 +221,6 @@ agentic-framework sync [options]
 
 Options:
   -p, --project <path>  Project path (default: current directory)
-```
-
-#### `routes`
-
-Manage routes.yml synchronization.
-
-```bash
-agentic-framework routes [options]
-
-Options:
-  -p, --project <path>  Project path (default: current directory)
-```
-
-#### `bump-version`
-
-Bump framework version across all modules.
-
-```bash
-agentic-framework bump-version [options]
-
-Options:
-  -p, --project <path>      Project path (default: current directory)
-  -v, --version <version>   New version (e.g., 1.2.0)
-  -t, --type <type>         Bump type: major, minor, patch
-```
-
-**Examples:**
-
-```bash
-# Patch version bump (1.0.0 -> 1.0.1)
-agentic-framework bump-version --type patch
-
-# Set specific version
-agentic-framework bump-version --version 2.0.0
 ```
 
 ### Backlog Management
@@ -543,20 +505,19 @@ agentic-framework status  # Works from root too
 | Priority | Marker | Description |
 |----------|--------|-------------|
 | 1 | `.agentic-framework.json` | Primary marker (most specific) |
-| 2 | `routes.yml` + `CLAUDE.md` | Secondary marker |
-| 3 | `.git` + `CLAUDE.md` | Fallback for git repos with framework |
+| 2 | `.git` + `CLAUDE.md` | Fallback for git repos with framework |
 
 The search stops at the home directory to prevent scanning system files.
 
-### Routes-Based Path Resolution
+### Path Resolution
 
-The CLI uses `routes.yml` for semantic path resolution, ensuring consistent path handling across all commands:
+The CLI resolves project paths from built-in defaults — no external routes file is required:
 
 ```typescript
-// Commands can resolve paths semantically:
+// Commands resolve paths via the shared resolver:
 const ctx = await CliContext.require();
-const ticketsDir = ctx.paths.getTicketPath('story');  // Uses routes.yml
-const plansDir = ctx.paths.getPlanPath('framework');  // Fallback to defaults
+const ticketsDir = ctx.paths.getTicketPath('story');
+const plansDir = ctx.paths.getPlanPath('framework');
 ```
 
 ### Using CliContext in Commands

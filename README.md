@@ -24,8 +24,7 @@ agentic-development-framework/
 │   ├── modules/           # Optional modules - install as needed
 │   │   ├── backlog/      # Ticket-based backlog management
 │   │   ├── confluence/   # Confluence documentation
-│   │   ├── coding/       # Development agents (architect, developer)
-│   │   └── reporting/    # Report generation
+│   │   └── coding/       # Development agents (architect, developer)
 │   └── cli/              # TypeScript scaffolding CLI
 └── examples/             # Example projects
 ```
@@ -37,16 +36,14 @@ agentic-development-framework/
 | **core** | Framework infrastructure (always required) | ai-framework-manager, ai-framework-developer | Governance, versioning, discovery |
 | **backlog** | Ticket-based backlog management | ai-backlog-manager | Epic breakdown, sprint planning, Jira sync |
 | **confluence** | Confluence documentation | ai-confluence-manager | Page creation, publishing |
-| **coding** | Software development | ai-architect, ai-app-developer, ai-ios-developer | Architecture design, implementation, iOS development |
-| **reporting** | Report generation | ai-report-manager | Status reports, metrics |
+| **coding** | Software development | ai-architect, ai-app-developer | Architecture design, implementation, testing |
 
 ## Module System
 
 Each module is self-contained with its own:
 - **Agents** - AI agents with specific roles
-- **Skills** - Reusable capabilities and workflows
+- **Skills** - Reusable capabilities, including `knowing-*` knowledge skills for project context
 - **CLI Commands** - TypeScript automation utilities
-- **Context** - Domain-specific knowledge templates
 
 ### Module Manifest (module.json)
 
@@ -84,16 +81,17 @@ No hardcoded dependencies - modules and skills evolve independently.
 
 ```bash
 agentic-framework init my-project \
-  --modules core,coding,backlog \
-  --context-template minimal
+  --modules core,coding,backlog
 ```
 
-### 2. Fill Context Templates
+### 2. Fill Knowledge Skills
 
-Edit the generated context files in `ai/context/`:
-- `business-basic.md` - Product overview, user roles
-- `technical-basic.md` - Tech stack, architecture
-- `process-basic.md` - Workflow, team structure
+Fill in the generated knowledge skills with your project's specifics:
+- `knowing-the-codebase` - tech stack, architecture, conventions
+- `knowing-the-domain` - business domain, users, product context
+- `knowing-backlog` - backlog conventions and ticket patterns
+
+Add external doc and codebase pointers to `references.yml`.
 
 ### 3. Use Agents
 
@@ -101,7 +99,6 @@ Agents are available as slash commands:
 ```
 /ai-architect        # Architecture design
 /ai-app-developer    # Code implementation
-/ai-ios-developer    # iOS development
 /ai-backlog-manager  # Backlog management
 ```
 
@@ -131,7 +128,7 @@ syncing-with-jira         # Backlog: Jira sync workflow
 | `remove <module>` | Remove module from project |
 | `list` | List available modules |
 | `info <module>` | Show module details |
-| `validate` | Validate project configuration |
+| `build` | Validate framework artifacts (schema + links) |
 
 ## Project Structure After Initialization
 
@@ -142,12 +139,10 @@ my-project/
 │   └── skills/             # Skills for Claude
 ├── ai/
 │   ├── agents/             # Agent markdown files
-│   ├── skills/             # Skill documentation
-│   ├── context/            # Context files (fill these in)
+│   ├── skills/             # Skill documentation (incl. knowing-* knowledge skills)
 │   └── registries/         # Discovery metadata
-├── src/                    # Python automation scripts
 ├── CLAUDE.md               # Entry point
-└── routes.yml              # Filesystem navigation
+└── references.yml          # Curated external doc/codebase references
 ```
 
 ## Portability
@@ -155,7 +150,7 @@ my-project/
 This framework is designed to be project-agnostic:
 
 1. **Core module** - Pure infrastructure, no project knowledge
-2. **Context templates** - Fill with your project's specifics
+2. **Knowledge skills** - Fill `knowing-*` skills with your project's specifics
 3. **Optional modules** - Install only what you need
 4. **Capability-based** - Skills auto-discovered, not hardcoded
 
