@@ -50,7 +50,7 @@ git commit -m "PLAN-001-PHASE-01: Create generic skills and infrastructure
 
 ✅ Created generic-shared-understanding-framework-architecture-knowledge skill
 ✅ Created building-skills skill
-✅ Created ROUTES-REGISTRY-DESIGN.md with complete design rationale
+✅ Created DISCOVERY-ENGINE-ARCHITECTURE.md with complete design rationale
 ✅ Updated ai/registry.yml with new skill metadata
 ✅ Updated README.md with skill references
 

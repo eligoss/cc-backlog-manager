@@ -32,25 +32,25 @@ Six foundational rules that govern the APM-R AI Agentic Framework architecture. 
 ## Capabilities
 - What this agent CAN DO (generic)
 
-## Required Reading
-- Context files to load (from registry.yml)
+## Project Knowledge
+- Knowledge skills to invoke (knowing-the-codebase, knowing-the-domain)
 
 ## Instructions
 - Generic workflow steps
-- Reference context files for specifics
+- Invoke knowledge skills for project-specific details
 ```
 
-**Context Structure:**
+**Knowledge Structure:**
 ```
-ai/context/
-├── business-basic.md (APM-R domain knowledge)
-├── technical-basic.md (Architecture patterns)
-└── process-basic.md (Workflow procedures)
+.claude/skills/
+├── knowing-the-codebase/   (tech stack, architecture, conventions)
+├── knowing-the-domain/     (business domain, users, product context)
+└── knowing-backlog/        (backlog conventions, ticket patterns)
 ```
 
 ### Validation
 
-**Test:** Can you swap out context files and use agent for different project?
+**Test:** Can you swap out the knowledge skills and use the agent for a different project?
 - YES → Compliant with Rule 1
 - NO → Agent contains project-specific knowledge (violation)
 
