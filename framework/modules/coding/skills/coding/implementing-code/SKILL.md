@@ -468,13 +468,13 @@ When implementing code, also verify compliance with these essentials:
 
 ### Related Skills
 - [designing-architecture](../designing-architecture/SKILL.md) - Architecture design and decision-making
-- [committing-code](../../../../core/skills/committing-code/SKILL.md) - Git workflow and commit standards
-- [verifying-quality](../../../../core/skills/verifying-quality/SKILL.md) - Quality validation checklist
-- [validating-markdown](../../../../core/skills/validating-markdown/SKILL.md) - Documentation standards
+- committing-code - Git workflow and commit standards
+- verifying-quality - Quality validation checklist
+- validating-markdown - Documentation standards
 
 ### Module Documentation
-- **Coding Module Manifest:** [module.json](../../../module.json)
-- **Developer Agent:** [ai-app-developer.md](../../../agents/ai-app-developer.md)
+- **Coding Module Manifest:** module.json
+- **Developer Agent:** ai-app-developer
 
 ### External Resources
 - Clean Code by Robert C. Martin

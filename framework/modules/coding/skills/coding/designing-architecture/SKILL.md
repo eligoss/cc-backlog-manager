@@ -456,11 +456,11 @@ Once pattern is chosen, design the components:
 
 ### Related Skills
 - [implementing-code](../implementing-code/SKILL.md) - Code implementation and review standards
-- [verifying-quality](../../../../core/skills/verifying-quality/SKILL.md) - Quality validation standards
+- verifying-quality - Quality validation standards
 
 ### Module Documentation
-- **Coding Module Manifest:** [module.json](../../../module.json)
-- **Architecture Agent:** [ai-architect.md](../../../agents/ai-architect.md)
+- **Coding Module Manifest:** module.json
+- **Architecture Agent:** ai-architect
 
 ### External Resources
 - Architecture Decision Records (ADR) format
