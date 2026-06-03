@@ -5,6 +5,28 @@ All notable changes to the Agentic Development Framework will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2026-06-02
+
+> **Re-baseline:** v1.0.0 resets the version identity of this fork (`cc-backlog-manager`). It is a deliberate simplification of the framework, not a regression — the entries below this line (1.16.0 and earlier) belong to the pre-fork `agentic-development-framework` lineage and carry higher version numbers.
+
+### Removed
+- **Context-level system** — `.claude/context/*` context files, `context.json`, the `context-category-needs` agent frontmatter field, the basic/advanced/expert context levels, and the context loaders/generators.
+- **Internal `routes.yml`** navigation file and the `routes sync` / `routes check` commands and validators.
+- **`validate` command** and its `agentic_validate` MCP tool, plus the `version-validator` module.
+- **`bump-version` command** and its `agentic_bump_version` MCP tool.
+- **`managing-versions` skill** and the `version-management` capability.
+- **`writer` and `reporting` modules**, the iOS coding artifacts, and the `ai-book-writer` / `ai-report-manager` agents.
+
+### Added
+- **Knowledge skills** — `knowing-the-codebase`, `knowing-the-domain`, and `knowing-backlog` provide on-demand project context in place of context files.
+- **`references.yml`** — a curated library of external doc/API/codebase references, replacing the internal `routes.yml`.
+
+### Changed
+- **`build` (BuildEngine)** is now the unified validation entry point (agent/skill schema + markdown-link checking); the MCP `agentic_build` tool runs `BuildEngine` directly.
+- **Git hooks** point at `build`: pre-commit runs `build --quick` (schema-only, fast), pre-push runs `build` (full, incl. links). Version-consistency checking is dropped.
+- **Trust Directive relaxed** — the framework is a focused four-module set (`core`, `backlog`, `coding`, `confluence`) navigated natively; the old "don't explore / use routes.yml" mandate is removed.
+- **Version re-baselined to 1.0.0** across the CLI package and all module manifests; entry-point docs (`CLAUDE.md`, `README.md`, `docs/*`) rewritten to match.
+
 ## [1.16.0] - 2026-03-30
 
 ### Added
