@@ -4,7 +4,7 @@
  * Validates separation between framework (publishable) and instance (deployed) zones.
  *
  * Rules:
- * 1. Framework files must NOT reference instance paths (.claude/, .claude/, CLAUDE.md)
+ * 1. Framework files must NOT reference instance paths (.claude/, CLAUDE.md)
  * 2. Instance files must NOT reference framework paths (framework/)
  * 3. No hardcoded absolute paths (/Users/, /home/, C:\)
  */
