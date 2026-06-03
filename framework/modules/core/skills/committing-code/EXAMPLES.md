@@ -532,11 +532,10 @@ Working on framework improvement with versioning
 - Add documentation
 - Create new features
 
-**Run versioning script** (if available)
+**Run framework build** (if available)
 ```bash
-# Framework might have automation
-agentic-framework routes sync
-# Or manual version/changelog update
+# Regenerate registries and validate
+agentic-framework build
 ```
 
 **Stage everything**

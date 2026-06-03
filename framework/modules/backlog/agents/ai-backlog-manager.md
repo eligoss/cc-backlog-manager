@@ -392,7 +392,6 @@ These skills hold YOUR project's specifics (shipped as fillable templates). Cons
 
 ## Navigation
 
-> **Routes:** Use `{project}/routes.yml` for filesystem navigation
 > **Registries:** Use JSON registries in `{project}/ai/registries/` for metadata and discovery
 
 **Key Registries:**

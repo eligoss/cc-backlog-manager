@@ -142,10 +142,10 @@ Orchestration steps (implementation delegated):
 
 Orchestration steps (execution delegated):
 
-1. **Analyze current structure** — Review `routes.yml`, identify misplaced files, note category boundary violations.
+1. **Analyze current structure** — Review the registries and filesystem, identify misplaced files, note category boundary violations.
 2. **Design new structure** — Sketch folder hierarchy, define clear category boundaries, plan migration path. Minimize nesting depth (<4 levels).
-3. **Delegate execution** — Dispatch `ai-framework-developer` to move files (`git mv`), update references, and run `agentic-framework routes sync`.
-4. **Validate** — Check for broken references, verify registry files updated, confirm routes.yml synchronized.
+3. **Delegate execution** — Dispatch `ai-framework-developer` to move files (`git mv`) and update references.
+4. **Validate** — Check for broken references, verify registry files updated.
 
 ---
 
@@ -167,7 +167,7 @@ Orchestration steps (file edits delegated):
 
 Orchestration steps (file moves delegated):
 
-1. **Plan organization** — Identify what belongs where. Root should contain only entry points (README.md, routes.yml, CLAUDE.md). Changelogs go in `framework/changelog/`.
+1. **Plan organization** — Identify what belongs where. Root should contain only entry points (README.md, CLAUDE.md). Changelogs go in `framework/changelog/`.
 2. **Delegate file moves** — Dispatch `ai-framework-developer` to move files, update internal links, remove duplicates.
 3. **Validate** — No broken links, root directory clean, all documentation reachable from CLAUDE.md.
 
@@ -183,7 +183,7 @@ Framework registries live in `.claude/registries/` (installed project) and `fram
 - `skills.json` — Skill definitions, capabilities-provided
 - `discovery-map.json` — Capability mappings (single source of truth)
 
-After any structural change, verify registry synchronization. Use `agentic-framework routes sync` to update `routes.yml`.
+After any structural change, verify registry synchronization by running `agentic-framework build`.
 
 ---
 

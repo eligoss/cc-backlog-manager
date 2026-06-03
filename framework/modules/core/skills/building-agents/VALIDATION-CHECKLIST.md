@@ -176,7 +176,7 @@ Recommended order:
 Run discovery test:
 
 ```bash
-agentic-framework validate --verbose
+agentic-framework build --verbose
 ```
 
 **Check:**
@@ -198,7 +198,7 @@ agentic-framework validate --verbose
 Run link validator:
 
 ```bash
-agentic-framework validate --links
+agentic-framework build
 ```
 
 **Check:**
@@ -268,10 +268,10 @@ For quick checks, use this abbreviated version:
 wc -l ai/agents/ai-{name}.md  # Must be < 500
 
 # 2. Discovery check
-agentic-framework validate --verbose
+agentic-framework build --verbose
 
 # 3. Link check
-agentic-framework validate --links
+agentic-framework build
 
 # 4. Visual inspection
 # - Has skill routing table?

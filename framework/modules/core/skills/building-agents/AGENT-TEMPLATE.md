@@ -261,8 +261,8 @@ Before committing a new or modified agent:
 2. **Token estimate:** Lines × 5.5 → Must be < 3,000
 3. **Duplication check:** Search for similar content in other agents
 4. **Routing check:** All task types have skill routing
-5. **Discovery check:** `agentic-framework validate --verbose`
-6. **Link check:** `agentic-framework validate --links`
+5. **Discovery check:** `agentic-framework build --verbose`
+6. **Link check:** `agentic-framework build`
 
 ---
 

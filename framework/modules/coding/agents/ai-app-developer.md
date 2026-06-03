@@ -90,7 +90,6 @@ These guides are source-of-truth for each repository (NOT duplicated in framewor
 
 ## Navigation
 
-> **Routes:** Use `{project}/routes.yml` for filesystem navigation
 > **Registries:** Use JSON registries in `{project}/ai/registries/` for metadata and discovery
 
 All directory paths, file locations, and metadata are defined in the registry system:

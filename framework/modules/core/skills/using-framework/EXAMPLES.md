@@ -1,244 +1,82 @@
 # Framework Architecture Examples
 
-**Real-World Workflow Examples, Validation Patterns, and Adding Components**
+**Worked Examples: Discovery, Adding Components, Validation**
 
 ---
 
 ## Real-World Scenarios
 
-### Scenario 1: Framework Manager Loads an Agent
+### Scenario 1: Understanding What a Given Agent Will Load
 
-**Goal:** Load ai-architect agent with all required context
+**Goal:** Determine which skills will be auto-loaded for `ai-architect`
 
-**Step 1: Discover where agents live** (using routes.yml)
-```bash
-$ yq '.paths.ai.agents' routes.yml
-ai/agents/
+**Step 1: Read the agent's capability-needs** (from agent file or agents.json)
+```json
+// .claude/registries/agents.json
+{
+  "id": "ai-architect",
+  "capability-needs": [
+    "architecture-design",
+    "quality-assurance",
+    "markdown-formatting"
+  ]
+}
 ```
 
-**Step 2: Load agent metadata** (using registry.yml)
-```bash
-$ yq '.agents.ai-architect' ai/registry.yml
-file: ai-architect.md
-token-budget: 4500
-context-dependencies:
-  - business-advanced
-  - technical-advanced
-  - process-basic
-total-context-tokens: 9800
+**Step 2: Resolve each capability in discovery-map.json**
+```json
+// .claude/registries/discovery-map.json (excerpt)
+{ "capability": "architecture-design", "skills-providing": ["building-framework"] }
+{ "capability": "quality-assurance",   "skills-providing": ["verifying-quality"] }
+{ "capability": "markdown-formatting", "skills-providing": ["validating-markdown"] }
 ```
 
-**Step 3: Build loading instructions**
+**Step 3: The Discovery Engine loads those three skills**
 ```
-Source: ai/agents/ (from routes.yml)
-Load: ai-architect.md (from registry.yml)
-With context:
-  - business-advanced (3500 tokens)
-  - technical-advanced (4500 tokens)
-  - process-basic (1500 tokens)
-
-Total: 4500 + 9800 = 14,300 tokens
-Status: Within limits ✓
-```
-
-**Step 4: Execute loading**
-```python
-# Pseudocode
-agent_content = read("ai/agents/ai-architect.md")
-business_ctx = read("ai/context/business-advanced.md")
-technical_ctx = read("ai/context/technical-advanced.md")
-process_ctx = read("ai/context/process-basic.md")
-
-full_prompt = agent_content + business_ctx + technical_ctx + process_ctx
-# Load full_prompt with 14,300 tokens
-```
-
-**Result:** Agent loaded with complete context and metadata
-
----
-
-### Scenario 2: New Team Member Learning Framework Structure
-
-**Goal:** Understand where everything is and how it works
-
-**Step 1: Read routes.yml for overview**
-```bash
-$ cat routes.yml | grep -A 10 'paths:'
-```
-Output shows all top-level folders and their locations.
-
-**Step 2: Check registry for framework components**
-```bash
-$ yq '.meta' ai/registry.yml
-total-agents: 8
-total-context-files: 13
-total-skills: 21
-```
-
-**Step 3: Look up specific component**
-```bash
-# Where does ai-backlog-manager live?
-$ yq '.agents.ai-backlog-manager.file' ai/registry.yml
-ai-backlog-manager.md
-
-# Full path is?
-# routes.yml says: ai/agents = "ai/agents/"
-# So full path: ai/agents/ai-backlog-manager.md
-```
-
-**Step 4: Understand what it needs**
-```bash
-$ yq '.agents.ai-backlog-manager.context-dependencies' ai/registry.yml
-- business-advanced
-- technical-advanced
-- process-advanced
-```
-
-**Result:** New member understands component location and dependencies
-
----
-
-### Scenario 3: Framework Architect Reviews Impact of New Feature
-
-**Goal:** Understand impact before and after implementing new capability
-
-**Current State:**
-```bash
-$ yq '.meta.total-agents' ai/registry.yml
-8
-
-$ yq '.meta.token-budgets.grand-total' ai/registry.yml
-87,500
-```
-
-**Proposed Change:** Add new ai-feature-planner agent
-
-**Planning Questions:**
-1. Will this break any dependencies?
-   - Check: Does business-advanced context exist?
-   - Check: Is there available token budget?
-
-2. What will the impact be?
-   - Current agents: 8
-   - New agents: 9
-   - Additional tokens: ~5000 (estimate)
-
-**Decision:** Proceed with new agent
-
----
-
-## Validation Patterns
-
-### Validation 1: Verify All Dependencies Exist
-
-**Script:**
-```bash
-#!/bin/bash
-REGISTRY="ai/registry.yml"
-
-# Get all agents
-for agent in $(yq '.agents | keys[]' $REGISTRY); do
-  echo "Checking $agent..."
-
-  # Get dependencies
-  deps=$(yq ".agents.$agent.context-dependencies[]" $REGISTRY)
-
-  # Verify each dependency
-  for dep in $deps; do
-    if ! yq ".context-files.$dep" $REGISTRY > /dev/null; then
-      echo "  ERROR: Missing context file: $dep"
-    else
-      echo "  OK: $dep exists"
-    fi
-  done
-done
-```
-
-**Expected Output:**
-```
-Checking ai-architect...
-  OK: business-advanced exists
-  OK: technical-advanced exists
-  OK: process-basic exists
-Checking ai-backlog-manager...
-  OK: business-advanced exists
-  ...
+Agent: ai-architect
+Auto-loaded skills:
+  - building-framework     (architecture-design)
+  - verifying-quality      (quality-assurance)
+  - validating-markdown    (markdown-formatting)
 ```
 
 ---
 
-### Validation 2: Check Token Budget Compliance
+### Scenario 2: Finding Project-Specific Context
 
-**Script:**
-```bash
-#!/bin/bash
-REGISTRY="ai/registry.yml"
-BUDGET_LIMIT=100000
+**Goal:** Understand what tech stack the project uses before writing code
 
-# Get totals
-total=$(yq '.meta.token-budgets.grand-total' $REGISTRY)
-agent_total=$(yq '.meta.token-budgets.total-agent-tokens' $REGISTRY)
-context_total=$(yq '.meta.token-budgets.total-context-tokens' $REGISTRY)
+Invoke the `knowing-the-codebase` skill — it contains tech stack, architecture decisions,
+conventions, and testing/CI details. The three knowledge skills are the project's context
+layer; there is no separate context-file directory.
 
-echo "Token Usage Report"
-echo "=================="
-echo "Total Framework: $total / $BUDGET_LIMIT"
-echo "  Agents: $agent_total"
-echo "  Context: $context_total"
-echo ""
-
-if [ $total -gt $BUDGET_LIMIT ]; then
-  echo "⚠️  WARNING: Over budget!"
-  exit 1
-else
-  echo "✓ Within budget"
-  exit 0
-fi
+```
+knowing-the-codebase  →  tech stack, architecture, code conventions, CI/git workflow
+knowing-the-domain    →  business domain, users, product scope
+knowing-backlog       →  Jira project, ticket conventions, Confluence config
 ```
 
-**Expected Output:**
-```
-Token Usage Report
-==================
-Total Framework: 87500 / 100000
-  Agents: 42500
-  Context: 45000
-
-✓ Within budget
-```
+For external pointers (API docs, design specs, related codebases), consult `references.yml`.
 
 ---
 
-### Validation 3: Verify File Locations
+### Scenario 3: New Team Member Exploring the Framework
 
-**Script:**
+**Goal:** Understand what modules and agents exist
+
 ```bash
-#!/bin/bash
-ROUTES="routes.yml"
-REGISTRY="ai/registry.yml"
+# List installed modules
+agentic-framework list
 
-# Get agent path from routes
-agent_path=$(yq '.paths.ai.agents' $ROUTES)
+# Show detail for a module (capabilities, agents, skills)
+agentic-framework info core
 
-# Get all agents from registry
-for agent in $(yq '.agents | keys[]' $REGISTRY); do
-  file=$(yq ".agents.$agent.file" $REGISTRY)
-  full_path="$agent_path$file"
-
-  if [ ! -f "$full_path" ]; then
-    echo "ERROR: $agent file missing: $full_path"
-  else
-    echo "OK: $agent file exists"
-  fi
-done
+# Read the agent file directly
+cat framework/modules/coding/agents/ai-architect.md
 ```
 
-**Expected Output:**
-```
-OK: ai-architect file exists
-OK: ai-backlog-manager file exists
-...
-```
+No routes map is needed — navigate the filesystem directly. The four modules are:
+`core`, `backlog`, `coding`, `confluence`.
 
 ---
 
@@ -246,290 +84,209 @@ OK: ai-backlog-manager file exists
 
 ### Adding a New Agent
 
-**Scenario:** Need to add ai-feature-planner agent
+**Scenario:** Need to add `ai-feature-planner` agent
 
 **Step 1: Create agent file**
 ```bash
-$ touch ai/agents/ai-feature-planner.md
-$ cat > ai/agents/ai-feature-planner.md << 'EOF'
-# Feature Planner Agent
-
-**Agent:** ai-feature-planner
-...
-EOF
+touch framework/modules/coding/agents/ai-feature-planner.md
 ```
 
-**Step 2: Add to registry**
-```bash
-# Edit ai/registry.yml
-agents:
-  ...
-  ai-feature-planner:
-    file: ai-feature-planner.md
-    capability-domain: feature-planning
-    description: Plan features and break into stories
-    token-budget: 5000
-    context-dependencies:
-      - business-advanced
-      - technical-advanced
-      - process-advanced
-    shared-dependencies:
-      - markdown-formatting-guide
-      - agent-self-evaluation
-    total-context-tokens: 12000
-```
-
-**Step 3: Update loading matrix** (if needed)
 ```yaml
-loading-matrix:
-  ai-feature-planner:
-    business: advanced
-    technical: advanced
-    process: advanced
-    context-files: [business-advanced, technical-advanced, process-advanced]
-    total-tokens: 17000
-```
-
-**Step 4: Validate**
-```bash
-# Verify dependencies exist
-$ yq '.agents.ai-feature-planner.context-dependencies[]' ai/registry.yml | while read dep; do
-    yq ".context-files.$dep" ai/registry.yml > /dev/null && echo "✓ $dep exists" || echo "✗ $dep missing"
-  done
-
-# Check token budget
-$ yq '.meta.token-budgets.grand-total' ai/registry.yml
-# Should be under limit
-
-# Verify file exists
-$ ls -la ai/agents/ai-feature-planner.md
-```
-
-**Result:** New agent registered and ready to use
-
+---
+agent: ai-feature-planner
+role: Feature Planner
+capability-needs:
+  - architecture-design
+  - quality-assurance
+token-budget: 4000
+essential-skills:
+  - knowing-the-codebase
+  - knowing-the-domain
 ---
 
-### Adding a New Context File
-
-**Scenario:** Need to add deployment-specific context
-
-**Step 1: Create context file**
-```bash
-$ touch ai/context/deployment-advanced.md
-$ cat > ai/context/deployment-advanced.md << 'EOF'
-# Deployment Advanced Context
-
-**Level:** advanced
-**Category:** deployment
-
-## Content
-
-### Deployment Strategies
+# Feature Planner Agent
 ...
-EOF
 ```
 
-**Step 2: Add to registry**
-```yaml
-context-files:
-  ...
-  deployment-advanced:
-    file: deployment-advanced.md
-    level: advanced
-    category: deployment
-    token-budget: 2500
-    responsibility:
-      must-contain:
-        - deployment-strategies
-        - infrastructure-considerations
-        - rollout-patterns
-      must-not-contain:
-        - application-logic
-        - business-domain-specifics
+**Step 2: Register in agents.json**
+```json
+{
+  "id": "ai-feature-planner",
+  "capability-needs": ["architecture-design", "quality-assurance"],
+  "description": "Plan features and break into stories",
+  "token-budget": 4000
+}
 ```
 
-**Step 3: Add to agents that need it**
-```yaml
-agents:
-  ai-deployment-manager:
-    ...
-    context-dependencies:
-      - business-basic
-      - technical-advanced
-      - deployment-advanced  # NEW
-    total-context-tokens: 10500  # UPDATED
+**Step 3: Update discovery-map.json used-by-agents**
+```json
+{ "capability": "architecture-design", "used-by-agents": ["ai-architect", "ai-feature-planner"] }
 ```
 
 **Step 4: Validate**
 ```bash
-# Verify new context file exists
-$ ls -la ai/context/deployment-advanced.md
-
-# Check token budget still OK
-$ yq '.meta.token-budgets.grand-total' ai/registry.yml
-
-# Verify agent can load it
-$ yq '.agents.ai-deployment-manager.context-dependencies[]' ai/registry.yml | grep deployment-advanced
+agentic-framework build
 ```
-
-**Result:** New context file available and integrated
 
 ---
 
 ### Adding a New Skill
 
-**Scenario:** Need skill for validating Jira exports
+**Scenario:** Need a skill for validating Jira exports
 
-**Step 1: Create skill directory**
+**Step 1: Create skill directory and SKILL.md**
 ```bash
-$ mkdir -p ai/skills/guards/generic-validating-jira-exports-guard
+mkdir -p framework/modules/backlog/skills/validating-jira-exports
 ```
 
-**Step 2: Create SKILL.md**
-```bash
-$ cat > ai/skills/guards/generic-validating-jira-exports-guard/SKILL.md << 'EOF'
+```yaml
 ---
+id: validating-jira-exports
+module: backlog
 name: validating-jira-exports
-description: Validates Jira CSV exports for required fields, correct format, and data integrity.
+description: Validate Jira CSV exports for required fields and data integrity.
 scope: generic
 applicable-projects: any
+capabilities-provided:
+  - jira-export-validation
+tools:
+  - Read
 ---
 
 # Validating Jira Exports
 ...
-EOF
 ```
 
-**Step 3: Create supporting files**
+**Step 2: Register in skills.json**
+```json
+{
+  "id": "validating-jira-exports",
+  "capabilities-provided": ["jira-export-validation"],
+  "description": "Validates Jira CSV export files",
+  "location": "framework/modules/backlog/skills/validating-jira-exports/",
+  "token-budget": 2000
+}
+```
+
+**Step 3: Map capability in discovery-map.json**
+```json
+{
+  "capability": "jira-export-validation",
+  "description": "Validate Jira CSV export files for required fields and integrity",
+  "skills-providing": ["validating-jira-exports"],
+  "used-by-agents": ["ai-backlog-manager"]
+}
+```
+
+**Step 4: Add to agent capability-needs**
+```json
+// agents.json — ai-backlog-manager entry
+{ "capability-needs": ["...", "jira-export-validation"] }
+```
+
+**Step 5: Validate**
 ```bash
-$ touch ai/skills/guards/generic-validating-jira-exports-guard/VALIDATION-RULES.md
-$ touch ai/skills/guards/generic-validating-jira-exports-guard/EXAMPLES.md
+agentic-framework build
 ```
 
-**Step 4: Add to registry**
+---
+
+### Adding a New Capability to an Existing Skill
+
+**Scenario:** `verifying-quality` should also cover `link-checking`
+
+**Step 1: Add capability to SKILL.md frontmatter**
 ```yaml
-skills:
-  generic-validating-jira-exports-guard:
-    file: generic-validating-jira-exports-guard/SKILL.md
-    scope: generic
-    type: guard
-    token-budget: 2000
-    description: Validates Jira CSV export files
-    referenced-by:
-      - ai-backlog-manager
+capabilities-provided:
+  - quality-assurance
+  - link-checking     # NEW
 ```
 
-**Step 5: Update agent if needed**
-```yaml
-agents:
-  ai-backlog-manager:
-    ...
-    shared-dependencies:
-      - ...
-      - generic-validating-jira-exports-guard  # NEW
+**Step 2: Update skills.json**
+```json
+{ "capabilities-provided": ["quality-assurance", "link-checking"] }
 ```
 
-**Step 6: Auto-sync and validate**
+**Step 3: Add mapping in discovery-map.json**
+```json
+{
+  "capability": "link-checking",
+  "skills-providing": ["verifying-quality"],
+  "used-by-agents": []
+}
+```
+
+**Step 4: Validate**
 ```bash
-# Skill auto-syncs to .claude/skills/ directory
-# Verify sync happened
-$ ls -la .claude/skills/generic-validating-jira-exports-guard/
-
-# Run skill tests
-$ python -m pytest tests/skills/ -k jira_export
+agentic-framework build
 ```
 
-**Result:** New skill available and integrated
+---
+
+## Validation Examples
+
+### Checking Coverage Manually
+
+```bash
+# Verify all capability-needs appear in discovery-map
+jq '[.capabilities[].capability]' .claude/registries/discovery-map.json
+
+# Verify a specific skill is mapped
+jq '.capabilities[] | select(.["skills-providing"] | contains(["verifying-quality"]))' \
+  .claude/registries/discovery-map.json
+
+# Verify an agent's capabilities all resolve
+jq '.agents[] | select(.id == "ai-architect") | .["capability-needs"]' \
+  .claude/registries/agents.json
+```
+
+### Running Build Validation
+
+```bash
+agentic-framework build
+# Checks: JSON schema compliance, markdown link validity, no broken internal references
+# Exit 0 = clean; any error must be fixed before committing
+```
 
 ---
 
 ## Impact Analysis Examples
 
-### Example 1: Consolidating Context Files
+### Example 1: Removing an Unused Skill
 
-**Before:**
-```yaml
-context-files:
-  technical-basic: 1500 tokens
-  technical-advanced: 4500 tokens
-  technical-deep: 3500 tokens
-```
-
-**Question:** Should we consolidate?
-
-**Analysis:**
-```
-Total: 9500 tokens in 3 files
-If merged: ~7500 tokens (remove duplication)
-Savings: ~2000 tokens (21% reduction)
-
-But: Deep knowledge might not always be needed
-Decision: KEEP SEPARATE (progressive disclosure benefits worth more than token savings)
-```
-
----
-
-### Example 2: Adding New Skill
-
-**Before:**
-```yaml
-total-skills: 20
-grand-total-tokens: 85000
-```
-
-**Adding:** validating-jira-exports (2000 tokens)
-
-**After:**
-```yaml
-total-skills: 21
-grand-total-tokens: 87000
-```
-
-**Impact:**
-- Skills increased by 5%
-- Tokens increased by 2.4%
-- Well within budget limits ✓
-
----
-
-### Example 3: Removing Unused Context
-
-**Analysis:**
 ```bash
-# Find unused context file
-$ grep -r "reporting-advanced" ai/agents/ | wc -l
-0  # No agents use it!
+# Check if any agent references the capability this skill provides
+grep -r "jira-export-validation" .claude/registries/agents.json
+# → 0 matches — safe to remove
 
-# Check registry
-$ yq '.context-files.reporting-advanced' ai/registry.yml
-{ file: reporting-advanced.md, token-budget: 2000 }
+# Steps:
+# 1. Delete skill directory
+# 2. Remove from skills.json
+# 3. Remove mapping from discovery-map.json
+# 4. Run: agentic-framework build
 ```
 
-**Decision:** Remove unused context file
+### Example 2: Renaming a Capability
 
-**Steps:**
-1. Delete: ai/context/reporting-advanced.md
-2. Update registry: Remove entry
-3. Run validation: Ensure no references remain
-4. Commit: "Remove unused reporting-advanced context"
-
-**Result:**
-```
-Tokens saved: 2000 (2.3% reduction)
-Framework cleaner and more maintainable
+```bash
+# Rename "quality-assurance" → "qa-and-review"
+# Files to update:
+#   .claude/registries/discovery-map.json  (key + used-by-agents entries)
+#   .claude/registries/skills.json          (capabilities-provided)
+#   .claude/registries/agents.json          (capability-needs in every agent that uses it)
+#   Each affected agent's YAML frontmatter  (capability-needs)
+# Then: agentic-framework build
 ```
 
 ---
 
 ## References
 
-- **[ROUTES-REGISTRY-DESIGN.md](ROUTES-REGISTRY-DESIGN.md)** - Complete design rationale
-- **[BEST-PRACTICES.md](BEST-PRACTICES.md)** - Maintenance and optimization
+- **[BEST-PRACTICES.md](BEST-PRACTICES.md)** - Maintenance and naming conventions
 - **[SKILL.md](SKILL.md)** - Quick reference and overview
-- **routes.yml** - Your project's navigation map
-- **registry.yml** - Your project's metadata catalog
+- **[DISCOVERY-ENGINE-ARCHITECTURE.md](DISCOVERY-ENGINE-ARCHITECTURE.md)** - Deep dive into discovery engine
 
 ---
 
-**Examples Version:** 1.0
-**Last Updated:** 2025-12-07
+**Examples Version:** 2.0
+**Last Updated:** 2025-12-15

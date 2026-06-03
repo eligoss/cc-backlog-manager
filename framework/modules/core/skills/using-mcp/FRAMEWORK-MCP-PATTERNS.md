@@ -227,11 +227,11 @@ Result: Well-reasoned architectural decision
 ### Use Case 2: Framework Refactoring Plan
 
 ```
-Task: "Design migration from manual routes.yml to automatic discovery"
+Task: "Design migration to a new module system"
 
 With Sequential Thinking:
-1. Analyze current routes.yml usage
-2. Design discovery mechanism
+1. Analyze current module structure
+2. Design target architecture
 3. Plan migration phases
 4. Identify risks and mitigations
 5. Define success metrics
@@ -275,16 +275,16 @@ Result: Data-driven optimization plan
 ### Use Case 1: Decision Documentation
 
 ```
-Store: "Why did we separate routes.yml from registry.yml in v4.1?"
+Store: "Why did we move to native navigation without a dedicated routes file?"
 
 Memory:
 {
-  "decision": "Routes and Registry Separation",
-  "version": "v4.1",
-  "rationale": "Routes is filesystem navigation (where things live), Registry is metadata (what things are). Separation of concerns improves clarity.",
-  "date": "2024-11",
-  "alternatives_considered": ["Single unified file", "Discovery-based routing"],
-  "trade_offs": "Two files to maintain, but clearer responsibilities"
+  "decision": "Remove dedicated routes file in favor of native navigation",
+  "version": "v1.0",
+  "rationale": "A separate routes file created a maintenance burden and duplicated what the registries already express. Native navigation via registries is simpler.",
+  "date": "2025-01",
+  "alternatives_considered": ["Keep the routes file", "Auto-generate routes from registries"],
+  "trade_offs": "Less explicit filesystem map, but fewer files to keep in sync"
 }
 ```
 

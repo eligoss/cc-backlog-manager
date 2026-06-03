@@ -124,7 +124,7 @@ token-budget: {estimated-tokens}
 
 **Validate JSON syntax:**
 ```bash
-agentic-framework validate
+agentic-framework build
 ```
 
 ---
@@ -133,7 +133,7 @@ agentic-framework validate
 
 **Run Discovery Engine:**
 ```bash
-agentic-framework validate --verbose
+agentic-framework build --verbose
 ```
 
 **Verify:**
@@ -156,7 +156,7 @@ Discovered Skills:
 
 **Run:**
 ```bash
-agentic-framework validate
+agentic-framework build
 ```
 
 **Ensure:**
@@ -180,8 +180,8 @@ agentic-framework validate
 
 **On commit, hooks will:**
 - Auto-sync agent to `.claude/commands/` (via `agentic-framework sync --agents`)
-- Validate schemas (via `agentic-framework validate`)
-- Check links (via `agentic-framework validate --links`)
+- Validate schemas (via `agentic-framework build`)
+- Check links (via `agentic-framework build`)
 
 ---
 

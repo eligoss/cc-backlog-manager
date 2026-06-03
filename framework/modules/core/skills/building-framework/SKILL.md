@@ -190,7 +190,6 @@ Use `building-skills` for:
 **Framework Documentation:**
 - ai/registry.yml - Single source of truth for metadata
 - ai/framework/framework-governance.md - Extended governance rules
-- routes.yml - Filesystem map
 
 ---
 

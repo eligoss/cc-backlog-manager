@@ -46,12 +46,13 @@
       "description": "Framework architecture and discovery engine understanding",
       "triggers": [
         "framework architecture",
-        "routes.yml",
         "discovery engine",
         "registry system",
         "module system",
         "skill loading",
-        "context loading"
+        "capability-needs",
+        "capabilities-provided",
+        "discovery-map"
       ],
       "prompt-patterns": [
         "how.*framework",

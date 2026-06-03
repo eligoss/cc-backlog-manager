@@ -28,7 +28,7 @@ Test isolated functions in isolation:
 describe('resolveProjectPath', () => {
   it('should return projectPath for user files', () => {
     const ctx = { projectPath: '/user/project', frameworkRoot: '/cli/dist' };
-    expect(resolveProjectPath(ctx, 'routes.yml')).toBe('/user/project/routes.yml');
+    expect(resolveProjectPath(ctx, 'references.yml')).toBe('/user/project/references.yml');
   });
 
   it('should return frameworkRoot for CLI templates', () => {

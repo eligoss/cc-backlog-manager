@@ -41,15 +41,12 @@ token-budget: {{tokenBudget}}
 
 ---
 
-## Required Reading
+## Project Knowledge
 
-### Context Files
+Before starting work, invoke these skills via the Skill tool to load project-specific context:
 
-Load these context files before starting work:
-
-1. **business-{{businessLevel}}** - Business context at {{businessLevel}} level
-2. **technical-{{technicalLevel}}** - Technical context at {{technicalLevel}} level
-3. **process-{{processLevel}}** - Process context at {{processLevel}} level
+- **`knowing-the-codebase`** — tech stack, architecture, and code conventions.
+- **`knowing-the-domain`** — business domain, product context, and users.
 
 > **Auto-Discovery Note:** All required skills are automatically discovered and loaded by the Discovery Engine. No manual skill loading required.
 

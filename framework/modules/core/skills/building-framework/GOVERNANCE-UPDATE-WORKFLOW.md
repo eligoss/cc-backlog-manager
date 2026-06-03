@@ -84,7 +84,7 @@ vi ai/registries/skills.json
 
 **Run schema validation after changes:**
 ```bash
-agentic-framework validate
+agentic-framework build
 ```
 
 ---
@@ -107,7 +107,7 @@ agentic-framework validate
 
 **Run schema validation on all registries:**
 ```bash
-agentic-framework validate
+agentic-framework build
 ```
 
 **Test enforcement workflow:**

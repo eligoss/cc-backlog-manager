@@ -66,7 +66,7 @@ const dir = PLURAL_MAP[type] ?? `${type}s`;
 
 ```typescript
 // Which root? User's project or CLI installation?
-const routesPath = path.join(root, 'routes.yml');
+const manifestPath = path.join(root, '.agentic-framework.json');
 
 // Validator uses frameworkRoot, but user files are in projectPath
 const validator = new RoutesValidator(ctx.frameworkRoot);
@@ -86,7 +86,7 @@ interface PathContext {
 }
 
 // Explicit path usage with context
-const routesPath = path.join(ctx.projectPath, 'routes.yml');  // User's file
+const manifestPath = path.join(ctx.projectPath, '.agentic-framework.json');  // User's file
 const templatePath = path.join(ctx.frameworkRoot, 'templates');  // CLI's templates
 
 // Validator receives explicit path
@@ -98,7 +98,7 @@ const validator = new RoutesValidator(ctx.projectPath);  // User's project
 ```
 Is this file...
 ├── Created/owned by user? → Use projectPath
-│   Examples: routes.yml, .agentic-framework.json, PLAN.md
+│   Examples: references.yml, .agentic-framework.json, PLAN.md
 │
 ├── Part of CLI package? → Use frameworkRoot
 │   Examples: templates, schemas, module definitions
