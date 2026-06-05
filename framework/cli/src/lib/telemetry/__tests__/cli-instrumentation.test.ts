@@ -84,8 +84,8 @@ describe('cli-instrumentation', () => {
       mockTelemetry.isInstrumentationEnabled.mockReturnValue(true);
 
       await recordCLICommand(
-        'routes',
-        'sync',
+        'agent',
+        'list',
         {},
         {},
         80,
@@ -93,9 +93,9 @@ describe('cli-instrumentation', () => {
       );
 
       const recordedEvent = mockTelemetry.recordEvent.mock.calls[0][0] as Partial<CLIEvent>;
-      expect(recordedEvent.operation).toBe('routes_sync');
-      expect(recordedEvent.command).toBe('routes');
-      expect(recordedEvent.subcommand).toBe('sync');
+      expect(recordedEvent.operation).toBe('agent_list');
+      expect(recordedEvent.command).toBe('agent');
+      expect(recordedEvent.subcommand).toBe('list');
     });
 
     it('should record command with error', async () => {
@@ -678,7 +678,7 @@ describe('cli-instrumentation', () => {
 
       await recordInitCommand(
         'large-project',
-        ['core', 'planning', 'coding', 'jira', 'confluence', 'reporting'],
+        ['core', 'planning', 'coding', 'jira', 'confluence', 'backlog'],
         1000,
         true
       );

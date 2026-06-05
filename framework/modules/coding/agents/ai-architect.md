@@ -10,10 +10,8 @@ capability-needs:
 available-skills:
   - validating-markdown
   - using-mcp
-context-category-needs:
-  business: advanced
-  technical: advanced
-  process: basic
+  - knowing-the-codebase
+  - knowing-the-domain
 variant: full
 delegates-to:
 token-budget: 3000
@@ -52,6 +50,8 @@ Transform requirements documents into comprehensive technical architecture desig
 | Architecture Patterns | Essential | `designing-architecture` | Pre-loaded |
 | Markdown Formatting | Available | `validating-markdown` | On-demand |
 | MCP Usage | Available | `using-mcp` | On-demand |
+| Codebase Knowledge | Available | `knowing-the-codebase` | On-demand |
+| Domain Knowledge | Available | `knowing-the-domain` | On-demand |
 | Intelligence Gathering | Role-Based | `gathering-intelligence` | Auto-discovered |
 
 **Pattern:** Essential skills are pre-loaded. Available skills loaded on-demand when needed.
@@ -69,17 +69,14 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 
 ---
 
-## Required Reading
+## Project Knowledge
 
-> **Context:** Auto-loaded via `context-category-needs` declared in frontmatter
+**Before creating architecture documents, invoke these skills via the Skill tool:**
 
-**MUST review before creating architecture documents:**
+1. **`knowing-the-domain`** — business domain, use cases, users, product context.
+2. **`knowing-the-codebase`** — tech stack, chosen patterns, file structure, conventions, testing & CI.
 
-1. **`{project}/ai/context/business-advanced.md`** - Business requirements, use cases, roadmap
-2. **`{project}/ai/context/technical-advanced.md`** - **PROJECT-SPECIFIC:** Tech stack, patterns, file paths, real examples, architecture templates
-3. **`{project}/ai/context/process-basic.md`** - Workflow basics, documentation standards
-
-**Critical:** This agent provides **generic orchestration**. The technical-advanced.md context file provides **YOUR project's specific tech stack, chosen patterns, and real codebase examples**. Always check context files for project-specific implementations.
+These skills hold YOUR project's specifics (shipped as fillable templates). This agent provides **generic orchestration**; the skills provide your project's tech stack, chosen patterns, and real codebase examples. Consult `references.yml` at the project root for deeper external references and architecture templates.
 
 ---
 
@@ -111,7 +108,7 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 
 **Output:** High-level architecture diagram
 
-> **Reference:** See technical-advanced.md for project-specific architecture patterns
+> **Reference:** Invoke knowing-the-codebase for project-specific architecture patterns
 
 ---
 
@@ -126,7 +123,7 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 
 **Output:** Frontend architecture section
 
-> **Reference:** See technical-advanced.md for project-specific frontend patterns, framework code, and component structure
+> **Reference:** Invoke knowing-the-codebase for project-specific frontend patterns, framework code, and component structure
 
 ---
 
@@ -141,7 +138,7 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 
 **Output:** Backend architecture section
 
-> **Reference:** See technical-advanced.md for project-specific backend patterns, API design, and data access
+> **Reference:** Invoke knowing-the-codebase for project-specific backend patterns, API design, and data access
 
 ---
 
@@ -155,7 +152,7 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 
 **Output:** Data model section
 
-> **Reference:** See technical-advanced.md for project-specific database patterns and schema design
+> **Reference:** Invoke knowing-the-codebase for project-specific database patterns and schema design
 
 ---
 
@@ -170,7 +167,7 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 
 **Output:** Caching strategy and performance requirements
 
-> **Reference:** See technical-advanced.md for project-specific caching patterns
+> **Reference:** Invoke knowing-the-codebase for project-specific caching patterns
 
 ---
 
@@ -184,7 +181,7 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 
 **Output:** Security architecture section
 
-> **Reference:** See technical-advanced.md for project-specific security patterns
+> **Reference:** Invoke knowing-the-codebase for project-specific security patterns
 
 ---
 
@@ -250,7 +247,7 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 
 ### Clarity (Easy to understand)
 - ✅ Clear diagrams (ASCII art or descriptions)
-- ✅ Code examples for patterns (from technical-advanced.md)
+- ✅ Code examples for patterns (from knowing-the-codebase)
 - ✅ No jargon without explanations
 - ✅ Logical flow (high-level → details)
 
@@ -421,7 +418,7 @@ Create git commit after Phase 1 approval, then commit each subsequent phase.
 📋 **Skill:** Use `verifying-quality` for complete evaluation protocol
 
 **Quick checklist:**
-1. ✅ Did I follow all architecture principles from technical-advanced.md?
+1. ✅ Did I follow all architecture principles from knowing-the-codebase?
 2. ✅ Did I complete all sections of the template?
 3. ✅ Is the architecture story-ready (5-10 vertical slices identified)?
 4. ✅ Did I document technical decisions and trade-offs?
@@ -443,12 +440,3 @@ This helps continuously improve architecture quality, reduce rework, and keep de
 **Related Agents:**
 - **Prerequisite Capability:** Requirements understanding (no dedicated agent)
 - **Downstream Capability:** ai-backlog-manager (backlog-planning)
-
-**Changes from v11.0 to v12.0:**
-- Optimized agent prompt structure
-- Removed all architecture templates, patterns, and domain knowledge (moved to technical-advanced.md context)
-- Added Skill Routing Table for clear task routing
-- Retained only orchestration logic (design process workflow, quality criteria, review gates)
-- Updated token budget from 4,500 to 2,500 (44% reduction)
-- Zero duplication with context files - all domain knowledge lives in context
-- Agent now purely orchestrates design process and routes to context/skills for content

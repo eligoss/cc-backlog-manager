@@ -46,12 +46,13 @@
       "description": "Framework architecture and discovery engine understanding",
       "triggers": [
         "framework architecture",
-        "routes.yml",
         "discovery engine",
         "registry system",
         "module system",
         "skill loading",
-        "context loading"
+        "capability-needs",
+        "capabilities-provided",
+        "discovery-map"
       ],
       "prompt-patterns": [
         "how.*framework",
@@ -75,21 +76,6 @@
         "check.*reference",
         "find.*broken",
         "verify.*url"
-      ]
-    },
-    "building-context": {
-      "description": "Context file authoring and validation",
-      "triggers": [
-        "context file",
-        "business context",
-        "technical context",
-        "process context",
-        "context-category-needs"
-      ],
-      "prompt-patterns": [
-        "create.*context",
-        "update.*context",
-        "write.*context"
       ]
     },
     "building-skills": {
@@ -152,20 +138,6 @@
         "convert.*adf"
       ]
     },
-    "building-reports": {
-      "description": "Report generation and metrics collection",
-      "triggers": [
-        "report",
-        "metrics",
-        "status report",
-        "executive summary"
-      ],
-      "prompt-patterns": [
-        "generate.*report",
-        "create.*report",
-        "build.*metrics"
-      ]
-    },
     "organizing-backlog": {
       "description": "Backlog organization and ticket lifecycle",
       "triggers": [
@@ -180,18 +152,62 @@
         "break.*epic"
       ]
     },
-    "building-worlds": {
-      "description": "World design and magic system creation",
+    "knowing-the-codebase": {
+      "description": "Project-specific tech stack, architecture, code conventions, testing/CI, and git workflow",
       "triggers": [
-        "world building",
-        "magic system",
-        "fantasy world",
-        "culture design"
+        "codebase",
+        "architecture",
+        "tech stack",
+        "code convention",
+        "implement",
+        "refactor",
+        "testing",
+        "ci pipeline",
+        "git workflow"
       ],
       "prompt-patterns": [
-        "create.*world",
-        "design.*magic",
-        "build.*culture"
+        "implement.*feature",
+        "write.*code",
+        "design.*architecture",
+        "how.*built"
+      ]
+    },
+    "knowing-the-domain": {
+      "description": "Project-specific platform, business domain, users, and product context",
+      "triggers": [
+        "domain",
+        "business",
+        "product",
+        "users",
+        "platform",
+        "feature",
+        "stakeholder",
+        "use case"
+      ],
+      "prompt-patterns": [
+        "what.*product",
+        "business.*requirement",
+        "user.*need"
+      ]
+    },
+    "knowing-backlog": {
+      "description": "Project-specific Jira project, workflow states, ticket conventions, and Jira/Confluence config",
+      "triggers": [
+        "ticket",
+        "backlog",
+        "jira",
+        "epic",
+        "story",
+        "sprint",
+        "definition of ready",
+        "definition of done",
+        "confluence"
+      ],
+      "prompt-patterns": [
+        "create.*ticket",
+        "write.*story",
+        "decompose.*epic",
+        "sync.*jira"
       ]
     }
   }

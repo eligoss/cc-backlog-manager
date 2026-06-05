@@ -74,7 +74,7 @@ In `.claude/registries/agents.json`, add `"intelligence-gathering"` to the agent
 
 ### Step 7: Validate
 
-Run: `agentic-framework validate`
+Run: `agentic-framework build`
 Test with a sample task that should trigger intelligence gathering.
 
 ---

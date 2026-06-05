@@ -9,36 +9,6 @@
 import { z } from "zod";
 
 /**
- * Context level enum - determines how much context is loaded
- */
-export const ContextLevelSchema = z.enum(["basic", "advanced", "expert"]);
-
-/**
- * Context category enum - the three types of context
- */
-export const ContextCategorySchema = z.enum([
-  "business",
-  "technical",
-  "process",
-]);
-
-/**
- * Context category needs - maps categories to required levels
- *
- * Note: Using z.object() with optional fields instead of z.record() with enum keys
- * because Zod v4 requires all enum keys to be present in z.record().
- * Using .strict() to reject unknown category keys.
- */
-export const ContextCategoryNeedsSchema = z
-  .object({
-    business: ContextLevelSchema.optional(),
-    technical: ContextLevelSchema.optional(),
-    process: ContextLevelSchema.optional(),
-  })
-  .strict()
-  .optional();
-
-/**
  * Agent schema - unified agent definition (no full/slim distinction)
  */
 export const AgentSchema = z.object({
@@ -59,9 +29,6 @@ export const AgentSchema = z.object({
 
   /** Skills available for on-demand invocation */
   "available-skills": z.array(z.string()).optional(),
-
-  /** Context files this agent requires */
-  "context-category-needs": ContextCategoryNeedsSchema,
 
   /** Token budget for this agent */
   "token-budget": z
@@ -90,15 +57,12 @@ export const AgentSchemaLoose = z
     "essential-skills": z.array(z.string()).optional(),
     "capability-needs": z.array(z.string()).optional(),
     "available-skills": z.array(z.string()).optional(),
-    "context-category-needs": z.record(z.string(), z.string()).optional(),
     "token-budget": z.number().optional(),
     "deploy-to": z.enum(["command", "agent", "both"]).optional(),
   })
   .passthrough();
 
 // Type exports
-export type ContextLevel = z.infer<typeof ContextLevelSchema>;
-export type ContextCategory = z.infer<typeof ContextCategorySchema>;
 export type Agent = z.infer<typeof AgentSchema>;
 /** @deprecated No longer used - agent variants removed */
 export const AgentVariantSchema = z.enum(["full", "slim"]);

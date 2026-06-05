@@ -40,7 +40,6 @@ describe('FrameworkValidator', () => {
           id: 'test-agent',
           moduleId: 'core',
           capabilityNeeds: ['git-workflow'],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: '/framework/agents/test-agent.md',
           variant: 'full',
@@ -68,7 +67,6 @@ describe('FrameworkValidator', () => {
           id: 'test-agent',
           moduleId: 'core',
           capabilityNeeds: ['missing-capability'],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: '/framework/agents/test-agent.md',
           variant: 'full',
@@ -97,7 +95,6 @@ describe('FrameworkValidator', () => {
           id: 'test-agent',
           moduleId: 'core',
           capabilityNeeds: ['cap1', 'cap2', 'cap3'],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: '/framework/agents/test-agent.md',
           variant: 'full',
@@ -124,101 +121,6 @@ describe('FrameworkValidator', () => {
       expect(result.valid).toBe(false);
       expect(result.issues).toHaveLength(1);
       expect(result.issues[0].message).toContain('Engine failure');
-    });
-  });
-
-  describe('validateContextExistence', () => {
-    it('should pass when all context files exist', async () => {
-      const mockAgents: AgentDefinition[] = [
-        {
-          id: 'test-agent',
-          moduleId: 'core',
-          capabilityNeeds: [],
-          contextCategoryNeeds: { business: 'basic' },
-          tokenBudget: 1000,
-          sourcePath: '/framework/agents/test-agent.md',
-          variant: 'full',
-        },
-      ];
-
-      mockEngine.getAllAgents.mockResolvedValue(mockAgents);
-      mockedFs.pathExists.mockResolvedValue(true);
-
-      const result = await validator.validateContextExistence();
-
-      expect(result.valid).toBe(true);
-      expect(result.issues).toHaveLength(0);
-    });
-
-    it('should fail when context file is missing', async () => {
-      const mockAgents: AgentDefinition[] = [
-        {
-          id: 'test-agent',
-          moduleId: 'core',
-          capabilityNeeds: [],
-          contextCategoryNeeds: { business: 'basic' },
-          tokenBudget: 1000,
-          sourcePath: '/framework/agents/test-agent.md',
-          variant: 'full',
-        },
-      ];
-
-      mockEngine.getAllAgents.mockResolvedValue(mockAgents);
-      mockedFs.pathExists.mockResolvedValue(false);
-
-      const result = await validator.validateContextExistence();
-
-      expect(result.valid).toBe(false);
-      expect(result.issues).toHaveLength(1);
-      expect(result.issues[0].message).toContain('business-basic.md');
-    });
-
-    it('should check cumulative context files for advanced level', async () => {
-      const mockAgents: AgentDefinition[] = [
-        {
-          id: 'test-agent',
-          moduleId: 'core',
-          capabilityNeeds: [],
-          contextCategoryNeeds: { business: 'advanced' },
-          tokenBudget: 1000,
-          sourcePath: '/framework/agents/test-agent.md',
-          variant: 'full',
-        },
-      ];
-
-      mockEngine.getAllAgents.mockResolvedValue(mockAgents);
-      mockedFs.pathExists.mockResolvedValue(true);
-
-      await validator.validateContextExistence();
-
-      // Should check for both basic and advanced files (cumulative loading)
-      expect(mockedFs.pathExists).toHaveBeenCalledWith(
-        expect.stringContaining('business-basic.md')
-      );
-      expect(mockedFs.pathExists).toHaveBeenCalledWith(
-        expect.stringContaining('business-advanced.md')
-      );
-    });
-
-    it('should skip agents without context needs', async () => {
-      const mockAgents: AgentDefinition[] = [
-        {
-          id: 'test-agent',
-          moduleId: 'core',
-          capabilityNeeds: [],
-          contextCategoryNeeds: {},
-          tokenBudget: 1000,
-          sourcePath: '/framework/agents/test-agent.md',
-          variant: 'full',
-        },
-      ];
-
-      mockEngine.getAllAgents.mockResolvedValue(mockAgents);
-
-      const result = await validator.validateContextExistence();
-
-      expect(result.valid).toBe(true);
-      expect(result.stats.checked).toBe(0);
     });
   });
 
@@ -379,7 +281,6 @@ describe('FrameworkValidator', () => {
           id: 'full-agent',
           moduleId: 'core',
           capabilityNeeds: [],
-          contextCategoryNeeds: { business: 'expert' },
           tokenBudget: 3000,
           sourcePath: '/framework/agents/full-agent.md',
           variant: 'full',
@@ -399,7 +300,6 @@ describe('FrameworkValidator', () => {
           id: 'slim-agent',
           moduleId: 'core',
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 500,
           sourcePath: '/framework/agents/slim-agent.md',
           variant: 'slim',
@@ -421,7 +321,6 @@ describe('FrameworkValidator', () => {
           id: 'slim-agent',
           moduleId: 'core',
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 1500,
           sourcePath: '/framework/agents/slim-agent.md',
           variant: 'slim',
@@ -437,35 +336,12 @@ describe('FrameworkValidator', () => {
       expect(result.issues[0].message).toContain('exceeds recommended 1000 token budget');
     });
 
-    it('should error when slim agent uses non-basic context level', async () => {
-      const mockAgents: AgentDefinition[] = [
-        {
-          id: 'slim-agent',
-          moduleId: 'core',
-          capabilityNeeds: [],
-          contextCategoryNeeds: { business: 'advanced' },
-          tokenBudget: 500,
-          sourcePath: '/framework/agents/slim-agent.md',
-          variant: 'slim',
-          parentAgent: 'full-agent',
-        },
-      ];
-
-      mockEngine.getAllAgents.mockResolvedValue(mockAgents);
-
-      const result = await validator.validateAgentVariants();
-
-      expect(result.valid).toBe(false);
-      expect(result.issues[0].message).toContain("must use 'basic' context level");
-    });
-
     it('should error when full agent delegates to non-existent agent', async () => {
       const mockAgents: AgentDefinition[] = [
         {
           id: 'full-agent',
           moduleId: 'core',
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 3000,
           sourcePath: '/framework/agents/full-agent.md',
           variant: 'full',
@@ -487,7 +363,6 @@ describe('FrameworkValidator', () => {
           id: 'full-agent',
           moduleId: 'core',
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 3000,
           sourcePath: '/framework/agents/full-agent.md',
           variant: 'full',
@@ -497,7 +372,6 @@ describe('FrameworkValidator', () => {
           id: 'another-full',
           moduleId: 'core',
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 3000,
           sourcePath: '/framework/agents/another-full.md',
           variant: 'full', // Not slim!
@@ -520,7 +394,6 @@ describe('FrameworkValidator', () => {
           id: 'test-agent',
           moduleId: 'core',
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: '/framework/agents/test-agent.md',
           variant: 'full',
@@ -552,7 +425,6 @@ describe('FrameworkValidator', () => {
           id: 'test-agent',
           moduleId: 'core',
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: '/framework/agents/test-agent.md',
           variant: 'full',
@@ -575,7 +447,6 @@ describe('FrameworkValidator', () => {
           id: 'test-agent',
           moduleId: 'core',
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: '/framework/agents/test-agent.md',
           variant: 'full',
@@ -598,7 +469,6 @@ describe('FrameworkValidator', () => {
           id: 'test-agent',
           moduleId: 'core',
           capabilityNeeds: ['git-workflow'],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: '/framework/agents/test-agent.md',
           variant: 'full',
@@ -629,7 +499,6 @@ describe('FrameworkValidator', () => {
           id: 'test-agent',
           moduleId: 'core',
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: '/framework/agents/test-agent.md',
           variant: 'full',
@@ -662,7 +531,6 @@ describe('FrameworkValidator', () => {
 
       expect(report.timestamp).toBeDefined();
       expect(report.capabilityResolution).toBeDefined();
-      expect(report.contextExistence).toBeDefined();
       expect(report.moduleDeclarations).toBeDefined();
       expect(report.skillCapabilities).toBeDefined();
       expect(report.agentVariants).toBeDefined();

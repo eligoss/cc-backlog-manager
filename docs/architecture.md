@@ -139,11 +139,10 @@ project/
 │   └── skills/            # Skills for Claude Code
 ├── .claude/
 │   ├── agents/            # Agent markdown files
-│   ├── skills/            # Skill directories
-│   ├── context/           # Context files (business, technical, process)
+│   ├── skills/            # Skill directories (incl. knowing-* knowledge skills)
 │   └── registries/        # Discovery metadata
 ├── CLAUDE.md              # Entry point
-└── routes.yml             # Filesystem navigation
+└── references.yml         # Curated external doc/codebase references
 ```
 
 ### Why This Structure?
@@ -152,8 +151,7 @@ project/
 |-----------|---------|-----------|
 | `.claude/` | Claude Code integration | IDE recognizes this for slash commands |
 | `.claude/commands/` | Agent prompts | Grouped with AI content, not source code |
-| `.claude/skills/` | Skill docs | Progressive disclosure (SKILL.md + supporting files) |
-| `.claude/context/` | Domain knowledge | Loaded based on agent's context-category-needs |
+| `.claude/skills/` | Skill docs | Progressive disclosure (SKILL.md + supporting files); includes `knowing-*` knowledge skills |
 | `.claude/registries/` | Discovery metadata | JSON files for programmatic access |
 
 ### Framework vs Project
@@ -196,39 +194,26 @@ The framework uses `SyncEngine` as the single deployment mechanism for all CLI c
 - **No orphaned files** - Shared deployment engine ensures consistency across all commands
 - **Idempotent operations** - Running sync/add multiple times produces the same result
 
-## Context System
+## Project Knowledge
 
-Context files provide domain knowledge at three levels:
+Project-specific knowledge lives in three on-demand **knowledge skills** rather than tiered context files:
 
-| Level | Files Loaded | Use Case |
-|-------|-------------|----------|
-| `basic` | `*-basic.md` | Day-to-day tasks (~500 tokens) |
-| `advanced` | `*-basic.md` + `*-advanced.md` | Complex tasks (~1500 tokens) |
-| `expert` | All three | Strategic decisions (~3000 tokens) |
+| Skill | Provides |
+|-------|----------|
+| `knowing-the-codebase` | Tech stack, architecture, conventions, testing & CI |
+| `knowing-the-domain` | Business domain, users, product context |
+| `knowing-backlog` | Backlog conventions, ticket patterns, sizing |
 
-Categories: `business`, `technical`, `process`
-
-### Context Loading
-
-Agents declare what context they need:
-
-```yaml
-context-category-needs:
-  business: basic
-  technical: advanced
-  process: basic
-```
-
-The Discovery Engine loads matching context files automatically.
+Agents list the relevant `knowing-*` skills in their `available-skills` and invoke them on demand. External doc and codebase pointers live in `references.yml`.
 
 ## Agent Variants
 
 Agents come in two variants for token efficiency:
 
-| Variant | Token Budget | Context Level | Use Case |
-|---------|-------------|---------------|----------|
-| **Full** | ~2500 | advanced/expert | Orchestration, complex decisions |
-| **Slim** | ~1000 | basic only | Focused single-task execution |
+| Variant | Token Budget | Use Case |
+|---------|-------------|----------|
+| **Full** | ~2500 | Orchestration, complex decisions |
+| **Slim** | ~1000 | Focused single-task execution |
 
 Full agents can delegate to slim variants:
 
@@ -236,31 +221,6 @@ Full agents can delegate to slim variants:
 flowchart LR
     Full[ai-backlog-manager] -->|delegates| Slim[ai-backlog-manager-slim]
     Slim -->|returns result| Full
-```
-
-## Routes.yml
-
-The `routes.yml` file provides filesystem navigation without hardcoded paths:
-
-```yaml
-claude:
-  commands: .claude/commands
-  skills: .claude/skills
-  context: .claude/context
-  registries: .claude/registries
-framework:
-  modules: framework/modules
-  cli: framework/cli
-```
-
-### Keeping Routes Updated
-
-```bash
-# Preview changes
-agentic-framework routes sync --dry-run
-
-# Apply synchronization
-agentic-framework routes sync
 ```
 
 ## Registries

@@ -48,15 +48,6 @@ interface UpdateReport {
 
 // Command mappings with availability tracking
 const commandMappings: CommandMapping[] = [
-  // Discovery & Validation - Only update what's actually available
-  {
-    pattern: /python3 src\/framework\/discovery_engine\.py validate/g,
-    replacement: 'agentic-framework validate',
-    description: 'Validate framework integrity',
-    category: 'discovery',
-    available: true,
-  },
-
   // Sync commands
   {
     pattern: /python3 src\/framework\/sync_agents\.py/g,
@@ -70,38 +61,6 @@ const commandMappings: CommandMapping[] = [
     replacement: 'agentic-framework sync --skills',
     description: 'Sync skills',
     category: 'sync',
-    available: true,
-  },
-
-  // Version management - Only update validate_version_consistency (available)
-  {
-    pattern: /python3 scripts\/validate_version_consistency\.py/g,
-    replacement: 'agentic-framework validate --versions',
-    description: 'Validate version consistency',
-    category: 'version',
-    available: true,
-  },
-
-  // Routes
-  {
-    pattern: /python3 src\/framework\/update_routes\.py\s+--apply/g,
-    replacement: 'agentic-framework routes sync',
-    description: 'Sync routes.yml',
-    category: 'routes',
-    available: true,
-  },
-  {
-    pattern: /python3 src\/framework\/update_routes\.py\s+--report/g,
-    replacement: 'agentic-framework routes check',
-    description: 'Check routes.yml',
-    category: 'routes',
-    available: true,
-  },
-  {
-    pattern: /python3 src\/framework\/update_routes\.py/g,
-    replacement: 'agentic-framework routes check',
-    description: 'Check routes.yml (default)',
-    category: 'routes',
     available: true,
   },
 

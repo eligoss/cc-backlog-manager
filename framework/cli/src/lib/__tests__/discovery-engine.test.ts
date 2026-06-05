@@ -37,7 +37,7 @@ essential-skills: []
   it('should parse empty object {} correctly', () => {
     const engine = new DiscoveryEngine('/fake/path');
     const content = `---
-context-category-needs: {}
+metadata: {}
 ---
 # Agent`;
 
@@ -546,9 +546,6 @@ describe('DiscoveryEngine - getAgentDefinition()', () => {
 variant: full
 capability-needs:
   - code-implementation
-context-category-needs:
-  business: basic
-  technical: advanced
 token-budget: 3000
 essential-skills:
   - verifying-quality
@@ -694,89 +691,6 @@ describe('DiscoveryEngine - validateModuleDependencies()', () => {
       module: 'coding',
       requires: 'core'
     });
-  });
-});
-
-describe('DiscoveryEngine - getCumulativeContextFiles()', () => {
-  let engine: DiscoveryEngine;
-
-  beforeEach(() => {
-    engine = new DiscoveryEngine('/test/framework');
-  });
-
-  it('should return only basic file for basic level', () => {
-    const files = engine.getCumulativeContextFiles('business', 'basic');
-
-    expect(files).toEqual(['business-basic.md']);
-  });
-
-  it('should return basic and advanced files for advanced level', () => {
-    const files = engine.getCumulativeContextFiles('technical', 'advanced');
-
-    expect(files).toEqual(['technical-basic.md', 'technical-advanced.md']);
-  });
-
-  it('should return all three files for expert level', () => {
-    const files = engine.getCumulativeContextFiles('process', 'expert');
-
-    expect(files).toEqual([
-      'process-basic.md',
-      'process-advanced.md',
-      'process-expert.md'
-    ]);
-  });
-
-  it('should handle unknown level gracefully', () => {
-    const files = engine.getCumulativeContextFiles('business', 'unknown' as any);
-
-    expect(files).toEqual(['business-unknown.md']);
-  });
-});
-
-describe('DiscoveryEngine - getContextFilesForAgent()', () => {
-  let engine: DiscoveryEngine;
-
-  beforeEach(() => {
-    engine = new DiscoveryEngine('/test/framework');
-  });
-
-  it('should get all context files for agent', () => {
-    const agent = {
-      id: 'test-agent',
-      moduleId: 'core',
-      capabilityNeeds: [],
-      contextCategoryNeeds: {
-        business: 'basic',
-        technical: 'advanced'
-      },
-      tokenBudget: 3000,
-      sourcePath: '/test/agent.md'
-    };
-
-    const files = engine.getContextFilesForAgent(agent);
-
-    expect(files).toContain('business-basic.md');
-    expect(files).toContain('technical-basic.md');
-    expect(files).toContain('technical-advanced.md');
-  });
-
-  it('should deduplicate context files', () => {
-    const agent = {
-      id: 'test-agent',
-      moduleId: 'core',
-      capabilityNeeds: [],
-      contextCategoryNeeds: {
-        business: 'expert',
-        technical: 'expert'
-      },
-      tokenBudget: 3000,
-      sourcePath: '/test/agent.md'
-    };
-
-    const files = engine.getContextFilesForAgent(agent);
-    const uniqueFiles = [...new Set(files)];
-
-    expect(files.length).toBe(uniqueFiles.length);
   });
 });
 

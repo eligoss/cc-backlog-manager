@@ -139,7 +139,6 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
 
       const totalIssues =
         validationReport.capabilityResolution.issues.length +
-        validationReport.contextExistence.issues.length +
         validationReport.moduleDeclarations.issues.length +
         validationReport.skillCapabilities.issues.length;
 
@@ -227,7 +226,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
       console.log(`  ${chalk.green('✓')} All checks passed`);
     } else {
       console.log(`  ${chalk.red('✗')} ${report.validation.issues} issue(s) found`);
-      console.log(chalk.dim('  Run \'agentic-framework validate --verbose\' for details'));
+      console.log(chalk.dim('  Run \'agentic-framework build --verbose\' for details'));
     }
   }
 
@@ -235,7 +234,7 @@ export async function statusCommand(options: StatusOptions): Promise<void> {
   console.log(chalk.yellow('\nCommands:\n'));
   console.log(chalk.dim('  agentic-framework update     Update to latest version'));
   console.log(chalk.dim('  agentic-framework sync       Force re-sync skills/agents'));
-  console.log(chalk.dim('  agentic-framework validate   Check framework integrity\n'));
+  console.log(chalk.dim('  agentic-framework build      Check framework integrity\n'));
 
   // Record telemetry
   const durationMs = Date.now() - startTime;

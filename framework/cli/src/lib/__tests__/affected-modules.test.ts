@@ -25,14 +25,6 @@ describe('affected-modules', () => {
         expect(mapFileToModule('framework/modules/coding/module.json')).toBe('coding');
       });
 
-      it('should map framework/modules/reporting/ files to reporting module', () => {
-        expect(mapFileToModule('framework/modules/reporting/module.json')).toBe('reporting');
-      });
-
-      it('should map framework/modules/writer/ files to writer module', () => {
-        expect(mapFileToModule('framework/modules/writer/module.json')).toBe('writer');
-      });
-
       it('should map framework/modules/planning/ files to planning module', () => {
         expect(mapFileToModule('framework/modules/planning/module.json')).toBe('planning');
       });
@@ -49,9 +41,6 @@ describe('affected-modules', () => {
         expect(mapFileToModule('framework/cli/src/commands/backlog/validate.ts')).toBe('backlog');
       });
 
-      it('should map CLI writer commands to writer module', () => {
-        expect(mapFileToModule('framework/cli/src/commands/writer/create-chapter.ts')).toBe('writer');
-      });
 
       it('should map CLI planning commands to planning module', () => {
         expect(mapFileToModule('framework/cli/src/commands/planning/create-plan.ts')).toBe('planning');
@@ -137,11 +126,6 @@ describe('affected-modules', () => {
     it('should have patterns defined for core module', () => {
       expect(MODULE_TEST_PATTERNS.core).toBeDefined();
       expect(MODULE_TEST_PATTERNS.core.length).toBeGreaterThan(0);
-    });
-
-    it('should have patterns defined for writer module', () => {
-      expect(MODULE_TEST_PATTERNS.writer).toBeDefined();
-      expect(MODULE_TEST_PATTERNS.writer.length).toBeGreaterThan(0);
     });
 
     it('should have patterns defined for planning module', () => {

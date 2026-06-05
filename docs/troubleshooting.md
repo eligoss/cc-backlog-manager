@@ -130,31 +130,18 @@ agentic-framework list
 
 ### Link Validation Failures
 
-**Symptom:** `agentic-framework validate --links` reports broken links
+**Symptom:** `agentic-framework build` reports broken links
 
 **Solutions:**
 
 ```bash
-# Run verbose validation
-agentic-framework validate --links --verbose
+# Run verbose validation (build checks schemas + markdown links)
+agentic-framework build --verbose
 
 # Common causes:
 # - Typos in file paths
 # - Missing .md extension
 # - Relative paths incorrect
-```
-
-### Version Validation Failures
-
-**Symptom:** `agentic-framework validate --versions` reports mismatches
-
-**Solutions:**
-
-```bash
-# Check version consistency
-agentic-framework validate --versions
-
-# Fix: Ensure all module.json files have consistent versions
 ```
 
 ### Plan Validation Failures
@@ -191,7 +178,7 @@ Enable verbose output for debugging:
 
 ```bash
 agentic-framework backlog validate --verbose
-agentic-framework validate --links --verbose
+agentic-framework build --verbose
 ```
 
 ## Configuration Issues
@@ -236,26 +223,11 @@ agentic-framework list
 ### Validate Everything
 
 ```bash
-# Run all validations
-agentic-framework validate
+# Validate framework artifacts (schemas + markdown links)
+agentic-framework build
 
-# Run specific validations
-agentic-framework validate --links
-agentic-framework validate --versions
-agentic-framework validate --routes
-```
-
-### Routes Sync
-
-```bash
-# Check routes.yml synchronization
-agentic-framework routes check
-
-# Preview sync changes
-agentic-framework routes sync --dry-run
-
-# Apply sync
-agentic-framework routes sync
+# Quick schema-only check
+agentic-framework build --quick
 ```
 
 ## Getting Help

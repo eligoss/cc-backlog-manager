@@ -70,7 +70,6 @@ describe('CliContext', () => {
         },
       };
       await sandbox.createJson('.agentic-framework.json', manifest);
-      await sandbox.createFile('routes.yml', 'paths:\n  backlog:\n    tickets: .claude/backlog/tickets');
 
       const ctx = await CliContext.create({ path: sandbox.path });
 
@@ -100,18 +99,14 @@ describe('CliContext', () => {
     it('should integrate path resolver correctly', async () => {
       await sandbox.createDir('.git');
       await sandbox.createFile('CLAUDE.md', '# Project');
-      await sandbox.createFile(
-        'routes.yml',
-        'paths:\n  backlog:\n    tickets: custom/tickets\n  plans:\n    root: custom/plans'
-      );
 
       const ctx = await CliContext.create({ path: sandbox.path });
 
       expect(ctx.paths.getTicketPath('story')).toBe(
-        path.join(sandbox.path, 'custom/tickets/stories')
+        path.join(sandbox.path, '.claude/backlog/tickets/stories')
       );
       expect(ctx.paths.getPlanPath('framework')).toBe(
-        path.join(sandbox.path, 'custom/plans/framework')
+        path.join(sandbox.path, '.claude/plans/framework')
       );
     });
 
@@ -177,15 +172,14 @@ describe('CliContext', () => {
       expect(ctx.projectRoot).toBe(sandbox.path);
     });
 
-    it('should integrate path resolver with routes.yml', async () => {
+    it('should integrate path resolver', async () => {
       await sandbox.createDir('.git');
       await sandbox.createFile('CLAUDE.md', '# Project');
-      await sandbox.createFile('routes.yml', 'paths:\n  backlog:\n    tickets: ai/tickets');
 
       const ctx = CliContext.createSync({ path: sandbox.path });
 
       expect(ctx.paths.getTicketPath('bug')).toBe(
-        path.join(sandbox.path, 'ai/tickets/bugs')
+        path.join(sandbox.path, '.claude/backlog/tickets/bugs')
       );
     });
 
@@ -203,7 +197,7 @@ describe('CliContext', () => {
 
   describe('CliContext.requireSync()', () => {
     it('should return context when inside a project', async () => {
-      await sandbox.createFile('routes.yml', 'paths: {}');
+      await sandbox.createDir('.git');
       await sandbox.createFile('CLAUDE.md', '# Project');
 
       const ctx = CliContext.requireSync({ path: sandbox.path });
@@ -492,7 +486,6 @@ describe('CliContext', () => {
       const ctx = await CliContext.create({ path: sandbox.path });
 
       // All PathResolver methods should be available
-      expect(typeof ctx.paths.resolve).toBe('function');
       expect(typeof ctx.paths.getTicketPath).toBe('function');
       expect(typeof ctx.paths.getPlanPath).toBe('function');
       expect(typeof ctx.paths.getContextPath).toBe('function');
@@ -501,41 +494,16 @@ describe('CliContext', () => {
       expect(typeof ctx.paths.getRegistryPath).toBe('function');
     });
 
-    it('should use routes.yml config when available', async () => {
+    it('should resolve to default framework paths', async () => {
       await sandbox.createDir('.git');
       await sandbox.createFile('CLAUDE.md', '# Project');
-      const routesContent = `
-paths:
-  backlog:
-    tickets: custom/tickets
-  context:
-    root: custom/context
-  agents:
-    root: custom/agents
-`;
-      await sandbox.createFile('routes.yml', routesContent);
 
       const ctx = await CliContext.create({ path: sandbox.path });
 
-      expect(ctx.paths.routesConfig).not.toBeNull();
-      expect(ctx.paths.resolve('backlog.tickets')).toBe(
-        path.join(sandbox.path, 'custom/tickets')
-      );
-      expect(ctx.paths.getContextPath()).toBe(path.join(sandbox.path, 'custom/context'));
-      expect(ctx.paths.getAgentPath()).toBe(path.join(sandbox.path, 'custom/agents'));
-    });
-
-    it('should fallback to defaults when routes.yml is missing', async () => {
-      await sandbox.createDir('.git');
-      await sandbox.createFile('CLAUDE.md', '# Project');
-      // No routes.yml
-
-      const ctx = await CliContext.create({ path: sandbox.path });
-
-      expect(ctx.paths.routesConfig).toBeNull();
-      // Should still work with defaults
       expect(ctx.paths.getTicketPath('story')).toContain('.claude/backlog/tickets/stories');
       expect(ctx.paths.getPlanPath()).toContain('.claude/plans');
+      expect(ctx.paths.getContextPath()).toContain('.claude/context');
+      expect(ctx.paths.getAgentPath()).toContain('.claude/commands');
     });
   });
 

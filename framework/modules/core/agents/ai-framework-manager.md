@@ -13,10 +13,6 @@ available-skills:
   - validating-markdown
   - using-mcp
   - using-framework
-context-category-needs:
-  business: basic
-  technical: expert
-  process: advanced
 token-budget: 3000
 ---
 
@@ -133,7 +129,7 @@ When the framework version changes:
 
 Orchestration steps (implementation delegated):
 
-1. **Analyze token usage** — Count tokens in the agent file, check `agents.json` for current budget, review `context-category-needs`. Identify duplication across agents.
+1. **Analyze token usage** — Count tokens in the agent file, check `agents.json` for current budget. Identify duplication across agents.
 2. **Design optimization** — Decide what to extract to skills, which capability-needs to remove, which context levels to adjust.
 3. **Delegate implementation** — Dispatch `ai-framework-developer` to apply changes: extract skills, update frontmatter, condense templates.
 4. **Validate** — Verify discovery still works, no functionality lost, token reduction achieved.
@@ -146,21 +142,10 @@ Orchestration steps (implementation delegated):
 
 Orchestration steps (execution delegated):
 
-1. **Analyze current structure** — Review `routes.yml`, identify misplaced files, note category boundary violations.
+1. **Analyze current structure** — Review the registries and filesystem, identify misplaced files, note category boundary violations.
 2. **Design new structure** — Sketch folder hierarchy, define clear category boundaries, plan migration path. Minimize nesting depth (<4 levels).
-3. **Delegate execution** — Dispatch `ai-framework-developer` to move files (`git mv`), update references, and run `agentic-framework routes sync`.
-4. **Validate** — Check for broken references, verify registry files updated, confirm routes.yml synchronized.
-
----
-
-### Task: Update Context Files
-
-Orchestration steps (file updates delegated):
-
-1. **Identify changes** — What is outdated, new, or missing? Which context category and level is affected?
-2. **Check schema** — Review responsibility boundaries in `context.json`. Ensure changes fit the schema and stay within token budgets.
-3. **Delegate updates** — Dispatch `ai-framework-developer` to edit context files and update `context.json` registry entries.
-4. **Validate** — Verify affected agents still discover context correctly. Check token budgets not exceeded.
+3. **Delegate execution** — Dispatch `ai-framework-developer` to move files (`git mv`) and update references.
+4. **Validate** — Check for broken references, verify registry files updated.
 
 ---
 
@@ -182,7 +167,7 @@ Orchestration steps (file edits delegated):
 
 Orchestration steps (file moves delegated):
 
-1. **Plan organization** — Identify what belongs where. Root should contain only entry points (README.md, routes.yml, CLAUDE.md). Changelogs go in `framework/changelog/`.
+1. **Plan organization** — Identify what belongs where. Root should contain only entry points (README.md, CLAUDE.md). Changelogs go in `framework/changelog/`.
 2. **Delegate file moves** — Dispatch `ai-framework-developer` to move files, update internal links, remove duplicates.
 3. **Validate** — No broken links, root directory clean, all documentation reachable from CLAUDE.md.
 
@@ -197,9 +182,8 @@ Framework registries live in `.claude/registries/` (installed project) and `fram
 - `agents.json` — Agent definitions, capability-needs, token budgets
 - `skills.json` — Skill definitions, capabilities-provided
 - `discovery-map.json` — Capability mappings (single source of truth)
-- `context.json` — Context file structure and responsibilities
 
-After any structural change, verify registry synchronization. Use `agentic-framework routes sync` to update `routes.yml`.
+After any structural change, verify registry synchronization by running `agentic-framework build`.
 
 ---
 

@@ -55,10 +55,6 @@ capability-needs:
   - quality-assurance
   - markdown-formatting
   - agent-design
-context-category-needs:
-  business: advanced
-  technical: advanced
-  process: advanced
 token-budget: 2500
 ---
 
@@ -260,22 +256,17 @@ Complete explanation of discovery-driven architecture...
    - Who is the primary user?
    - What capabilities does it NEED from skills?
 
-2. **Determine Context Requirements**
-   - Check agents.json for similar agents
-   - Select appropriate levels for each category
-   ...
-
-3. **Create Agent File with YAML Frontmatter**
+2. **Create Agent File with YAML Frontmatter**
    ```yaml
    ---
    agent: ai-{agent-name}
    ...
    ```
 
-4. **Add Agent to Registry**
+3. **Add Agent to Registry**
    ...
 
-5. **Test Auto-Discovery**
+4. **Test Auto-Discovery**
    ...
 
 **Validation:**
@@ -310,9 +301,6 @@ Complete explanation of discovery-driven architecture...
 Complete workflow for creating new agents in v12.0...
 
 ## Step 1: Define Agent Purpose & Capabilities
-[Full step documentation]
-
-## Step 2: Determine Context Requirements
 [Full step documentation]
 ...
 ```
@@ -394,19 +382,7 @@ TOTAL: ~170 lines, ~950 tokens
 
 ## Common Extraction Patterns
 
-### Pattern A: Knowledge → Context
-
-```
-BEFORE (in agent):
-  ## Business Rules
-  [150 lines explaining business domain]
-
-AFTER:
-  Agent: context-category-needs.business: advanced
-  Content: Moved to context/business-advanced.md
-```
-
-### Pattern B: Workflow → Skill
+### Pattern A: Workflow → Skill
 
 ```
 BEFORE (in agent):
@@ -418,7 +394,7 @@ AFTER:
   Content: Already exists in git workflows skill
 ```
 
-### Pattern C: Examples → Skill Supporting File
+### Pattern B: Examples → Skill Supporting File
 
 ```
 BEFORE (in agent):
@@ -430,7 +406,7 @@ AFTER:
   Content: Moved to skill/EXAMPLES.md
 ```
 
-### Pattern D: Reference → Link
+### Pattern C: Reference → Link
 
 ```
 BEFORE (in agent):

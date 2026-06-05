@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://agentic-framework.dev/schemas/agents.schema.json",
   "title": "Agentic Framework Agents Registry",
-  "description": "Schema for agents.json registry that defines all available agents with their capabilities, context needs, and SDK configuration",
+  "description": "Schema for agents.json registry that defines all available agents with their capabilities and SDK configuration",
   "type": "object",
   "required": ["version", "agents"],
   "additionalProperties": false,
@@ -27,7 +27,7 @@
   "definitions": {
     "AgentDefinition": {
       "type": "object",
-      "required": ["id", "module", "file", "capability-needs", "context-category-needs", "token-budget"],
+      "required": ["id", "module", "file", "capability-needs", "token-budget"],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -69,30 +69,6 @@
           },
           "description": "Skills available for on-demand invocation (Tier 3: referenced but not loaded, invoke via Skill tool)"
         },
-        "context-category-needs": {
-          "type": "object",
-          "description": "Context loading requirements by category and level",
-          "additionalProperties": false,
-          "properties": {
-            "business": {
-              "$ref": "#/definitions/ContextLevel"
-            },
-            "technical": {
-              "$ref": "#/definitions/ContextLevel"
-            },
-            "process": {
-              "$ref": "#/definitions/ContextLevel"
-            }
-          }
-        },
-        "context-files": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^[a-z]+-[a-z]+\\.md$"
-          },
-          "description": "Computed list of context files to load (derived from context-category-needs)"
-        },
         "token-budget": {
           "type": "integer",
           "minimum": 500,
@@ -104,11 +80,6 @@
           "description": "Claude Agent SDK configuration for programmatic execution"
         }
       }
-    },
-    "ContextLevel": {
-      "type": "string",
-      "enum": ["basic", "advanced", "expert"],
-      "description": "Context loading level (cumulative: basic < advanced < expert)"
     },
     "SDKConfiguration": {
       "type": "object",

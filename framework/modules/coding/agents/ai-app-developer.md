@@ -9,10 +9,8 @@ capability-needs:
   - intelligence-gathering
 available-skills:
   - using-mcp
-context-category-needs:
-  business: basic
-  technical: advanced
-  process: basic
+  - knowing-the-codebase
+  - knowing-the-domain
 variant: full
 delegates-to:
 token-budget: 3000
@@ -52,6 +50,8 @@ Transform tickets into production-ready application code following industry stan
 | Git Workflow | Role-Based | `committing-code` | Auto-discovered |
 | Intelligence Gathering | Role-Based | `gathering-intelligence` | Auto-discovered |
 | MCP Usage | Available | `using-mcp` | On-demand |
+| Codebase Knowledge | Available | `knowing-the-codebase` | On-demand |
+| Domain Knowledge | Available | `knowing-the-domain` | On-demand |
 
 **Pattern:** Essential skills pre-loaded. Role-based skills auto-discovered from capability-needs. Available skills loaded on-demand.
 
@@ -68,21 +68,14 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 
 ---
 
-## Required Reading
+## Project Knowledge
 
-### Context Files
+**Before writing code, invoke these skills via the Skill tool to load this project's specifics:**
 
-> **Registry:** Context requirements defined in `{project}/ai/registries/agents.json` under `ai-app-developer.context-category-needs`
+1. **`knowing-the-codebase`** — tech stack, architecture, code conventions, testing & CI, git workflow. **Always invoke before implementing.**
+2. **`knowing-the-domain`** — product context, business domain, and users the code serves.
 
-**Load these 3 files before writing code:**
-
-1. **business-basic** - Product overview, core features, users
-2. **technical-advanced** - Tech stack, coding patterns, architecture, file structure, real examples (~8,000 tokens)
-3. **process-basic** - Development workflow, documentation standards
-
-> **Auto-Discovery Note:** All required skills (code-implementation, git-workflow-management, quality-assurance) are automatically discovered and loaded by the Discovery Engine. No manual skill loading required.
-
-**Critical:** The technical-advanced.md context file provides YOUR project's specific tech stack, coding patterns, file structure, real examples, and cross-repository coordination. Always load before writing code.
+These skills hold YOUR project's specifics (the framework ships them as fillable templates). Consult `references.yml` at the project root for links to deeper external docs and related codebases.
 
 ### Repository-Specific Guides
 
@@ -97,13 +90,11 @@ These guides are source-of-truth for each repository (NOT duplicated in framewor
 
 ## Navigation
 
-> **Routes:** Use `{project}/routes.yml` for filesystem navigation
 > **Registries:** Use JSON registries in `{project}/ai/registries/` for metadata and discovery
 
 All directory paths, file locations, and metadata are defined in the registry system:
 - **agents.json** - Agent definitions, capability-needs, token budgets
 - **skills.json** - Skill definitions, capabilities-provided
-- **context.json** - Context file structure and responsibilities
 - **discovery-map.json** - Capability mappings (single source of truth)
 
 ---
@@ -119,7 +110,7 @@ All directory paths, file locations, and metadata are defined in the registry sy
    - Understand acceptance criteria
    - Identify affected components (frontend, backend, database)
    - Review related code in codebase
-   - Check technical-advanced.md for project-specific patterns
+   - Invoke knowing-the-codebase for project-specific patterns
 
 2. **Plan Approach**
    - Identify files to create/modify
@@ -202,7 +193,7 @@ Please review the implementation and provide feedback. Reply:
 ## Critical Reminders
 
 **Before Writing Code:**
-- ✅ Load technical-advanced.md context
+- ✅ Invoke knowing-the-codebase (and knowing-the-domain) skills
 - ✅ Load repository-specific CLAUDE.md guide
 - ✅ Verify project conventions and patterns
 - ✅ Check for existing similar implementations
@@ -231,7 +222,7 @@ Please review the implementation and provide feedback. Reply:
 
 - Code is production-ready and secure
 - Tests are comprehensive and passing
-- Code follows project conventions from technical-advanced.md
+- Code follows project conventions from the knowing-the-codebase skill
 - Multi-tenant isolation enforced (if applicable)
 - Review requests provide clear context and reasoning
 - Implementation aligns with ticket acceptance criteria
@@ -250,7 +241,7 @@ Please review the implementation and provide feedback. Reply:
 1. ✅ Did I follow SOLID and DRY principles?
 2. ✅ Did I write comprehensive tests?
 3. ✅ Did I ensure code is production-ready and secure?
-4. ✅ Did I follow project conventions from technical-advanced.md?
+4. ✅ Did I follow project conventions from knowing-the-codebase?
 5. ✅ Did I request meaningful review with context?
 6. ⚠️ Did I encounter any issues or make assumptions?
 7. 💡 Do I have suggestions for code quality improvements?
@@ -260,7 +251,6 @@ Please review the implementation and provide feedback. Reply:
 
 **Version:** 12.0 (Discovery-Driven Architecture)
 **Token Budget:** ~2,500 tokens (agent file only, skills auto-loaded via Discovery Engine)
-**Context Loading:** Auto-discovered via context-category-needs in agents.json
 **Last Updated:** 2025-12-15
 
 **Skills Routed To:**

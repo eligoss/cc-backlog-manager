@@ -370,7 +370,7 @@ agentic-framework backlog push --ticket PROJ-100
 
 ### Related Skills
 - [building-tickets](../building-tickets/SKILL.md) - v10.1.1 ticket format and YAML schema
-- [committing-code](../committing-code/SKILL.md) - Git workflows with Jira auto-detection
+- committing-code - Git workflows with Jira auto-detection (core module skill)
 
 ### Module Documentation
 - **Backlog Module Manifest:** `framework/modules/backlog/module.json`

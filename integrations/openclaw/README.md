@@ -46,13 +46,10 @@ Point OpenClaw to `integrations/openclaw/manifest.json` for agent discovery. Eac
 |-------|-------|--------|---------|
 | `ai-app-developer` | sonnet | coding | Feature implementation, bug fixes |
 | `ai-architect` | opus | coding | Architecture design, tech decisions |
-| `ai-ios-developer` | sonnet | coding | iOS/Swift development |
 | `ai-backlog-manager` | sonnet | backlog | Ticket creation, sprint planning |
-| `ai-book-writer` | sonnet | writer | Book writing, world-building |
 | `ai-confluence-manager` | sonnet | confluence | Documentation publishing |
 | `ai-framework-manager` | opus | core | Framework improvements |
 | `ai-framework-developer` | sonnet | core | Framework code changes |
-| `ai-report-manager` | sonnet | reporting | Reports, metrics |
 
 ## Manifest Format
 

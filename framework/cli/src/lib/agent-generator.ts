@@ -27,12 +27,6 @@ export interface AgentDefinition {
   "essential-skills"?: string[];
   "capability-needs"?: string[];
   "available-skills"?: string[];
-  "context-category-needs"?: {
-    business?: "basic" | "advanced" | "expert";
-    technical?: "basic" | "advanced" | "expert";
-    process?: "basic" | "advanced" | "expert";
-  };
-  "context-files"?: string[];
   "token-budget"?: number;
   variant?: "full" | "slim";
   "parent-agent"?: string;
@@ -51,11 +45,6 @@ export interface CustomAgentDefinition {
   instructions: string;
   tools: string[];
   skills?: string[];
-  context?: {
-    business?: "basic" | "advanced" | "expert";
-    technical?: "basic" | "advanced" | "expert";
-    process?: "basic" | "advanced" | "expert";
-  };
   sourceAgent: string;
   generated: string;
 }
@@ -72,11 +61,6 @@ interface AgentFrontmatter {
   "available-skills"?: string[];
   variant?: "full" | "slim";
   "parent-agent"?: string;
-  "context-category-needs"?: {
-    business?: "basic" | "advanced" | "expert";
-    technical?: "basic" | "advanced" | "expert";
-    process?: "basic" | "advanced" | "expert";
-  };
   "token-budget"?: number;
   "deploy-to"?: "command" | "agent" | "both";
 }
@@ -301,10 +285,6 @@ export class AgentGenerator {
     const skills =
       agent["essential-skills"] || frontmatter["essential-skills"] || [];
 
-    // Build context from registry or frontmatter
-    const context =
-      agent["context-category-needs"] || frontmatter["context-category-needs"];
-
     return {
       $schema:
         "../../../framework/modules/core/registries/schemas/custom-agent.schema.json",
@@ -314,7 +294,6 @@ export class AgentGenerator {
       instructions,
       tools: [...AgentGenerator.DEFAULT_TOOLS],
       skills,
-      context,
       sourceAgent: agent.id,
       generated: new Date().toISOString(),
     };

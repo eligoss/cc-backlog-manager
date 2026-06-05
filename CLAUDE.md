@@ -1,6 +1,6 @@
 # Agentic Development Framework - Entry Point
 
-Framework Version: **v1.9.0** | Architecture: **Modular Discovery-Driven**
+Framework Version: **v1.0.0** | Architecture: **Modular Discovery-Driven**
 
 ## What is This?
 
@@ -21,26 +21,14 @@ A modular framework for AI-assisted software development. Compose intelligent wo
 | → Technical Reference | [docs/telemetry.md](docs/telemetry.md) | API docs & advanced features |
 | Troubleshooting | [docs/troubleshooting.md](docs/troubleshooting.md) | Common issues |
 
-## Trust Directive
+## Navigation
 
-**DO NOT run exploratory searches or codebase exploration.** This framework provides complete context through:
+This is a focused, four-module framework — navigate it natively. Use normal code search (Glob/Grep/Read) and the registries to find things; there is no "don't explore" mandate.
 
-1. **This file (CLAUDE.md)** - Structure overview and navigation
-2. **Agent prompts** - Detailed instructions, skill routing tables, context-category-needs
-3. **Skills** - Invoke via Skill tool when routing table indicates (loads on-demand)
-4. **Context files** - Read from `.claude/context/` based on agent's declared context-category-needs
-
-**Anti-patterns to avoid:**
-- Running Glob/Grep to "understand the codebase" - structure is documented here
-- Using Explore agents to "see what's there" - use routes.yml and registries
-- Re-verifying what framework documentation already states
-
-**Correct workflow:**
-- Trust loaded context and agent instructions
-- Use `routes.yml` for filesystem navigation
-- Use registry files (`framework/modules/core/registries/`) for metadata
-- Invoke skills via Skill tool when routing tables indicate
-- Use CLI commands for framework operations (don't do manually what CLI can do)
+- **Project knowledge** — invoke the `knowing-the-codebase`, `knowing-the-domain`, and `knowing-backlog` skills for project-specific context.
+- **External references** — consult `references.yml` for curated links to external docs, APIs, and related codebases.
+- **Framework metadata** — registry files in `framework/modules/core/registries/` describe agents, skills, and capabilities.
+- **Operations** — prefer CLI commands for framework operations rather than editing generated files by hand.
 
 ## MCP Integration (Required)
 
@@ -93,9 +81,7 @@ add_memory(
 | `init` | Initialize new project with framework |
 | `add` / `remove` | Add or remove modules |
 | `list` / `info` | List modules or show module details |
-| `validate` | Validate framework configuration |
-| `routes sync` | Sync filesystem to routes.yml |
-| `bump-version` | Manage framework versioning |
+| `build` | Validate framework artifacts (schema + markdown links) |
 | `status` | Show framework status |
 | `backlog pull` | Fetch tickets from Jira REST API to local markdown |
 | `backlog diff` | Compare local ticket state against Jira remote |
@@ -108,13 +94,12 @@ framework/              # SOURCE (published to npm)
 ├── modules/           # All modules (all optional)
 │   ├── core/         # Framework infrastructure (optional, recommended)
 │   │   ├── agents/   # Framework management agents
-│   │   ├── skills/   # Shared skills (git, qa, markdown, mcp)
+│   │   ├── skills/   # Shared skills (git, qa, markdown, mcp, knowledge)
 │   │   ├── registries/ # Discovery metadata & schemas
-│   │   └── templates/  # Context templates
+│   │   └── templates/  # Scaffolding templates
 │   ├── backlog/      # Ticket management
 │   ├── coding/       # Development agents
-│   ├── confluence/   # Confluence documentation
-│   └── reporting/    # Report generation
+│   └── confluence/   # Confluence documentation
 └── cli/              # TypeScript scaffolding CLI
 ```
 
@@ -131,8 +116,6 @@ Agents are available as `/commands`:
 - `/ai-architect` - Architecture design (if coding module installed)
 - `/ai-app-developer` - Code implementation (if coding module installed)
 - `/ai-backlog-manager` - Backlog planning, ticket creation (if backlog module installed)
-- `/ai-ios-developer` - iOS development (if coding module installed)
-- `/ai-book-writer` - Fantasy book writing (if writer module installed)
 
 ### As Skills
 
@@ -150,9 +133,8 @@ CLI commands are also available as slash commands (e.g., `/cmd-backlog-create-ti
 
 Each module provides:
 - **Agents** - AI agents with specific roles
-- **Skills** - Reusable capabilities
+- **Skills** - Reusable capabilities (including `knowing-*` knowledge skills for project context)
 - **CLI Commands** - TypeScript automation
-- **Context** - Domain knowledge templates
 
 Check `module.json` in each module directory for capabilities.
 
@@ -180,20 +162,15 @@ The framework uses a **three-tier skill loading model**:
 
 Agent prompts include a **Skill Routing Table** showing all tiers. For details on how discovery works, see [Architecture](docs/architecture.md).
 
-### Context Loading
+### Project Knowledge
 
-1. Check agent's `context-category-needs` in the agent prompt or `module.json`
-2. Read context files from `.claude/context/` matching the needed categories and levels
+Project-specific context lives in three on-demand **knowledge skills**, not context files:
 
-## Context Level System
+- `knowing-the-codebase` — tech stack, architecture, conventions, testing & CI
+- `knowing-the-domain` — business domain, users, product context
+- `knowing-backlog` — backlog conventions, ticket patterns, sizing
 
-| Level | Loads Files | Use Case | Token Target |
-|-------|-------------|----------|--------------|
-| `basic` | `*-basic.md` | Day-to-day tasks | ~500 |
-| `advanced` | `*-basic.md` + `*-advanced.md` | Complex tasks | ~1500 |
-| `expert` | All three levels | Strategic planning | ~3000 |
-
-See [Architecture](docs/architecture.md) for details.
+Fill these in per project, and list external doc/codebase pointers in `references.yml`.
 
 ## Commands, Agents, and Skills
 
@@ -204,11 +181,11 @@ See [Architecture](docs/architecture.md) for details.
 
 ## Agent Variants
 
-| Variant | Token Budget | Context Level | Role |
-|---------|-------------|---------------|------|
-| **Full** | 3000 | advanced/expert | Orchestrator, can delegate |
-| **Slim** | 1000 | basic only | Focused execution, single task |
-| **Scout** | 800 | none (stateless) | Parallel research, returns structured summary |
+| Variant | Token Budget | Role |
+|---------|-------------|------|
+| **Full** | 3000 | Orchestrator, can delegate |
+| **Slim** | 1000 | Focused execution, single task |
+| **Scout** | 800 | Parallel research, returns structured summary (stateless) |
 
 Full agents can delegate to slim variants via Task tool. Scout agents (`ai-scout-*`) are dispatched in parallel by orchestrators for intelligence gathering. See [Architecture](docs/architecture.md) for delegation patterns.
 
@@ -261,7 +238,7 @@ See [CLI Reference](docs/cli-reference.md) for full documentation.
 | `framework/modules/core/module.json` | Core module manifest |
 | `framework/modules/*/module.json` | Module manifests |
 | `framework/modules/core/registries/schemas/module.schema.json` | Module JSON Schema |
-| `routes.yml` | Filesystem navigation |
+| `references.yml` | Curated external doc/codebase references |
 
 ## Getting Started
 
@@ -276,14 +253,14 @@ agentic-framework init my-project --modules coding
 agentic-framework add confluence
 ```
 
-## Context Files
+## Project Knowledge Skills
 
-After scaffolding, customize context files for your project:
-- `.claude/context/business-basic.md` - Product overview, users, key features
-- `.claude/context/technical-basic.md` - Tech stack, architecture basics
-- `.claude/context/process-basic.md` - Workflow, team structure
+After scaffolding, fill in the three knowledge skills with your project's specifics:
+- `knowing-the-codebase` - tech stack, architecture, conventions, testing & CI
+- `knowing-the-domain` - business domain, users, product context
+- `knowing-backlog` - backlog conventions, ticket patterns, sizing
 
-See `framework/modules/core/templates/context/` for template examples.
+Add external doc and related-codebase pointers to `references.yml`.
 
 ## Commit Messages & CI/CD Integration
 
@@ -335,4 +312,4 @@ For breaking changes, auto-release skips and you must use the manual release wor
 
 ---
 
-**Version:** 1.9.0 | **Architecture:** Modular Discovery-Driven | **Modules:** core, backlog, confluence, coding, reporting, writer
+**Version:** 1.0.0 | **Architecture:** Modular Discovery-Driven | **Modules:** core, backlog, coding, confluence

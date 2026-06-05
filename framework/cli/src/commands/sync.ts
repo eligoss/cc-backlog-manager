@@ -212,7 +212,7 @@ export async function syncCommand(options: SyncOptions): Promise<void> {
       });
       console.log(
         chalk.dim(
-          '\nRun "agentic-framework validate" to check module installation.',
+          '\nRun "agentic-framework build" to check module installation.',
         ),
       );
       console.log(

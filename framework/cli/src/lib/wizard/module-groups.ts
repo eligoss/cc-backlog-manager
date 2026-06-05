@@ -47,7 +47,6 @@ const MODULE_CATEGORIES: Record<string, string> = {
   backlog: 'Workflow',
   jira: 'Integrations',
   confluence: 'Integrations',
-  reporting: 'Reporting',
 };
 
 /**
@@ -60,7 +59,6 @@ const MODULE_DESCRIPTIONS: Record<string, string> = {
   backlog: 'Backlog Management (tickets, sprints, milestones)',
   jira: 'Jira Integration (export, import, sync)',
   confluence: 'Confluence Integration (publishing, ADF)',
-  reporting: 'Report Generation (metrics, status reports)',
 };
 
 /**

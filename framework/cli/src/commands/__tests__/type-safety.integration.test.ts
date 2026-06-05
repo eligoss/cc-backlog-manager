@@ -63,38 +63,6 @@ describe('CLI Type Safety Integration Tests', () => {
     }
   });
 
-  describe('validate command options', () => {
-    it('should accept --verbose option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('-v, --verbose');
-    });
-
-    it('should accept --strict option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('--strict');
-    });
-
-    it('should accept --json option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('--json');
-    });
-
-    it('should accept --versions option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('--versions');
-    });
-
-    it('should accept --routes option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('--routes');
-    });
-
-    it('should accept --links option', () => {
-      const result = execCLI('validate --help');
-      expect(result.stdout).toContain('--links');
-    });
-  });
-
   describe('backlog create-ticket command options', () => {
     it('should require --type option', () => {
       const result = execCLI('backlog create-ticket --help');
@@ -120,40 +88,6 @@ describe('CLI Type Safety Integration Tests', () => {
 
     it('should accept --path option', () => {
       const result = execCLI('backlog create-ticket --help');
-      expect(result.stdout).toContain('-p, --path');
-    });
-  });
-
-  describe('writer build command options', () => {
-    it('should accept --watch option', () => {
-      const result = execCLI('writer build --help');
-      expect(result.stdout).toContain('-w, --watch');
-    });
-
-    it('should accept --verbose option', () => {
-      const result = execCLI('writer build --help');
-      expect(result.stdout).toContain('-v, --verbose');
-    });
-
-    it('should accept --path option', () => {
-      const result = execCLI('writer build --help');
-      expect(result.stdout).toContain('-p, --path');
-    });
-  });
-
-  describe('writer analyze command options', () => {
-    it('should accept --output option', () => {
-      const result = execCLI('writer analyze --help');
-      expect(result.stdout).toContain('-o, --output');
-    });
-
-    it('should accept --verbose option', () => {
-      const result = execCLI('writer analyze --help');
-      expect(result.stdout).toContain('-v, --verbose');
-    });
-
-    it('should accept --path option', () => {
-      const result = execCLI('writer analyze --help');
       expect(result.stdout).toContain('-p, --path');
     });
   });
@@ -207,19 +141,6 @@ describe('Command Option Default Values', () => {
     });
   });
 
-  describe('writer build command', () => {
-    it('should use default path . when not specified', () => {
-      const result = execCLI('writer build --help');
-      expect(result.stdout).toContain('.');
-    });
-  });
-
-  describe('writer analyze command', () => {
-    it('should use default output build/analysis when not specified', () => {
-      const result = execCLI('writer analyze --help');
-      expect(result.stdout).toContain('build/analysis');
-    });
-  });
 });
 
 describe('Command Option Error Handling', () => {
@@ -267,7 +188,7 @@ describe('Boolean Option Handling', () => {
    */
 
   it('should treat --verbose as true when flag is present', () => {
-    const result = execCLI('validate --verbose --help');
+    const result = execCLI('build --verbose --help');
     // Just checking it doesn't error - the flag should be accepted
     expect(result.exitCode).toBe(0);
   });
@@ -292,7 +213,7 @@ describe('String Option Handling', () => {
   });
 
   it('should accept path options with special characters', () => {
-    const result = execCLI('validate --help');
+    const result = execCLI('build --help');
     expect(result.exitCode).toBe(0);
   });
 });

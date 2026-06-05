@@ -96,6 +96,9 @@ export const SkillSchema = z.object({
   'capabilities-provided': z.array(z.string())
     .min(1, 'Skills must provide at least one capability'),
 
+  /** Marks a project-knowledge template skill (copy-once on deploy, user-filled) */
+  'project-knowledge': z.boolean().optional(),
+
   /** CLI commands this skill exposes */
   'cli-commands': CliCommandsSchema,
 });

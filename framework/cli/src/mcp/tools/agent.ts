@@ -152,12 +152,6 @@ export const agentShowTool = defineTool(
       for (const cap of generated.frameworkAgent.capabilityNeeds) {
         output += `  - ${cap}\n`;
       }
-      output += "\n[Context Files]\n";
-      for (const [category, level] of Object.entries(
-        generated.frameworkAgent.contextCategoryNeeds,
-      )) {
-        output += `  ${category}: ${level}\n`;
-      }
       output += "\n[Skills Loaded]\n";
       output +=
         generated.skillsContent.length > 0

@@ -22,11 +22,6 @@ export interface DiscoveryResult {
 }
 
 /**
- * Context level for cumulative context loading
- */
-export type ContextLevel = 'basic' | 'advanced' | 'expert';
-
-/**
  * Agent definition parsed from markdown frontmatter
  */
 export interface AgentDefinition {
@@ -35,7 +30,6 @@ export interface AgentDefinition {
   essentialSkills?: string[];
   capabilityNeeds: string[];
   availableSkills?: string[];
-  contextCategoryNeeds: Record<string, string>;
   tokenBudget: number;
   sourcePath: string;
   // Variant fields for agent hierarchy
@@ -562,30 +556,6 @@ export class DiscoveryEngine {
   }
 
   /**
-   * Get cumulative context files for a given category and level.
-   * basic -> [*-basic.md]
-   * advanced -> [*-basic.md, *-advanced.md]
-   * expert -> [*-basic.md, *-advanced.md, *-expert.md]
-   */
-  getCumulativeContextFiles(category: string, level: ContextLevel): string[] {
-    const hierarchy: ContextLevel[] = ['basic', 'advanced', 'expert'];
-    const levelIndex = hierarchy.indexOf(level);
-    if (levelIndex === -1) return [`${category}-${level}.md`]; // fallback for unknown levels
-    return hierarchy.slice(0, levelIndex + 1).map(l => `${category}-${l}.md`);
-  }
-
-  /**
-   * Get all cumulative context files for an agent based on its context-category-needs
-   */
-  getContextFilesForAgent(agent: AgentDefinition): string[] {
-    const files: string[] = [];
-    for (const [category, level] of Object.entries(agent.contextCategoryNeeds)) {
-      files.push(...this.getCumulativeContextFiles(category, level as ContextLevel));
-    }
-    return [...new Set(files)]; // deduplicate
-  }
-
-  /**
    * Load agent definition from markdown file
    */
   private async loadAgentDefinition(
@@ -609,7 +579,6 @@ export class DiscoveryEngine {
       essentialSkills: (frontmatter['essential-skills'] as string[]) || undefined,
       capabilityNeeds: (frontmatter['capability-needs'] as string[]) || [],
       availableSkills: (frontmatter['available-skills'] as string[]) || undefined,
-      contextCategoryNeeds: (frontmatter['context-category-needs'] as Record<string, string>) || {},
       tokenBudget: (frontmatter['token-budget'] as number) || 0,
       sourcePath: agentPath,
       variant: (frontmatter['variant'] as 'full' | 'slim') || 'full',

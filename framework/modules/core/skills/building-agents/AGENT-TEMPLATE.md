@@ -13,10 +13,6 @@ role: {Role Title}
 capability-needs:
   - {capability-1}
   - {capability-2}
-context-category-needs:
-  business: none|basic|advanced|expert
-  technical: none|basic|advanced|expert
-  process: none|basic|advanced|expert
 token-budget: {2000-3000}
 ---
 ```
@@ -29,7 +25,6 @@ token-budget: {2000-3000}
 | `role` | Yes | Human-readable role title |
 | `framework-version` | Yes | Current framework version |
 | `capability-needs` | Yes | Array of capabilities this agent requires |
-| `context-category-needs` | Yes | Business/Technical/Process levels |
 | `token-budget` | Yes | Target token budget (< 3000) |
 
 ---
@@ -44,7 +39,6 @@ token-budget: {2000-3000}
 | Auto-Discovery Note | 5-10 | ~50 | Yes |
 | Core Responsibilities | 15-25 | ~120 | Yes |
 | Skill Routing Table | 20-30 | ~150 | Yes |
-| Required Reading | 15-25 | ~120 | Optional |
 | Agent-Specific Tasks | 100-200 | ~1000 | Yes |
 | Success Criteria | 10-20 | ~80 | Yes |
 | Self-Evaluation | 10-20 | ~80 | Yes |
@@ -94,17 +88,6 @@ token-budget: {2000-3000}
 
 > **Note:** For tasks not listed, check agent's `capability-needs` in
 > agents.json - Discovery Engine will auto-load appropriate skills.
-
----
-
-## Required Reading
-
-> **Context:** Auto-loaded via `context-category-needs` declared in frontmatter
-
-For deep context understanding, these files are auto-loaded by Discovery Engine:
-- Business context at {level} level
-- Technical context at {level} level
-- Process context at {level} level
 
 ---
 
@@ -175,7 +158,6 @@ After completing tasks:
 - Pure routing/orchestration
 - Skill routing table for all task types
 - Minimal inline workflows
-- Context auto-loaded via Discovery Engine
 
 **Example agents:** ai-confluence-manager, ai-app-developer
 
@@ -256,18 +238,17 @@ After completing tasks:
 
 ### Never include in agent:
 
-1. **Domain knowledge** - Belongs in context files
-2. **Reusable workflows** - Belongs in skills
-3. **Architecture documentation** - Belongs in skills or docs
-4. **Code examples** - Belongs in skill supporting files
-5. **Reference documentation** - Belongs in docs folder
-6. **Duplicated content** - Reference source instead
+1. **Reusable workflows** - Belongs in skills
+2. **Architecture documentation** - Belongs in skills or docs
+3. **Code examples** - Belongs in skill supporting files
+4. **Reference documentation** - Belongs in docs folder
+5. **Duplicated content** - Reference source instead
 
 ### Red flags (content to extract):
 
 - Section > 100 lines → Consider extraction
 - Content exists in another agent → Extract to skill
-- Content is not agent-specific → Move to context/skill
+- Content is not agent-specific → Move to skill
 - Examples and templates → Move to skill supporting file
 
 ---
@@ -280,8 +261,8 @@ Before committing a new or modified agent:
 2. **Token estimate:** Lines × 5.5 → Must be < 3,000
 3. **Duplication check:** Search for similar content in other agents
 4. **Routing check:** All task types have skill routing
-5. **Discovery check:** `agentic-framework validate --verbose`
-6. **Link check:** `agentic-framework validate --links`
+5. **Discovery check:** `agentic-framework build --verbose`
+6. **Link check:** `agentic-framework build`
 
 ---
 

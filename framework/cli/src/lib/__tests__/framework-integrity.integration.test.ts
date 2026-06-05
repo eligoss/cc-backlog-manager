@@ -43,52 +43,6 @@ describe('Framework Integrity (Integration)', () => {
     });
   });
 
-  describe('Context Files', () => {
-    // Note: Context files (ai/context/*.md) are deployment artifacts, not framework source files.
-    // The framework provides TEMPLATES in framework/modules/core/templates/context/.
-    // When testing framework source, we verify templates exist, not deployed context files.
-    it('should have context templates available in framework', async () => {
-      const templatesPath = path.join(FRAMEWORK_ROOT, 'modules', 'core', 'templates', 'context');
-      const templatesExist = await fs.pathExists(templatesPath);
-
-      if (templatesExist) {
-        // Templates use .template.md extension
-        const expectedTemplates = [
-          'business-basic.template.md', 'business-advanced.template.md', 'business-expert.template.md',
-          'technical-basic.template.md', 'technical-advanced.template.md', 'technical-expert.template.md',
-          'process-basic.template.md', 'process-advanced.template.md', 'process-expert.template.md',
-        ];
-
-        for (const expected of expectedTemplates) {
-          const templatePath = path.join(templatesPath, expected);
-          const exists = await fs.pathExists(templatePath);
-          if (!exists) {
-            console.log(`Missing context template: ${expected}`);
-          }
-          expect(exists).toBe(true);
-        }
-      } else {
-        // In bundled mode, templates may not be available - skip validation
-        console.log('Context templates directory not found (bundled mode) - skipping template validation');
-        expect(true).toBe(true);
-      }
-    });
-
-    it('should have agents with valid context-category-needs declarations', async () => {
-      const agents = await engine.getAllAgents();
-      const validLevels = ['basic', 'advanced', 'expert'];
-      const validCategories = ['business', 'technical', 'process'];
-
-      for (const agent of agents) {
-        if (!agent.contextCategoryNeeds) continue;
-
-        for (const [category, level] of Object.entries(agent.contextCategoryNeeds)) {
-          expect(validCategories).toContain(category);
-          expect(validLevels).toContain(level);
-        }
-      }
-    });
-  });
 
   describe('Module Declarations', () => {
     it('should have all declared agent files', async () => {
@@ -154,12 +108,6 @@ describe('Framework Integrity (Integration)', () => {
 
       // Agent variants should pass
       expect(report.agentVariants.valid).toBe(true);
-
-      // Context existence may fail for framework source testing (expected)
-      // This is validated separately in the "Context Files" describe block
-      if (!report.contextExistence.valid) {
-        console.log('Note: Context existence validation failed (expected for framework source testing)');
-      }
     });
 
     it('should report validation statistics', async () => {
@@ -167,7 +115,6 @@ describe('Framework Integrity (Integration)', () => {
 
       console.log('Framework Validation Stats:');
       console.log(`  Capability Resolution: ${report.capabilityResolution.stats.passed}/${report.capabilityResolution.stats.checked}`);
-      console.log(`  Context Files: ${report.contextExistence.stats.passed}/${report.contextExistence.stats.checked} (deployment artifacts)`);
       console.log(`  Module Declarations: ${report.moduleDeclarations.stats.passed}/${report.moduleDeclarations.stats.checked}`);
       console.log(`  Skill Capabilities: ${report.skillCapabilities.stats.passed}/${report.skillCapabilities.stats.checked}`);
       console.log(`  Agent Variants: ${report.agentVariants.stats.passed}/${report.agentVariants.stats.checked}`);

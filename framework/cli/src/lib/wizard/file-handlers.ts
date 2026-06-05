@@ -14,7 +14,6 @@ export const GITIGNORE_FRAMEWORK_ENTRIES = [
   '',
   '# Agentic Framework',
   'telemetry.config.json',
-  'routes.yml.backup',
   '',
   '# Telemetry data (do not commit)',
   '.claude/telemetry/',
@@ -189,64 +188,6 @@ export async function mergeSettingsLocal(
     return { action: 'merged' };
   } else {
     await fs.writeJson(settingsPath, frameworkSettings, { spaces: 2 });
-    return { action: 'created' };
-  }
-}
-
-/**
- * Create context files, skipping existing ones
- */
-export async function createContextFilesWithSkip(
-  projectPath: string,
-  getContextTemplate: (filename: string) => string
-): Promise<{ created: string[]; skipped: string[] }> {
-  const contextDir = path.join(projectPath, '.claude/context');
-  await fs.ensureDir(contextDir);
-
-  const contextFiles = [
-    'business-basic.md',
-    'business-advanced.md',
-    'business-expert.md',
-    'technical-basic.md',
-    'technical-advanced.md',
-    'technical-expert.md',
-    'process-basic.md',
-    'process-advanced.md',
-    'process-expert.md',
-  ];
-
-  const created: string[] = [];
-  const skipped: string[] = [];
-
-  for (const file of contextFiles) {
-    const filePath = path.join(contextDir, file);
-    if (!(await fs.pathExists(filePath))) {
-      await fs.writeFile(filePath, getContextTemplate(file));
-      created.push(file);
-    } else {
-      skipped.push(file);
-    }
-  }
-
-  return { created, skipped };
-}
-
-/**
- * Backup existing routes.yml before creating new one
- */
-export async function backupAndCreateRoutesYml(
-  projectPath: string,
-  content: string
-): Promise<{ action: 'created' | 'backed_up_and_created' }> {
-  const routesPath = path.join(projectPath, 'routes.yml');
-
-  if (await fs.pathExists(routesPath)) {
-    const backupPath = path.join(projectPath, 'routes.yml.backup');
-    await fs.copy(routesPath, backupPath);
-    await fs.writeFile(routesPath, content);
-    return { action: 'backed_up_and_created' };
-  } else {
-    await fs.writeFile(routesPath, content);
     return { action: 'created' };
   }
 }

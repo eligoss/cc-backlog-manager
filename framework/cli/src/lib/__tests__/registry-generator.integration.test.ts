@@ -66,9 +66,6 @@ describe('RegistryGenerator', () => {
 capability-needs:
   - framework-governance
   - git-workflow-management
-context-category-needs:
-  business: basic
-  technical: expert
 token-budget: 2500
 variant: full
 delegates-to:
@@ -83,8 +80,6 @@ delegates-to:
       `---
 capability-needs:
   - framework-governance
-context-category-needs:
-  business: basic
 token-budget: 1000
 variant: slim
 parent-agent: ai-framework-manager
@@ -138,8 +133,6 @@ capabilities-provided:
       `---
 capability-needs:
   - ticket-management
-context-category-needs:
-  process: advanced
 token-budget: 2000
 ---
 # Backlog Manager Agent
@@ -193,7 +186,6 @@ capabilities-provided:
       expect(await fs.pathExists(path.join(projectPath, '.claude/registries/agents.json'))).toBe(true);
       expect(await fs.pathExists(path.join(projectPath, '.claude/registries/skills.json'))).toBe(true);
       expect(await fs.pathExists(path.join(projectPath, '.claude/registries/discovery-map.json'))).toBe(true);
-      expect(await fs.pathExists(path.join(projectPath, '.claude/registries/context.json'))).toBe(true);
     });
 
     it('should create registries directory if it does not exist', async () => {
@@ -234,20 +226,6 @@ capabilities-provided:
       expect(frameworkManager['capability-needs']).toContain('git-workflow-management');
     });
 
-    it('should include context-category-needs from agent frontmatter', async () => {
-      const modules = await createTestFixture();
-
-      await generateRegistries(projectPath, modules);
-
-      const agentsJson = await fs.readJson(path.join(projectPath, '.claude/registries/agents.json'));
-      const frameworkManager = agentsJson.agents.find((a: { id: string }) => a.id === 'ai-framework-manager');
-
-      expect(frameworkManager['context-category-needs']).toEqual({
-        business: 'basic',
-        technical: 'expert',
-      });
-    });
-
     it('should include token-budget from agent frontmatter', async () => {
       const modules = await createTestFixture();
 
@@ -273,22 +251,6 @@ capabilities-provided:
       const slimAgent = agentsJson.agents.find((a: { id: string }) => a.id === 'ai-framework-manager-slim');
       expect(slimAgent.variant).toBe('slim');
       expect(slimAgent['parent-agent']).toBe('ai-framework-manager');
-    });
-
-    it('should compute cumulative context-files', async () => {
-      const modules = await createTestFixture();
-
-      await generateRegistries(projectPath, modules);
-
-      const agentsJson = await fs.readJson(path.join(projectPath, '.claude/registries/agents.json'));
-      const frameworkManager = agentsJson.agents.find((a: { id: string }) => a.id === 'ai-framework-manager');
-
-      // business: basic -> [business-basic.md]
-      // technical: expert -> [technical-basic.md, technical-advanced.md, technical-expert.md]
-      expect(frameworkManager['context-files']).toContain('business-basic.md');
-      expect(frameworkManager['context-files']).toContain('technical-basic.md');
-      expect(frameworkManager['context-files']).toContain('technical-advanced.md');
-      expect(frameworkManager['context-files']).toContain('technical-expert.md');
     });
   });
 
@@ -375,121 +337,6 @@ capabilities-provided:
       expect(governanceCapability).toBeDefined();
       expect(governanceCapability['used-by-agents']).toContain('ai-framework-manager');
       expect(governanceCapability['used-by-agents']).toContain('ai-framework-manager-slim');
-    });
-  });
-
-  describe('context.json generation', () => {
-    it('should include all 9 standard context files when they exist', async () => {
-      const modules = await createTestFixture();
-
-      await generateRegistries(projectPath, modules);
-
-      const contextJson = await fs.readJson(path.join(projectPath, '.claude/registries/context.json'));
-
-      expect(contextJson.version).toBe('1.0.0');
-      expect(contextJson.context).toBeInstanceOf(Array);
-
-      // Should include all 9 standard context files (3 categories x 3 levels)
-      const contextIds = contextJson.context.map((c: { id: string }) => c.id);
-
-      // Basic level
-      expect(contextIds).toContain('business-basic');
-      expect(contextIds).toContain('technical-basic');
-      expect(contextIds).toContain('process-basic');
-
-      // Advanced level
-      expect(contextIds).toContain('business-advanced');
-      expect(contextIds).toContain('technical-advanced');
-      expect(contextIds).toContain('process-advanced');
-
-      // Expert level
-      expect(contextIds).toContain('business-expert');
-      expect(contextIds).toContain('technical-expert');
-      expect(contextIds).toContain('process-expert');
-
-      // Total should be 9
-      expect(contextJson.context.length).toBe(9);
-    });
-
-    it('should include correct levels for each category', async () => {
-      const modules = await createTestFixture();
-
-      await generateRegistries(projectPath, modules);
-
-      const contextJson = await fs.readJson(path.join(projectPath, '.claude/registries/context.json'));
-
-      // Check levels are correctly assigned
-      const basicContexts = contextJson.context.filter((c: { level: string }) => c.level === 'basic');
-      const advancedContexts = contextJson.context.filter((c: { level: string }) => c.level === 'advanced');
-      const expertContexts = contextJson.context.filter((c: { level: string }) => c.level === 'expert');
-
-      expect(basicContexts.length).toBe(3);
-      expect(advancedContexts.length).toBe(3);
-      expect(expertContexts.length).toBe(3);
-    });
-
-    it('should only include context files that exist', async () => {
-      const modules = await createTestFixture();
-
-      // Remove some context files
-      await fs.remove(path.join(projectPath, '.claude/context/business-expert.md'));
-      await fs.remove(path.join(projectPath, '.claude/context/technical-expert.md'));
-
-      await generateRegistries(projectPath, modules);
-
-      const contextJson = await fs.readJson(path.join(projectPath, '.claude/registries/context.json'));
-
-      const contextIds = contextJson.context.map((c: { id: string }) => c.id);
-
-      // These should exist
-      expect(contextIds).toContain('business-basic');
-      expect(contextIds).toContain('business-advanced');
-
-      // These were removed, should not be in registry
-      expect(contextIds).not.toContain('business-expert');
-      expect(contextIds).not.toContain('technical-expert');
-
-      // Total should be 7 (9 - 2 removed)
-      expect(contextJson.context.length).toBe(7);
-    });
-
-    it('should NOT include module context files that do not exist', async () => {
-      const modules = await createTestFixture();
-
-      await generateRegistries(projectPath, modules);
-
-      const contextJson = await fs.readJson(path.join(projectPath, '.claude/registries/context.json'));
-
-      // The backlog-workflow.md file does not exist, so it should NOT be in context.json
-      const backlogWorkflow = contextJson.context.find(
-        (c: { id: string }) => c.id === 'backlog-workflow'
-      );
-
-      expect(backlogWorkflow).toBeUndefined();
-    });
-
-    it('should include module context files that DO exist', async () => {
-      const modules = await createTestFixture();
-
-      // Create the context file that module references
-      // Note: module context files are still checked in ai/context path
-      await fs.ensureDir(path.join(projectPath, 'ai/context'));
-      await fs.writeFile(
-        path.join(projectPath, 'ai/context/backlog-workflow.md'),
-        '# Backlog Workflow'
-      );
-
-      await generateRegistries(projectPath, modules);
-
-      const contextJson = await fs.readJson(path.join(projectPath, '.claude/registries/context.json'));
-
-      const backlogWorkflow = contextJson.context.find(
-        (c: { id: string }) => c.id === 'backlog-workflow'
-      );
-
-      expect(backlogWorkflow).toBeDefined();
-      expect(backlogWorkflow.module).toBe('backlog');
-      expect(backlogWorkflow.category).toBe('process');
     });
   });
 

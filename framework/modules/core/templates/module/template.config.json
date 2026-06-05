@@ -33,7 +33,7 @@
           "pattern": "^\\d+\\.\\d+\\.\\d+$"
         },
         "category": {
-          "enum": ["core", "integration", "workflow", "development", "documentation", "reporting"]
+          "enum": ["core", "integration", "workflow", "development", "documentation"]
         }
       }
     }

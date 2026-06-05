@@ -1,9 +1,0 @@
-{
-  "$schema": "../../schemas/manifest.schema.json",
-  "directory": "{{directory}}",
-  "type": "{{type}}",
-  "created": "{{date}}",
-  "facts": [],
-  "total-token-estimate": 0,
-  "last-validated": "{{date}}"
-}

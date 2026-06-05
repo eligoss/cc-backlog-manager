@@ -1,44 +1,33 @@
 {
   "$schema": "../core/registries/schemas/module.schema.json",
   "id": "coding",
-  "version": "1.17.0",
+  "version": "1.0.0",
   "name": "Development & Coding",
-  "description": "Software development agents for architecture design, code implementation, iOS development, and quality assurance",
+  "description": "Software development agents for architecture design, code implementation, and quality assurance",
   "provides": {
     "agents": [
       "ai-architect",
-      "ai-app-developer",
-      "ai-ios-developer",
-      "ai-hig-reviewer"
+      "ai-app-developer"
     ],
     "skills": [
       "designing-architecture",
       "implementing-code",
-      "structuring-code",
-      "implementing-ios",
-      "designing-ios-ui"
+      "structuring-code"
     ],
     "capabilities": [
       "architecture-design",
       "code-implementation",
       "code-organization",
+      "file-structure-guidance",
+      "readability-assessment",
       "code-review",
-      "test-writing",
-      "ios-development",
-      "ios-testing",
-      "hig-compliance",
-      "ios-visual-design"
+      "test-writing"
     ]
   },
   "requires": {},
   "optional-dependencies": [
     "core"
   ],
-  "context": {
-    "technical": [
-      "coding-standards.md"
-    ]
-  },
   "metadata": {
     "category": "development",
     "keywords": [
@@ -46,11 +35,7 @@
       "architecture",
       "development",
       "implementation",
-      "testing",
-      "ios",
-      "swift",
-      "swiftui",
-      "uikit"
+      "testing"
     ]
   }
 }

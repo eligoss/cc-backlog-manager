@@ -11,10 +11,8 @@ capability-needs:
 available-skills:
   - validating-markdown
   - publishing-confluence
-context-category-needs:
-  business: advanced
-  technical: basic
-  process: advanced
+  - knowing-backlog
+  - knowing-the-domain
 variant: full
 delegates-to:
 token-budget: 3000
@@ -53,6 +51,8 @@ Transform architecture documents into production-ready Jira epics and user stori
 | Intelligence Gathering | Role-Based | `gathering-intelligence` | Auto-discovered |
 | Jira Sync Operations | Role-Based | `syncing-with-jira` | Auto-discovered |
 | Markdown Formatting | Available | `validating-markdown` | On-demand |
+| Backlog Knowledge | Available | `knowing-backlog` | On-demand |
+| Domain Knowledge | Available | `knowing-the-domain` | On-demand |
 
 **Pattern:** Route to skills for templates, examples, and standards. Agent orchestrates ticket creation and decomposition.
 
@@ -69,15 +69,14 @@ Before starting complex tasks, evaluate whether intelligence gathering would imp
 
 ---
 
-## Required Reading
+## Project Knowledge
 
-> **Registry:** Context requirements defined in `{project}/ai/registries/agents.json` under `ai-backlog-manager.context-category-needs`
+**Before creating epics and stories, invoke these skills via the Skill tool:**
 
-Load these context files for project-specific guidance:
+1. **`knowing-backlog`** — Jira project, workflow states, ticket conventions, definition of ready/done.
+2. **`knowing-the-domain`** — business domain, use cases, and product roadmap.
 
-1. **business-advanced.md** - Business domain, use cases, roadmap
-2. **technical-basic.md** - Tech stack, architecture patterns
-3. **process-advanced.md** - Ticket writing standards, epic decomposition
+These skills hold YOUR project's specifics (shipped as fillable templates). Consult `references.yml` at the project root for the Jira board, Confluence space, and process docs.
 
 **Critical:** This agent provides **generic decomposition principles**. Context files provide **YOUR project's specific standards**.
 
@@ -295,8 +294,8 @@ Load these context files for project-specific guidance:
    - Verify native markdown syntax (NOT Jira markup)
    - Verify section headers are h3 (NOT bold)
 
-2. **Context File Check**
-   - Load `process-advanced.md` context
+2. **Project Knowledge Check**
+   - Invoke `knowing-backlog` for ticket conventions and standards
    - Verify ticket length (30-100 lines)
    - Verify Context is paragraphs (NOT bullets)
    - Verify no code snippets included
@@ -339,7 +338,7 @@ Load these context files for project-specific guidance:
    - Native markdown syntax (NOT Jira markup)?
    - Proper h3 headers (NOT bold pseudo-headers)?
 
-2. ✅ Did I verify against project context files?
+2. ✅ Did I verify against knowing-backlog and knowing-the-domain?
    - Ticket length 30-100 lines?
    - Context 2-3 paragraphs (NOT bullets)?
    - Requirements 4-6 bullets?
@@ -393,7 +392,6 @@ Load these context files for project-specific guidance:
 
 ## Navigation
 
-> **Routes:** Use `{project}/routes.yml` for filesystem navigation
 > **Registries:** Use JSON registries in `{project}/ai/registries/` for metadata and discovery
 
 **Key Registries:**
@@ -409,7 +407,6 @@ Load these context files for project-specific guidance:
 
 **Version:** 12.0 (Discovery-Driven Architecture)
 **Token Budget:** ~2,500 tokens (agent file only, skills auto-loaded via Discovery Engine)
-**Context Loading:** Auto-discovered via context-category-needs in agents.json
 **Last Updated:** 2025-12-15
 
 **Skills Routed To:**

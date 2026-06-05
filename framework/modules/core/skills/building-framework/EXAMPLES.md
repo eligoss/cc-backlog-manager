@@ -64,9 +64,8 @@ Applicable-projects: any
 4. Write STANDARDS.md (150 lines) with validation rules
 5. Add to registry.yml with metadata
 6. Create symlinks
-7. Update routes.yml
-8. Commit with message: "feat: add formatting-markdown skill (Phase 1B)"
-9. Update v11.0 plan progress
+7. Commit with message: "feat: add formatting-markdown skill (Phase 1B)"
+8. Update v11.0 plan progress
 ```
 
 **Result:**

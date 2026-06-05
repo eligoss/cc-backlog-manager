@@ -29,6 +29,21 @@ describe('Skill Schema', () => {
       expect(result.success).toBe(true);
     });
 
+    it('accepts an optional project-knowledge marker', () => {
+      const result = SkillSchema.safeParse({
+        id: 'knowing-the-codebase',
+        name: 'knowing-the-codebase',
+        description: 'Project-specific knowledge of the target application stack.',
+        scope: 'project',
+        'capabilities-provided': ['codebase-knowledge'],
+        'project-knowledge': true,
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data['project-knowledge']).toBe(true);
+      }
+    });
+
     it('should require at least one capability', () => {
       const skill = {
         id: 'test-skill',

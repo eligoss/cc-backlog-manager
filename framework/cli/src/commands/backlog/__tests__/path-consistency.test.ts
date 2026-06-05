@@ -141,47 +141,14 @@ status: draft
       }
     });
 
-    it('should handle routes.yml path configuration', async () => {
-      // routes.yml can configure custom backlog paths
-      await sandbox.createFile('routes.yml', `
-version: "1.0"
-paths:
-  backlog:
-    root: backlog
-    tickets:
-      bugs: backlog/tickets/bugs
-      stories: backlog/tickets/stories
-      tasks: backlog/tickets/tasks
-`);
-
-      const content = await sandbox.readFile('routes.yml');
-      expect(content).toContain('backlog');
-      expect(content).not.toContain('ai/backlog');
-    });
   });
 
   describe('Path Resolution Priority', () => {
     /**
-     * Tests path resolution when routes.yml is present or absent
+     * Tests default backlog path resolution
      */
 
-    it('should use routes.yml path if available', async () => {
-      await sandbox.createFile('routes.yml', `
-version: "1.0"
-paths:
-  backlog:
-    root: custom-backlog
-`);
-
-      // When routes.yml defines a custom path, use it
-      const content = await sandbox.readFile('routes.yml');
-      expect(content).toContain('custom-backlog');
-    });
-
-    it('should fall back to "backlog" if routes.yml not found', async () => {
-      // No routes.yml, should use default "backlog"
-      expect(await sandbox.exists('routes.yml')).toBe(false);
-
+    it('should fall back to "backlog" as the default backlog path', async () => {
       const defaultPath = 'backlog';
       await sandbox.createDir(defaultPath);
 

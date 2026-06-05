@@ -116,122 +116,6 @@ export interface JiraExportOptions extends ExternalSystemOptions {
 }
 
 // =============================================================================
-// Writer Commands
-// =============================================================================
-
-/**
- * Options for writer init command
- */
-export interface WriterInitOptions extends BaseCommandOptions {
-  /** Book title */
-  title?: string;
-  /** Author name */
-  author?: string;
-  /** Genre */
-  genre?: string;
-}
-
-/**
- * Options for writer validate command
- */
-export interface WriterValidateOptions extends BaseCommandOptions {
-  /** Exit with error code on warnings */
-  strict?: boolean;
-}
-
-/**
- * Options for writer create-part command
- */
-export interface CreatePartOptions extends BaseCommandOptions {
-  /** Part title */
-  title?: string;
-  /** Part number (auto-generated if not provided) */
-  number?: number;
-}
-
-/**
- * Options for writer create-chapter command
- */
-export interface CreateChapterOptions extends BaseCommandOptions {
-  /** Parent part (e.g., "part-01") */
-  part: string;
-  /** Chapter title */
-  title?: string;
-  /** Chapter number (auto-generated if not provided) */
-  number?: number;
-}
-
-/**
- * Options for writer create-scene command
- */
-export interface CreateSceneOptions extends BaseCommandOptions {
-  /** Parent chapter (e.g., "part-01/chapter-01") */
-  chapter: string;
-  /** Scene title */
-  title?: string;
-  /** Scene number (auto-generated if not provided) */
-  number?: number;
-}
-
-/**
- * Options for writer create-character command
- */
-export interface CreateCharacterOptions extends BaseCommandOptions {
-  /** Character name */
-  name: string;
-  /** Character role */
-  role?: string;
-}
-
-/**
- * Options for writer lock-fact and unlock-fact commands
- */
-export interface FactLockOptions extends BaseCommandOptions {
-  /** Path to fact file */
-  file: string;
-  /** Reason for locking/unlocking */
-  reason?: string;
-}
-
-/**
- * Options for writer validate-immutability command
- */
-export interface ValidateImmutabilityOptions extends BaseCommandOptions {
-  /** Exit with error code on warnings */
-  strict?: boolean;
-}
-
-/**
- * Options for writer build command
- */
-export interface WriterBuildOptions extends BaseCommandOptions {
-  /** Skip validation step */
-  skipValidation?: boolean;
-  /** Skip context generation */
-  skipContext?: boolean;
-}
-
-/**
- * Options for writer export command
- */
-export interface WriterExportOptions extends BaseCommandOptions {
-  /** Export format: markdown, html, epub */
-  format?: string;
-  /** Output file path */
-  output?: string;
-}
-
-/**
- * Options for writer analyze command
- */
-export interface WriterAnalyzeOptions extends BaseCommandOptions {
-  /** Analysis type: wordcount, characters, timeline, all */
-  type?: string;
-  /** Output format: text, json */
-  format?: string;
-}
-
-// =============================================================================
 // Planning Commands
 // =============================================================================
 
@@ -304,22 +188,6 @@ export interface ImportReportsOptions extends ExternalSystemOptions {
 // =============================================================================
 
 /**
- * Options for validate command
- */
-export interface ValidateOptions extends BaseCommandOptions {
-  /** Exit with error code on validation failure */
-  strict?: boolean;
-  /** Output as JSON */
-  json?: boolean;
-  /** Validate version consistency */
-  versions?: boolean;
-  /** Validate routes.yml */
-  routes?: boolean;
-  /** Validate markdown links */
-  links?: boolean;
-}
-
-/**
  * Options for init command
  */
 export interface InitOptions {
@@ -357,24 +225,6 @@ export interface UpdateOptions {
   force: boolean;
   /** Preview changes without applying */
   dryRun: boolean;
-}
-
-/**
- * Options for routes sync command
- */
-export interface RoutesSyncOptions extends BaseCommandOptions {
-  /** Show what would be synced without making changes */
-  dryRun?: boolean;
-}
-
-/**
- * Options for bump-version command
- */
-export interface BumpVersionOptions extends BaseCommandOptions {
-  /** Version bump type: major, minor, patch */
-  type?: string;
-  /** Specific version to set */
-  version?: string;
 }
 
 // =============================================================================

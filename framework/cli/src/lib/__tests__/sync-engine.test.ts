@@ -466,9 +466,9 @@ describe.skip("SyncEngine", () => {
     it("should sync templates to .claude/templates/{module}/", async () => {
       const modules: ModuleManifest[] = [
         {
-          id: "writer",
+          id: "backlog",
           version: "1.0.0",
-          _sourcePath: "/framework/modules/writer",
+          _sourcePath: "/framework/modules/backlog",
         },
       ];
 
@@ -482,16 +482,16 @@ describe.skip("SyncEngine", () => {
       const items = await engine.syncTemplates(modules);
 
       expect(items).toHaveLength(1);
-      expect(items[0].name).toBe("writer-templates");
-      expect(items[0].target).toContain(".claude/templates/writer");
+      expect(items[0].name).toBe("backlog-templates");
+      expect(items[0].target).toContain(".claude/templates/backlog");
     });
 
     it("should handle nested template directories", async () => {
       const modules: ModuleManifest[] = [
         {
-          id: "writer",
+          id: "backlog",
           version: "1.0.0",
-          _sourcePath: "/framework/modules/writer",
+          _sourcePath: "/framework/modules/backlog",
         },
       ];
 
@@ -515,9 +515,9 @@ describe.skip("SyncEngine", () => {
     it("should mark templates as skipped when copy fails", async () => {
       const modules: ModuleManifest[] = [
         {
-          id: "writer",
+          id: "backlog",
           version: "1.0.0",
-          _sourcePath: "/framework/modules/writer",
+          _sourcePath: "/framework/modules/backlog",
         },
       ];
 

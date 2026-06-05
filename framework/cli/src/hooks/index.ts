@@ -8,7 +8,6 @@
  * - pre-write-quality: Validates before file writes (syntax, hardcoded paths)
  * - post-write-validate: Validates after file writes
  * - claude-folder-protection: Warns when editing synced .claude/ files
- * - subagent-context-loader: Auto-loads context for subagents
  * - stop-quality-check: Final quality summary on session end
  *
  * All hooks operate in advisory mode (report issues, don't block).

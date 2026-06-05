@@ -25,24 +25,7 @@ Use this workflow when:
 
 ---
 
-## Step 2: Determine Context Requirements
-
-Check `ai/registries/agents.json` for similar agents as reference.
-
-**Select appropriate levels for each category:**
-
-| Level | Business | Technical | Process |
-|-------|----------|-----------|---------|
-| none | No business knowledge needed | No technical knowledge needed | No process knowledge needed |
-| basic | Core business concepts | Architecture overview | Standard workflows |
-| advanced | Detailed use cases, personas | Detailed patterns, APIs | Complex processes |
-| expert | Full domain knowledge | Complete technical depth | All process edge cases |
-
-Discovery Engine will auto-load matching context files from context.json.
-
----
-
-## Step 3: Create Agent File with YAML Frontmatter
+## Step 2: Create Agent File with YAML Frontmatter
 
 **Location:** `ai/agents/ai-{agent-name}.md`
 
@@ -54,10 +37,6 @@ role: {Role Title}
 capability-needs:
   - {capability-1}
   - {capability-2}
-context-category-needs:
-  business: basic|advanced|expert
-  technical: basic|advanced|expert
-  process: basic|advanced|expert
 token-budget: {estimated-tokens}
 ---
 
@@ -126,7 +105,7 @@ token-budget: {estimated-tokens}
 
 ---
 
-## Step 4: Add Agent to Registry
+## Step 3: Add Agent to Registry
 
 **Edit:** `ai/registries/agents.json`
 
@@ -139,32 +118,26 @@ token-budget: {estimated-tokens}
   "description": "{Purpose}",
   "use-case": "{When to use}",
   "token-budget": {tokens},
-  "capability-needs": ["{capability-1}", "{capability-2}"],
-  "context-category-needs": {
-    "business": "basic|advanced|expert",
-    "technical": "basic|advanced|expert",
-    "process": "basic|advanced|expert"
-  }
+  "capability-needs": ["{capability-1}", "{capability-2}"]
 }
 ```
 
 **Validate JSON syntax:**
 ```bash
-agentic-framework validate
+agentic-framework build
 ```
 
 ---
 
-## Step 5: Test Auto-Discovery
+## Step 4: Test Auto-Discovery
 
 **Run Discovery Engine:**
 ```bash
-agentic-framework validate --verbose
+agentic-framework build --verbose
 ```
 
 **Verify:**
 - Correct skills are discovered
-- Correct context files are discovered
 - Check audit trail for capability routing
 
 **Example output:**
@@ -175,20 +148,15 @@ Capability Needs: {capability-1}, {capability-2}
 Discovered Skills:
 - {skill-1} ({capability-1})
 - {skill-2} ({capability-2})
-
-Context Files Auto-Loaded:
-- business-{level}: [files...]
-- technical-{level}: [files...]
-- process-{level}: [files...]
 ```
 
 ---
 
-## Step 6: Validate Discovery Coverage
+## Step 5: Validate Discovery Coverage
 
 **Run:**
 ```bash
-agentic-framework validate
+agentic-framework build
 ```
 
 **Ensure:**
@@ -199,7 +167,7 @@ agentic-framework validate
 
 ---
 
-## Step 7: Update Documentation
+## Step 6: Update Documentation
 
 **Update README.md:**
 - Add to agent table
@@ -208,12 +176,12 @@ agentic-framework validate
 
 ---
 
-## Step 8: Pre-commit Validation
+## Step 7: Pre-commit Validation
 
 **On commit, hooks will:**
 - Auto-sync agent to `.claude/commands/` (via `agentic-framework sync --agents`)
-- Validate schemas (via `agentic-framework validate`)
-- Check links (via `agentic-framework validate --links`)
+- Validate schemas (via `agentic-framework build`)
+- Check links (via `agentic-framework build`)
 
 ---
 
@@ -224,7 +192,6 @@ Before committing new agent:
 - [ ] Agent file created in `ai/agents/` with YAML frontmatter
 - [ ] Registry entry added to agents.json with complete schema
 - [ ] capability-needs all resolve to skills (validated via discovery engine)
-- [ ] context-category-needs resolve to context files
 - [ ] Token budget under framework limits (< 3000 for agents)
 - [ ] Discovery engine test passed
 - [ ] Schema validation passed

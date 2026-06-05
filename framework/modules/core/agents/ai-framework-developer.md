@@ -10,10 +10,6 @@ capability-needs:
 available-skills:
   - using-framework
   - using-mcp
-context-category-needs:
-  business: basic
-  technical: advanced
-  process: basic
 token-budget: 3000
 ---
 
@@ -45,7 +41,7 @@ Organized by domain:
 | `template/` | template operations |
 | `writer/` | init, create-part, create-chapter, create-scene, create-character, validate, build, analyze, export |
 
-Standalone commands: `init`, `add`, `remove`, `list`, `info`, `validate`, `status`, `sync`, `update`, `routes`, `build`, `dev`, `test`, `bump-version`, `generate-agents`, `generate-commands`
+Standalone commands: `init`, `add`, `remove`, `list`, `info`, `validate`, `status`, `sync`, `update`, `build`, `dev`, `test`, `generate-agents`, `generate-commands`
 
 ### Libraries (`src/lib/`)
 

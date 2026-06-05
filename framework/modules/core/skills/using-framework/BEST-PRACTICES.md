@@ -1,421 +1,217 @@
-# Best Practices for Routes/Registry Architecture
+# Best Practices for Framework Architecture
 
-**How to Maintain, Evolve, and Optimize Framework Navigation & Metadata**
+**How to Maintain, Evolve, and Validate the Module/Registry System**
 
 ---
 
-## Routes.yml Best Practices
+## Registry Best Practices
 
-### Structure & Organization
+### skills.json
 
 **DO:**
-- ✅ Keep flat, simple structure with key-value pairs
-- ✅ Group related paths under logical categories
-- ✅ Use descriptive key names (e.g., `agents`, `context`, `skills-meta`)
-- ✅ Include only essential paths (no deep nesting >4 levels)
-- ✅ Separate metadata from paths (no descriptions here)
+- Include `capabilities-provided` for every skill entry
+- Use kebab-case IDs that match the skill directory name
+- Set an accurate `token-budget`
+- Provide a concise `description`
 
 **DON'T:**
-- ❌ Add metadata (descriptions, purposes, tokens)
-- ❌ Add relationships (dependencies, loading info)
-- ❌ Add validation rules
-- ❌ Create deeply nested structures
-- ❌ Duplicate path information
-- ❌ Store computed values
+- Leave `capabilities-provided` empty — an unmapped skill is undiscoverable
+- Duplicate capability names already covered by another skill
+- Skip the `location` field — discovery relies on it
 
-### Example: Good routes.yml Structure
-```yaml
-entry-points:
-  ai-guide: README.md
-  human-guide: README.md
+**Good Entry:**
 
-paths:
-  ai:
-    root: ai/
-    agents: ai/agents/
-    context: ai/context/
-    skills: ai/skills/
-
-  backlog:
-    root: backlog/
-    _workflow: backlog/_workflow/
-    tickets: backlog/tickets/
-
-registry: ai/registry.yml
+```json
+{
+  "id": "verifying-quality",
+  "taxonomy": "meta",
+  "capabilities-provided": ["quality-assurance"],
+  "description": "Quality verification patterns for code and framework artifacts",
+  "location": "framework/modules/core/skills/verifying-quality/",
+  "token-budget": 2500
+}
 ```
 
-**Why This Works:**
-- Grouped by category (entry-points, paths)
-- Consistent naming (all lowercase, hyphens)
-- Simple structure (easy to parse)
-- No metadata mixed in
-- Points to registry for detailed info
+---
 
-### Updating routes.yml
+### agents.json
 
-**When to Update:**
-- New top-level folder added to project
-- Major reorganization of folder structure
-- New entry points created
-- Registry location changes
+**DO:**
+- Mirror `capability-needs` from the agent YAML frontmatter exactly
+- Keep the registry entry in sync with the agent file
+- Use the same kebab-case ID as the agent filename
 
-**How to Update (if automation available):**
+**DON'T:**
+- Reference skill IDs directly — use abstract capability names
+- Let the YAML frontmatter and agents.json drift out of sync
+
+**Good Entry:**
+
+```json
+{
+  "id": "ai-architect",
+  "capability-needs": [
+    "architecture-design",
+    "quality-assurance",
+    "markdown-formatting"
+  ],
+  "description": "System Architect & Technical Design Lead",
+  "token-budget": 4500
+}
+```
+
+---
+
+### discovery-map.json
+
+**DO:**
+- Add a mapping for every new capability before using it
+- Keep `used-by-agents` accurate so coverage checks pass
+- Use `skills-providing` to list all skills that satisfy a capability
+
+**DON'T:**
+- Leave orphaned capabilities (defined but not used by any agent)
+- Leave missing capabilities (referenced in capability-needs but not mapped)
+
+**Good Entry:**
+
+```json
+{
+  "capability": "architecture-design",
+  "description": "Design system architecture, review technical decisions",
+  "skills-providing": ["building-framework"],
+  "used-by-agents": ["ai-architect", "ai-framework-manager"]
+}
+```
+
+---
+
+## Validation
+
+Run `agentic-framework build` after any registry or skill change. It checks:
+- JSON schema compliance for all registry files
+- Markdown link validity across skill and agent files
+- No broken internal references
+
 ```bash
-# Use automated script/tool to sync
-python src/framework/update_routes.py --apply
-
-# Or manually edit following patterns above
+agentic-framework build
 ```
 
-**Manual Update Guidelines:**
-1. Keep consistent formatting
-2. Maintain alphabetical order within groups
-3. Use simple key names (no spaces, hyphens only)
-4. Validate YAML syntax after changes
-5. Test with tools that read routes.yml
+Fix all errors before committing. The build command is the single gate for structural correctness.
 
 ---
 
-## Registry.yml Best Practices
+## Knowledge Skills Best Practices
 
-### Structure & Organization
+### Keeping Them Current
 
-**DO:**
-- ✅ Include complete metadata for each component
-- ✅ Define all dependencies explicitly
-- ✅ Use clear responsibility boundaries
-- ✅ Maintain single source of truth
-- ✅ Version metadata schema
-- ✅ Keep metadata close to related data
+Each project fills in three knowledge skills at scaffold time:
 
-**DON'T:**
-- ❌ Include file paths (those go in routes.yml)
-- ❌ Duplicate metadata across sections
-- ❌ Skip validation rules or enforcement
-- ❌ Mix metadata for different concerns
-- ❌ Leave optional fields undefined
+| Skill | What to Keep Current |
+|-------|---------------------|
+| `knowing-the-codebase` | Tech stack versions, architecture decisions, testing commands |
+| `knowing-the-domain` | Product scope, user types, key features, business rules |
+| `knowing-backlog` | Active sprint, Jira project key, ticket conventions, Definition of Done |
 
-### Component Entry: Good Example
+**Update these as the project evolves** — stale knowledge skills mislead agents as much as missing ones.
+
+### references.yml
+
+External pointers (API docs, design specs, related repos) belong in `references.yml`, not inlined into knowledge skill prose. This keeps the skill focused and the links maintainable.
+
 ```yaml
-ai-architect:
-  file: ai-architect.md                    # Just filename
-  capability-domain: architecture-design
-  description: Design system architecture
-  token-budget: 4500
-  context-dependencies:
-    - business-advanced
-    - technical-advanced
-    - process-basic
-  shared-dependencies:
-    - markdown-formatting-guide
-    - agent-self-evaluation
-  total-context-tokens: 9800
+codebase:
+  - label: API Reference
+    url: https://docs.example.com/api
+  - label: Related service
+    path: ../sibling-repo
 ```
-
-**Why This Works:**
-- Complete metadata in one place
-- Dependencies explicit and verifiable
-- File reference minimal (no path)
-- Token budgets tracked
-- Clear responsibility boundaries
-
-### Adding New Components
-
-**Process:**
-1. Identify component type (agent, context, skill, etc.)
-2. Add entry to appropriate section in registry
-3. Define all required metadata fields
-4. Add to any applicable loading matrices
-5. Validate dependencies exist
-6. Verify token budgets
-7. Update metadata totals/counts
-
-**Template: New Agent**
-```yaml
-agents:
-  ai-new-capability:
-    file: ai-new-capability.md
-    capability-domain: [domain]
-    description: [one-line description]
-    token-budget: [token count]
-    context-dependencies:
-      - [context-file-id]
-    shared-dependencies:
-      - [shared-resource-id]
-    total-context-tokens: [sum of context tokens]
-```
-
-**Template: New Context File**
-```yaml
-context-files:
-  category-level-id:
-    file: category-level-id.md
-    level: [basic|advanced]
-    category: [category-name]
-    token-budget: [token count]
-    responsibility:
-      must-contain:
-        - [required content]
-      must-not-contain:
-        - [prohibited content]
-```
-
-### Updating Registry
-
-**When to Update:**
-- New component added (agent, context, skill, etc.)
-- Component metadata changed (description, tokens, etc.)
-- Dependencies changed
-- Validation rules updated
-- Responsibility boundaries clarified
-
-**Update Workflow:**
-1. Identify what changed
-2. Find relevant section in registry
-3. Update metadata for affected component
-4. Recalculate totals (token budgets, counts)
-5. Update loading matrices if dependencies changed
-6. Validate against enforcement rules
-7. Verify all references still valid
-
-### Validation Best Practices
-
-**Always Verify:**
-- [ ] All dependencies exist in same registry
-- [ ] Token budgets don't exceed limits
-- [ ] File references in `file:` field are correct
-- [ ] No circular dependencies
-- [ ] Metadata schema matches defined structure
-- [ ] IDs use consistent naming (kebab-case)
 
 ---
 
-## Token Budget Management
+## Adding New Components
 
-### Tracking Token Usage
+### Adding a New Module
 
-**Best Practice:**
-- Record actual token count for each component
-- Sum tokens for loading scenarios
-- Maintain total budget limits
-- Review periodically (monthly or per release)
+1. Create directory: `framework/modules/<module-name>/`
+2. Add `module.json` (use schema at `framework/modules/core/registries/schemas/module.schema.json`)
+3. Create `agents/`, `skills/`, `commands/`, `templates/` subdirs as needed
+4. Register agents and skills in `.claude/registries/`
+5. Map new capabilities in `discovery-map.json`
+6. Run `agentic-framework build` to validate
 
-**Example: Agent Loading Scenario**
-```
-Scenario: Load ai-architect with full context
+### Adding a New Skill
 
-Components:
-  agent (ai-architect.md):           4,500 tokens
-  context (business-advanced.md):    3,500 tokens
-  context (technical-advanced.md):   4,500 tokens
-  context (process-basic.md):        1,500 tokens
-  shared (markdown-formatting):        250 tokens
-                                    ─────────────
-  Total:                            14,250 tokens
-```
+1. Create: `framework/modules/<module>/skills/<skill-id>/SKILL.md`
+2. Set `capabilities-provided` in YAML frontmatter
+3. Add entry to `skills.json`
+4. Add capability entry to `discovery-map.json`
+5. Add capability to agent `capability-needs` where relevant
+6. Run `agentic-framework build`
 
-### Optimization Strategies
+### Adding a New Agent
 
-**When tokens exceed budget:**
-
-1. **Identify Large Components**
-   - Which context files use most tokens?
-   - Which agents have largest budgets?
-   - What's essential vs. optional?
-
-2. **Apply Progressive Disclosure**
-   - Move detailed content to supporting files
-   - Keep main files focused and concise
-   - Load details only when needed
-
-3. **Extract Shared Resources**
-   - Find duplicated content (3+ locations)
-   - Move to shared resource file
-   - Reference from multiple places
-   - Reduces overall tokens
-
-4. **Consolidate Overlapping Content**
-   - Merge similar context files
-   - Combine low-usage components
-   - Remove redundant information
+1. Create: `framework/modules/<module>/agents/<agent-id>.md`
+2. Set `capability-needs` in YAML frontmatter
+3. Add entry to `agents.json`
+4. Verify each capability resolves in `discovery-map.json`
+5. Run `agentic-framework build`
 
 ---
 
 ## Maintenance Workflows
 
-### Monthly Health Check
+### Health Check
 
-**Verify:**
-- [ ] All paths in routes.yml exist
-- [ ] All files referenced in registry exist
-- [ ] No broken internal links
-- [ ] Token budgets accurate
-- [ ] Dependencies still valid
-- [ ] Metadata complete and current
-
-**Run Validations:**
 ```bash
-# Check routes.yml against filesystem
-python src/framework/update_routes.py --validate-only
+# Validate all schemas and links
+agentic-framework build
 
-# Verify registry integrity
-# (custom script or manual review)
+# List registered modules
+agentic-framework list
 
-# Check for missing files
-# (filesystem audit)
+# Show module detail
+agentic-framework info core
 ```
 
-### Quarterly Review
-
-**Evaluate:**
-- [ ] Token budget trends (growing too fast?)
-- [ ] Component organization (still logical?)
-- [ ] Dependency patterns (any tangles?)
-- [ ] Documentation accuracy
-- [ ] Naming consistency
-
-**Consider:**
-- Should any components be split?
-- Should any components be merged?
-- Are there new patterns emerging?
-- Should governance rules be updated?
+**Manual verification checklist:**
+- [ ] All `capability-needs` entries have mappings in `discovery-map.json`
+- [ ] All `capabilities-provided` entries appear in at least one mapping
+- [ ] All skill `location` paths point to existing directories
+- [ ] `references.yml` URLs are still live
+- [ ] Knowledge skills reflect current project state
 
 ### Refactoring Workflow
 
-**When making significant changes:**
+When making significant changes:
 
-1. **Document Current State**
-   - Create proposal/RFC file
-   - Show before/after structure
-   - Identify affected components
-
-2. **Validate Plan**
-   - Check no circular dependencies
-   - Verify token budgets will improve or stay same
-   - Identify all files to update
-
-3. **Implement Systematically**
-   - Update routes.yml first (if structure changed)
-   - Update registry.yml second (if dependencies changed)
-   - Update agent files third (if references changed)
-   - Verify all updates together
-
-4. **Comprehensive Testing**
-   - Run all validation checks
-   - Test loading scenarios
-   - Verify agent behavior unchanged
-   - Check all links work
-
-5. **Document Changes**
-   - Record why refactoring was done
-   - Note performance improvements
-   - Update governance docs if rules changed
+1. **Identify scope** — which agents and skills are affected
+2. **Update registries first** — `agents.json`, `skills.json`, `discovery-map.json`
+3. **Update agent/skill files second** — match frontmatter to registry entries
+4. **Run `agentic-framework build`** — catch schema and link errors early
+5. **Verify coverage** — no orphaned or missing capabilities
 
 ---
 
-## Common Patterns to Maintain
+## Naming Conventions
 
-### Pattern 1: Parallel Organization
-```
-routes.yml structure matches registry sections:
-
-routes.yml:              registry.yml:
-  paths:
-    ai:                    agents: [...]
-      agents: ...          context-files: [...]
-      context: ...         shared-resources: [...]
-      skills: ...          skills: [...]
-```
-
-**Benefit:** Easy to correlate between files
-
----
-
-### Pattern 2: Complete Metadata
-```
-Every component has:
-  - ID (kebab-case)
-  - File location (relative path)
-  - Description (what it does)
-  - Token budget (token count)
-  - Dependencies (if any)
-  - Relationships (if any)
-
-No missing fields!
-```
-
-**Benefit:** Complete information for validation and loading
-
----
-
-### Pattern 3: Single Source Per Concern
-```
-Where Does Information Live?
-
-File location?          → routes.yml
-What is this component? → registry.yml
-How to load it?         → registry.yml (via loading-matrix)
-When to use it?         → agent/context file itself
-```
-
-**Benefit:** No duplication, clear ownership
-
----
-
-## Troubleshooting Common Issues
-
-### Issue: Routes/Registry Out of Sync
-
-**Symptoms:**
-- Tool can't find file (wrong path in routes)
-- Registry references non-existent dependency
-- Metadata doesn't match actual file
-
-**Fix:**
-1. Identify what's out of sync
-2. Determine ground truth (file or metadata?)
-3. Update the other to match
-4. Run validation to confirm
-5. Commit as "fix: sync routes/registry"
-
-### Issue: Token Budget Exceeded
-
-**Symptoms:**
-- Total tokens > limit
-- Loading scenario fails
-- Agent can't load full context
-
-**Fix:**
-1. Calculate current total tokens
-2. Identify what can be optimized
-3. Apply progressive disclosure
-4. Extract shared resources if needed
-5. Re-test and update registry
-
-### Issue: Broken Dependency Reference
-
-**Symptoms:**
-- Agent can't find context file
-- Validation fails
-- Loading breaks
-
-**Fix:**
-1. Verify context file exists in registry
-2. Check file exists on disk
-3. Verify path correct in routes.yml
-4. Ensure context-dependencies IDs match
-5. Update registry or create missing file
+| Item | Convention | Example |
+|------|-----------|---------|
+| Module IDs | kebab-case | `core`, `backlog`, `coding` |
+| Agent IDs | `ai-` prefix, kebab-case | `ai-architect`, `ai-backlog-manager` |
+| Skill IDs | verb-noun, kebab-case | `knowing-the-codebase`, `verifying-quality` |
+| Capabilities | domain-noun, kebab-case | `quality-assurance`, `architecture-design` |
 
 ---
 
 ## References
 
-- **routes.yml** - Your project's navigation map
-- **registry.yml** - Your project's metadata catalog
-- **Skill: Understanding Framework Architecture** - Design rationale and patterns
-- **Governance Rules** - Framework enforcement standards
+- **[SKILL.md](SKILL.md)** - Overview and quick reference
+- **[EXAMPLES.md](EXAMPLES.md)** - Worked examples for common tasks
+- **[DISCOVERY-ENGINE-ARCHITECTURE.md](DISCOVERY-ENGINE-ARCHITECTURE.md)** - Discovery engine internals
+- `framework/modules/core/registries/schemas/` - JSON schemas for validation
 
 ---
 
-**Best Practices Version:** 2.0
-**Last Updated:** 2025-12-07
+**Best Practices Version:** 3.0
+**Last Updated:** 2025-12-15

@@ -16,15 +16,9 @@ jest.mock('../../commands/add.js', () => ({ addCommand: jest.fn() }));
 jest.mock('../../commands/remove.js', () => ({ removeCommand: jest.fn() }));
 jest.mock('../../commands/list.js', () => ({ listCommand: jest.fn() }));
 jest.mock('../../commands/info.js', () => ({ infoCommand: jest.fn() }));
-jest.mock('../../commands/validate.js', () => ({ validateCommand: jest.fn() }));
 jest.mock('../../commands/update.js', () => ({ updateCommand: jest.fn() }));
 jest.mock('../../commands/status.js', () => ({ statusCommand: jest.fn() }));
 jest.mock('../../commands/sync.js', () => ({ syncCommand: jest.fn() }));
-jest.mock('../../commands/routes.js', () => ({
-  routesCheckCommand: jest.fn(),
-  routesSyncCommand: jest.fn()
-}));
-jest.mock('../../commands/bump-version.js', () => ({ bumpVersion: jest.fn() }));
 jest.mock('../../commands/dev.js', () => ({ devCommand: jest.fn() }));
 jest.mock('../../commands/backlog/create-ticket.js', () => ({
   createCreateTicketCommand: jest.fn()
@@ -61,42 +55,6 @@ jest.mock('../../commands/skill/index.js', () => ({
   createRemoveCommand: jest.fn(),
   createInfoCommand: jest.fn(),
   createPullCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/init.js', () => ({
-  createInitCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/create-part.js', () => ({
-  createCreatePartCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/create-chapter.js', () => ({
-  createCreateChapterCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/create-scene.js', () => ({
-  createCreateSceneCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/create-character.js', () => ({
-  createCreateCharacterCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/validate.js', () => ({
-  createValidateCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/build.js', () => ({
-  createBuildCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/analyze.js', () => ({
-  createAnalyzeCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/export.js', () => ({
-  createExportCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/validate-immutability.js', () => ({
-  createValidateImmutabilityCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/lock-fact.js', () => ({
-  createLockFactCommand: jest.fn(),
-}));
-jest.mock('../../commands/writer/unlock-fact.js', () => ({
-  createUnlockFactCommand: jest.fn(),
 }));
 jest.mock('../../commands/agent/index.js', () => ({
   createListCommand: jest.fn(),
@@ -146,8 +104,8 @@ import type { MCPTool } from '../types.js';
 
 describe('MCP Tools Integration', () => {
   describe('Tool Aggregation', () => {
-    it('should aggregate exactly 52 tools', () => {
-      expect(allTools.length).toBe(52);
+    it('should aggregate exactly 36 tools', () => {
+      expect(allTools.length).toBe(36);
     });
 
     it('should have all tools with unique names', () => {
@@ -163,7 +121,7 @@ describe('MCP Tools Integration', () => {
     });
 
     it('should report correct total tool count', () => {
-      expect(getToolCount()).toBe(52);
+      expect(getToolCount()).toBe(36);
     });
   });
 
@@ -171,8 +129,8 @@ describe('MCP Tools Integration', () => {
     const categories = getToolsByCategory();
 
     describe('Framework Tools', () => {
-      it('should have 14 framework tools', () => {
-        expect(categories.framework.length).toBe(14);
+      it('should have 10 framework tools', () => {
+        expect(categories.framework.length).toBe(10);
       });
 
       it('should include expected framework tools', () => {
@@ -182,13 +140,9 @@ describe('MCP Tools Integration', () => {
         expect(names).toContain('agentic_remove');
         expect(names).toContain('agentic_list');
         expect(names).toContain('agentic_info');
-        expect(names).toContain('agentic_validate');
         expect(names).toContain('agentic_update');
         expect(names).toContain('agentic_status');
         expect(names).toContain('agentic_sync');
-        expect(names).toContain('agentic_routes_check');
-        expect(names).toContain('agentic_routes_sync');
-        expect(names).toContain('agentic_bump_version');
         expect(names).toContain('agentic_build');
         expect(names).toContain('agentic_dev');
       });
@@ -290,34 +244,6 @@ describe('MCP Tools Integration', () => {
       it('should follow skill naming pattern', () => {
         categories.skill.forEach((tool) => {
           expect(tool.name).toMatch(/^agentic_skill_/);
-        });
-      });
-    });
-
-    describe('Writer Tools', () => {
-      it('should have 12 writer tools', () => {
-        expect(categories.writer.length).toBe(12);
-      });
-
-      it('should include expected writer tools', () => {
-        const names = categories.writer.map((t) => t.name);
-        expect(names).toContain('agentic_writer_init');
-        expect(names).toContain('agentic_writer_create_part');
-        expect(names).toContain('agentic_writer_create_chapter');
-        expect(names).toContain('agentic_writer_create_scene');
-        expect(names).toContain('agentic_writer_create_character');
-        expect(names).toContain('agentic_writer_validate');
-        expect(names).toContain('agentic_writer_build');
-        expect(names).toContain('agentic_writer_analyze');
-        expect(names).toContain('agentic_writer_export');
-        expect(names).toContain('agentic_writer_validate_immutability');
-        expect(names).toContain('agentic_writer_lock_fact');
-        expect(names).toContain('agentic_writer_unlock_fact');
-      });
-
-      it('should follow writer naming pattern', () => {
-        categories.writer.forEach((tool) => {
-          expect(tool.name).toMatch(/^agentic_writer_/);
         });
       });
     });
@@ -458,12 +384,12 @@ describe('MCP Tools Integration', () => {
     });
 
     it('should register all tools without error', () => {
-      expect(registeredToolCount).toBe(52);
+      expect(registeredToolCount).toBe(36);
     });
 
     it('should list all registered tools', () => {
       const registeredTools = toolRegistry.getAll();
-      expect(registeredTools.length).toBe(52);
+      expect(registeredTools.length).toBe(36);
     });
 
     it('should retrieve tools by name', () => {
@@ -479,14 +405,13 @@ describe('MCP Tools Integration', () => {
 
     it('should get all tool names', () => {
       const names = toolRegistry.getNames();
-      expect(names.length).toBe(52);
+      expect(names.length).toBe(36);
       expect(names).toContain('agentic_init');
-      expect(names).toContain('agentic_validate');
     });
 
     it('should generate valid MCP metadata', () => {
       const metadata = toolRegistry.getMetadata();
-      expect(metadata.length).toBe(52);
+      expect(metadata.length).toBe(36);
 
       metadata.forEach((meta) => {
         expect(meta.name).toBeDefined();
@@ -518,11 +443,10 @@ describe('MCP Tools Integration', () => {
         categories.planning.length +
         categories.template.length +
         categories.skill.length +
-        categories.writer.length +
         categories.agent.length +
         categories.create.length;
 
-      expect(totalInCategories).toBe(52);
+      expect(totalInCategories).toBe(36);
     });
 
     it('should have no duplicate tools across categories', () => {
@@ -533,9 +457,7 @@ describe('MCP Tools Integration', () => {
         ...categories.confluence,
         ...categories.planning,
         ...categories.template,
-        ...categories.skill,
-        ...categories.writer,
-        ...categories.agent,
+        ...categories.skill,        ...categories.agent,
         ...categories.create,
       ];
 
@@ -552,9 +474,7 @@ describe('MCP Tools Integration', () => {
         ...categories.confluence,
         ...categories.planning,
         ...categories.template,
-        ...categories.skill,
-        ...categories.writer,
-        ...categories.agent,
+        ...categories.skill,        ...categories.agent,
         ...categories.create,
       ];
 
@@ -595,10 +515,6 @@ describe('MCP Tools Integration', () => {
 
       categories.skill.forEach((tool) => {
         expect(tool.name).toMatch(/^agentic_skill_/);
-      });
-
-      categories.writer.forEach((tool) => {
-        expect(tool.name).toMatch(/^agentic_writer_/);
       });
 
       categories.agent.forEach((tool) => {

@@ -39,8 +39,6 @@ delegates-to:
   - ai-test-agent-slim
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: advanced
 token-budget: 3000
 ---
 # Test Agent (Full Variant)
@@ -53,8 +51,6 @@ variant: slim
 parent-agent: ai-test-agent
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: basic
 token-budget: 1000
 ---
 # Test Agent (Slim Variant)
@@ -103,8 +99,6 @@ agent: ai-orphan-slim
 variant: slim
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: basic
 token-budget: 1000
 ---
 # Orphan Slim Agent
@@ -142,8 +136,6 @@ variant: slim
 parent-agent: ai-test-agent
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: basic
 token-budget: 1500
 ---
 # Large Slim Agent
@@ -171,46 +163,6 @@ token-budget: 1500
       );
     });
 
-    it('should error when slim agent uses non-basic context level', async () => {
-      // Create slim agent with advanced context
-      const wrongContextPath = path.join(testDir, 'modules', 'core', 'agents', 'ai-wrong-context-slim.md');
-      await fs.writeFile(wrongContextPath, `---
-agent: ai-wrong-context-slim
-variant: slim
-parent-agent: ai-test-agent
-capability-needs:
-  - git-workflow-management
-context-category-needs:
-  business: basic
-  technical: advanced
-token-budget: 1000
----
-# Wrong Context Slim Agent
-`);
-
-      // Update module.json
-      const coreModulePath = path.join(testDir, 'modules', 'core', 'module.json');
-      const coreModule = await fs.readJson(coreModulePath);
-      coreModule.provides.agents.push('ai-wrong-context-slim');
-      await fs.writeJson(coreModulePath, coreModule);
-
-      // Recreate engine and validator
-      const freshEngine = new DiscoveryEngine(testDir);
-      await freshEngine.loadModules();
-      await freshEngine.buildCapabilityMap();
-      const freshValidator = new FrameworkValidator(freshEngine, testDir);
-
-      const result = await freshValidator.validateAgentVariants();
-
-      expect(result.valid).toBe(false);
-      expect(result.issues).toContainEqual(
-        expect.objectContaining({
-          type: 'error',
-          message: expect.stringContaining("must use 'basic' context level")
-        })
-      );
-    });
-
     it('should error when full agent delegates to non-existent agent', async () => {
       // Create agent that delegates to non-existent slim variant
       const badDelegatorPath = path.join(testDir, 'modules', 'core', 'agents', 'ai-bad-delegator.md');
@@ -221,8 +173,6 @@ delegates-to:
   - ai-ghost-slim
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: advanced
 token-budget: 3000
 ---
 # Bad Delegator Agent
@@ -259,8 +209,6 @@ agent: ai-full-agent-2
 variant: full
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: advanced
 token-budget: 3000
 ---
 # Full Agent 2
@@ -275,8 +223,6 @@ delegates-to:
   - ai-full-agent-2
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: advanced
 token-budget: 3000
 ---
 # Test Agent (Full Variant)
@@ -322,8 +268,6 @@ token-budget: 3000
 agent: ai-default-variant
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: advanced
 token-budget: 3000
 ---
 # Default Variant Agent
@@ -356,8 +300,6 @@ variant: slim
 parent-agent: ai-test-agent
 capability-needs:
   - git-workflow-management
-context-category-needs:
-  business: basic
 token-budget: 800
 ---
 # Test Agent (Slim Variant 2)

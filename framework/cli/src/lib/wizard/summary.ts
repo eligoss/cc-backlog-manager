@@ -163,9 +163,6 @@ export function renderExistingFilesMessage(info: ExistingProjectInfo): string {
   if (info.hasSettingsLocal) {
     lines.push(chalk.dim('  ✓ .claude/settings.local.json exists (will merge)'));
   }
-  if (info.hasRoutesYml) {
-    lines.push(chalk.dim('  ✓ routes.yml exists (will backup)'));
-  }
 
   lines.push('');
   lines.push(chalk.dim('Framework will:'));

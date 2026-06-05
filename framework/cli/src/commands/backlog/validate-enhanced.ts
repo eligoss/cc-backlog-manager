@@ -86,10 +86,10 @@ async function runValidateEnhancedCommand(
 
   // Resolve backlog path:
   // - If explicit path provided (not default), use it as override
-  // - Otherwise, use CliContext path resolution
+  // - Otherwise, fall back to the project's default backlog directory
   const isDefaultPath = backlogPath === './backlog';
   const resolvedPath = isDefaultPath
-    ? ctx.paths.resolve('backlog') || path.join(ctx.projectRoot, 'ai/backlog')
+    ? path.join(ctx.projectRoot, 'ai/backlog')
     : path.resolve(backlogPath);
 
   // Check if backlog directory exists

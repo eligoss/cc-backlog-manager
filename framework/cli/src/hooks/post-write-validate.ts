@@ -20,7 +20,6 @@ const REGISTRY_FILES = [
   'agents.json',
   'skills.json',
   'discovery-map.json',
-  'context.json',
 ];
 
 // Required frontmatter fields for different file types

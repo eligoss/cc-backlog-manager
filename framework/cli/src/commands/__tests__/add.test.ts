@@ -251,7 +251,6 @@ describe("Integration: Add Command", () => {
         "confluence",
         "planning",
         "coding",
-        "reporting",
       ];
 
       expect(availableModules.includes("core")).toBe(true);

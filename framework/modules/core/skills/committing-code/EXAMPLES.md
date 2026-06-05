@@ -50,7 +50,7 @@ git commit -m "PLAN-001-PHASE-01: Create generic skills and infrastructure
 
 ✅ Created generic-shared-understanding-framework-architecture-knowledge skill
 ✅ Created building-skills skill
-✅ Created ROUTES-REGISTRY-DESIGN.md with complete design rationale
+✅ Created DISCOVERY-ENGINE-ARCHITECTURE.md with complete design rationale
 ✅ Updated ai/registry.yml with new skill metadata
 ✅ Updated README.md with skill references
 
@@ -532,11 +532,11 @@ Working on framework improvement with versioning
 - Add documentation
 - Create new features
 
-**Run versioning script** (if available)
+**Run framework build** (if available)
+
 ```bash
-# Framework might have automation
-agentic-framework routes sync
-# Or manual version/changelog update
+# Regenerate registries and validate
+agentic-framework build
 ```
 
 **Stage everything**

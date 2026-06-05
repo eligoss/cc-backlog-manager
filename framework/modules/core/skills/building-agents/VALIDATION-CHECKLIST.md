@@ -121,7 +121,6 @@ For each major section (> 20 lines), classify:
 
 **Content types:**
 - **Agent orchestration** → Should be in agent
-- **Domain knowledge** → Should be in context
 - **Reusable workflow** → Should be in skill
 - **Examples/templates** → Should be in skill supporting file
 
@@ -155,7 +154,6 @@ Calculate: `(agent-specific lines / total lines) × 100`
 - [ ] `agent:` - Valid agent ID
 - [ ] `role:` - Human-readable role
 - [ ] `capability-needs:` - Array of capabilities
-- [ ] `context-category-needs:` - Business/Technical/Process levels
 - [ ] `token-budget:` - Within limits (< 3000)
 
 ### 4.3 Section Ordering
@@ -164,11 +162,10 @@ Recommended order:
 1. [ ] Title and purpose
 2. [ ] Auto-discovery note
 3. [ ] Skill routing table
-4. [ ] Required reading (optional)
-5. [ ] Agent-specific tasks
-6. [ ] Success criteria
-7. [ ] Self-evaluation
-8. [ ] Footer/metadata
+4. [ ] Agent-specific tasks
+5. [ ] Success criteria
+6. [ ] Self-evaluation
+7. [ ] Footer/metadata
 
 ---
 
@@ -179,7 +176,7 @@ Recommended order:
 Run discovery test:
 
 ```bash
-agentic-framework validate --verbose
+agentic-framework build --verbose
 ```
 
 **Check:**
@@ -187,19 +184,11 @@ agentic-framework validate --verbose
 - [ ] No "missing capability" errors
 - [ ] Discovered skills match expected
 
-### 5.2 Context-Category-Needs Resolution
-
-**Verify levels are appropriate:**
-- [ ] `business:` level matches agent's domain knowledge needs
-- [ ] `technical:` level matches agent's technical depth needs
-- [ ] `process:` level matches agent's process knowledge needs
-
-### 5.3 Registry Alignment
+### 5.2 Registry Alignment
 
 **Check agents.json:**
 - [ ] Agent entry exists
 - [ ] `capability-needs` matches YAML frontmatter
-- [ ] `context-category-needs` matches YAML frontmatter
 - [ ] `token-budget` matches YAML frontmatter
 
 ---
@@ -209,13 +198,12 @@ agentic-framework validate --verbose
 Run link validator:
 
 ```bash
-agentic-framework validate --links
+agentic-framework build
 ```
 
 **Check:**
 - [ ] All internal links resolve
 - [ ] All skill references valid
-- [ ] All context references valid
 - [ ] No broken anchors
 
 ---
@@ -235,8 +223,7 @@ Test with actual use case:
 
 1. Invoke agent with realistic task
 2. Verify skill auto-discovery works
-3. Verify context auto-loading works
-4. Verify task completion
+3. Verify task completion
 
 **Result:** ____
 
@@ -281,10 +268,10 @@ For quick checks, use this abbreviated version:
 wc -l ai/agents/ai-{name}.md  # Must be < 500
 
 # 2. Discovery check
-agentic-framework validate --verbose
+agentic-framework build --verbose
 
 # 3. Link check
-agentic-framework validate --links
+agentic-framework build
 
 # 4. Visual inspection
 # - Has skill routing table?

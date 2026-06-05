@@ -1,5 +1,7 @@
 # Publishing to GitHub Packages
 
+> **Note (v1.0.0):** The `bump-version` CLI command referenced below was removed in v1.0.0. Version numbers are now edited directly in `package.json` / `module.json`, and releases are driven by CI auto-versioning on merge to `main` (see CLAUDE.md → CI/CD Auto-Release Integration). Treat the `bump-version` steps in this document as historical.
+
 This document describes how to publish the `@eligoss/agentic-framework` package to GitHub Packages.
 
 ## Overview

@@ -18,7 +18,6 @@ jest.mock("../../discovery-engine.js", () => {
         id: "test-agent",
         moduleId: "test",
         capabilityNeeds: ["test-capability"],
-        contextCategoryNeeds: { technical: "basic" },
         tokenBudget: 1000,
         sourcePath: "/test/agent.md",
         variant: "full",
@@ -41,9 +40,6 @@ jest.mock("../../discovery-engine.js", () => {
           },
         ],
       }),
-      getContextFilesForAgent: jest
-        .fn()
-        .mockReturnValue(["technical-basic.md"]),
     })),
   };
 });
@@ -135,13 +131,6 @@ This is a test skill.
       expect(result.subAgents.size).toBe(2);
       expect(result.subAgents.has("explore")).toBe(true);
       expect(result.subAgents.has("implementer")).toBe(true);
-    });
-
-    it("should inject context into system prompt", async () => {
-      const result = await generator.generateForAgent("test-agent");
-
-      expect(result.definition.prompt).toContain("Loaded Context");
-      expect(result.definition.prompt).toContain("technical-basic.md");
     });
 
     it("should inject skills into system prompt", async () => {
@@ -360,8 +349,7 @@ This is a test skill.
           id: "test-agent",
           moduleId: "test",
           capabilityNeeds: ["capability-1"],
-          contextCategoryNeeds: { technical: "basic" },
-          tokenBudget: 3000,
+            tokenBudget: 3000,
           sourcePath: "/test/agent.md",
           variant: "full",
           essentialSkills: ["essential-skill-1"],
@@ -397,9 +385,6 @@ This is a test skill.
             },
           ],
         }),
-        getContextFilesForAgent: jest
-          .fn()
-          .mockReturnValue(["technical-basic.md"]),
       }));
 
       tierGenerator = new SDKGenerator(mockProjectRoot);
@@ -459,16 +444,14 @@ This is a test skill.
       expect(hrCount).toBeGreaterThanOrEqual(3);
     });
 
-    it("should maintain section order: Context -> Tier 1 -> Tier 2 -> Tier 3", async () => {
+    it("should maintain section order: Tier 1 -> Tier 2 -> Tier 3", async () => {
       const result = await tierGenerator.generateForAgent("test-agent");
       const prompt = result.definition.prompt;
 
-      const contextIdx = prompt.indexOf("Loaded Context");
       const tier1Idx = prompt.indexOf("Essential Skills");
       const tier2Idx = prompt.indexOf("Role-Based Skills");
       const tier3Idx = prompt.indexOf("Available Skills");
 
-      expect(contextIdx).toBeLessThan(tier1Idx);
       expect(tier1Idx).toBeLessThan(tier2Idx);
       expect(tier2Idx).toBeLessThan(tier3Idx);
     });
@@ -495,7 +478,6 @@ This is a test skill.
           id: "test-agent",
           moduleId: "test",
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: "/test/agent.md",
           variant: "slim",
@@ -513,7 +495,6 @@ This is a test skill.
           deployed: [],
           modules: [],
         }),
-        getContextFilesForAgent: jest.fn().mockReturnValue([]),
       }));
 
       const emptyGenerator = new SDKGenerator(mockProjectRoot);
@@ -534,7 +515,6 @@ This is a test skill.
           id: "test-agent",
           moduleId: "test",
           capabilityNeeds: ["cap-1"],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: "/test/agent.md",
           variant: "full",
@@ -554,7 +534,6 @@ This is a test skill.
             { id: "discovered-1", sourcePath: "/test/discovered-1.md" },
           ],
         }),
-        getContextFilesForAgent: jest.fn().mockReturnValue([]),
       }));
 
       const noTier1Generator = new SDKGenerator(mockProjectRoot);
@@ -575,7 +554,6 @@ This is a test skill.
           id: "test-agent",
           moduleId: "test",
           capabilityNeeds: [],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: "/test/agent.md",
           variant: "full",
@@ -598,7 +576,6 @@ This is a test skill.
             { id: "available-1", sourcePath: "/test/available-1.md" },
           ],
         }),
-        getContextFilesForAgent: jest.fn().mockReturnValue([]),
       }));
 
       const noTier2Generator = new SDKGenerator(mockProjectRoot);
@@ -619,7 +596,6 @@ This is a test skill.
           id: "test-agent",
           moduleId: "test",
           capabilityNeeds: ["cap-1"],
-          contextCategoryNeeds: {},
           tokenBudget: 1000,
           sourcePath: "/test/agent.md",
           variant: "full",
@@ -641,7 +617,6 @@ This is a test skill.
             { id: "discovered-1", sourcePath: "/test/discovered-1.md" },
           ],
         }),
-        getContextFilesForAgent: jest.fn().mockReturnValue([]),
       }));
 
       const noTier3Generator = new SDKGenerator(mockProjectRoot);

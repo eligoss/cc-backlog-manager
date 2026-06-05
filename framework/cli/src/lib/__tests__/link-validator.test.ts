@@ -217,6 +217,16 @@ describe('MarkdownLinkValidator', () => {
       });
     });
 
+    it('should not flag bare backticked filenames without a separator', async () => {
+      const sourceFile = path.join(testRoot, 'source.md');
+      const content = 'Files include `SKILL.md`, `EXAMPLES.md`, and `PATTERNS.md`.';
+      await fs.writeFile(sourceFile, content);
+
+      const result = await validator.validateFile(sourceFile);
+
+      expect(result.antiPatterns).toHaveLength(0);
+    });
+
     it('should skip template patterns in backticks', async () => {
       const sourceFile = path.join(testRoot, 'source.md');
       const content = 'Create files like `STORY-123.md` or `TASK-456.md`.';
@@ -271,7 +281,7 @@ describe('MarkdownLinkValidator', () => {
 
     it('should detect multiple anti-patterns on same line', async () => {
       const sourceFile = path.join(testRoot, 'source.md');
-      const content = 'See `file1.md` and `file2.md`';
+      const content = 'See `dir/file1.md` and `other/file2.md`';
       await fs.writeFile(sourceFile, content);
 
       const result = await validator.validateFile(sourceFile);

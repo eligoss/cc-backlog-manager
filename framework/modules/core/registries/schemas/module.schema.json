@@ -149,25 +149,6 @@
       },
       "description": "Optional modules that enhance functionality if present"
     },
-    "context": {
-      "type": "object",
-      "description": "Context files provided by this module",
-      "additionalProperties": false,
-      "properties": {
-        "business": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "technical": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "process": {
-          "type": "array",
-          "items": { "type": "string" }
-        }
-      }
-    },
     "entry-points": {
       "type": "object",
       "description": "CLI entry points and scripts",
@@ -233,7 +214,7 @@
         },
         "category": {
           "type": "string",
-          "enum": ["core", "integration", "workflow", "development", "documentation", "reporting"]
+          "enum": ["core", "integration", "workflow", "development", "documentation"]
         }
       }
     }

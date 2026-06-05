@@ -71,14 +71,6 @@ export function createAgentShowCommand(): Command {
           console.log(`  - ${cap}`);
         }
 
-        // Context
-        console.log(chalk.cyan('\n[Context Files]'));
-        for (const [category, level] of Object.entries(
-          generated.frameworkAgent.contextCategoryNeeds
-        )) {
-          console.log(`  ${category}: ${level}`);
-        }
-
         // Skills loaded
         console.log(chalk.cyan('\n[Skills Loaded]'));
         if (generated.skillsContent.length > 0) {

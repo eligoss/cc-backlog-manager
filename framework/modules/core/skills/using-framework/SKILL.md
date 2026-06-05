@@ -2,7 +2,7 @@
 id: using-framework
 module: core
 name: using-framework
-description: Understand design patterns for framework organization with separated concerns (routes for navigation, registry for metadata). Use when learning how frameworks are structured, designing new frameworks, or understanding the rationale behind routes/registry separation.
+description: Understand the current framework architecture — four modules, registry-based skill/agent discovery, knowledge skills for project context, references.yml for external pointers, and build validation. Use when learning how the framework is structured, designing new modules or skills, or making decisions about framework organization.
 scope: generic
 applicable-projects: any
 capabilities-provided:
@@ -19,158 +19,152 @@ tools:
 ## When to Use This Skill
 
 You need to understand **framework design patterns** and should:
-- Learn why routes and registry are separated (design rationale)
-- Understand how routes/registry work together (architecture pattern)
-- Design navigation systems for other projects
-- Make decisions about framework structure organization
-- Understand best practices for maintaining separated navigation/metadata
-- Review historical evolution of framework organization patterns
+- Learn how modules, skills, and agents are organized
+- Understand how registry-based discovery works
+- Navigate the framework without a routes map
+- Add new capabilities (skills, agents, modules)
+- Understand how project-specific knowledge is provided
+- Make decisions about framework structure or governance
 
 **Example Invocations:**
-- "Use using-framework to explain why routes and registry are separate"
-- "Help me understand how the routes/registry pattern works"
-- "I'm designing a new framework - what can I learn from the routes/registry pattern?"
-- "Show me examples of how routes/registry separation improves maintainability"
+- "Use using-framework to explain how skill discovery works"
+- "Help me understand how capability-needs connects agents to skills"
+- "I'm adding a new module — what do I need to know?"
+- "Where does project-specific knowledge live in the framework?"
 
 ---
 
 ## Quick Reference
 
-### The Pattern
+### The Current Model
 
-**Problem:** Mixing filesystem navigation with component metadata makes both hard to maintain
+| Concern | How It Works |
+|---------|-------------|
+| **Modules** | 4 modules: `core`, `backlog`, `coding`, `confluence` |
+| **Skill discovery** | Registries (`skills.json`, `agents.json`, `discovery-map.json`) |
+| **Agent ↔ skill wiring** | `capability-needs` / `capabilities-provided` in YAML frontmatter |
+| **Project knowledge** | Three on-demand knowledge skills (see below) |
+| **External references** | `references.yml` at project root |
+| **Validation** | `agentic-framework build` (schema + markdown-link validation) |
+| **Navigation** | Native filesystem — Glob/Grep/Read, no routes map needed |
 
-**Solution:** Separate concerns into two files:
+### Knowledge Skills (Project Context)
 
-| Aspect | routes.yml | registry.yml |
-|--------|-----------|--------------|
-| **Purpose** | Navigation ("where things live") | Configuration ("what things are") |
-| **Contains** | Directory paths only | Metadata, dependencies, rules |
-| **Updated When** | New folder added | New component added |
-| **Used By** | Tools, developers finding files | Agents, systems understanding components |
+Project-specific context lives in three **knowledge skills**, not context files:
 
-### Example: Finding Something
+| Skill | Contains |
+|-------|---------|
+| `knowing-the-codebase` | Tech stack, architecture, conventions, testing/CI, git workflow |
+| `knowing-the-domain` | Business domain, users, product context, features |
+| `knowing-backlog` | Jira project, workflow states, ticket conventions, Confluence config |
 
+Fill these in after scaffolding. External doc and codebase pointers go in `references.yml`.
+
+---
+
+## How Discovery Works
+
+### Agent Declares Capability-Needs
+
+```yaml
+---
+agent: ai-architect
+capability-needs:
+  - architecture-design
+  - quality-assurance
+  - markdown-formatting
+---
 ```
-1. Use routes.yml  → "Where is the agents folder?"
-   → agents: ai/agents/
 
-2. Use registry.yml → "What agents exist and what do they load?"
-   → agents: { ai-architect: { file: ai-architect.md, context-dependencies: [...] } }
+### Skills Declare Capabilities-Provided
+
+```json
+{
+  "id": "verifying-quality",
+  "capabilities-provided": ["quality-assurance"],
+  "location": "framework/modules/core/skills/verifying-quality/"
+}
 ```
+
+### discovery-map.json Routes Needs to Skills
+
+```json
+{
+  "capability": "quality-assurance",
+  "skills-providing": ["verifying-quality"],
+  "used-by-agents": ["ai-architect", "ai-app-developer"]
+}
+```
+
+The Discovery Engine queries `discovery-map.json` at agent invocation time — no hardcoded skill references in agent files.
+
+---
+
+## Three-Tier Skill Loading
+
+| Tier | Name | Loading | Configuration |
+|------|------|---------|---------------|
+| **Tier 1** | Essential | Pre-loaded | `essential-skills` in agent frontmatter |
+| **Tier 2** | Role-Based | Auto-discovered | `capability-needs` in agent frontmatter |
+| **Tier 3** | Available | On-demand | `available-skills` in agent frontmatter |
 
 ---
 
 ## Quick Decision Trees
 
-### When Should These Be Separate?
+### Where Does This Information Live?
 
-**Question 1:** Do you need to find files?
-- YES → You need routes.yml (pure navigation)
-- NO → You need registry (metadata only)
-
-**Question 2:** Do you need to understand component relationships?
-- YES → You need registry.yml (dependencies, metadata)
-- NO → You need routes (just paths)
-
-**Question 3:** Are navigation and metadata changing independently?
-- YES → Keep them separate (different update frequencies)
-- NO → Could merge (but harder to maintain)
-
-### Decision: Merge or Separate?
-
-```
-Should routes and registry be one file or two?
-
-├─ If: Tools need FAST path lookups
-│  └─ SEPARATE → registry.yml too heavy for navigation
-│
-├─ If: Building from scratch
-│  ├─ < 20 components → Could merge
-│  └─ > 20 components → SEPARATE (grows too large)
-│
-├─ If: Path format ≠ metadata format
-│  └─ SEPARATE → Different structural needs
-│
-└─ If: Teams maintain separately (frontend vs platform)
-   └─ SEPARATE → Different ownership
+```text
+What is this component?         → agents.json / skills.json (registry)
+What capabilities does it need? → capability-needs in agent YAML
+What skill provides capability? → discovery-map.json
+External docs / API references  → references.yml
+Project tech/architecture/code  → knowing-the-codebase skill
+Business domain / product       → knowing-the-domain skill
+Jira / Confluence config        → knowing-backlog skill
 ```
 
-**Typical Recommendation:** SEPARATE (better maintainability, independent evolution)
+### Adding a New Agent
 
----
+1. Create agent file in `framework/modules/<module>/agents/`
+2. Add `capability-needs` to YAML frontmatter
+3. Register in `agents.json` with same capability-needs
+4. Verify each capability resolves in `discovery-map.json`
+5. Run `agentic-framework build` to validate
 
-## Common Patterns
+### Adding a New Skill
 
-### Pattern 1: Pure Navigation (routes.yml)
-
-**Purpose:** Tool discovers where files are
-```yaml
-paths:
-  agents: ai/agents/
-  context: ai/context/
-  registry: ai/registry.yml
-```
-
-**Key:** Simple key-value, fast to parse, no metadata
-
-### Pattern 2: Consolidated Metadata (registry.yml)
-
-**Purpose:** System understands component relationships
-```yaml
-agents:
-  ai-architect:
-    file: ai-architect.md
-    context-dependencies:
-      - business-advanced
-      - technical-advanced
-    total-context-tokens: 9800
-```
-
-**Key:** Complete metadata in one place, single source of truth
-
-### Pattern 3: Workflow Integration
-
-**Purpose:** Loading an agent with full context
-
-```
-1. routes.yml tells system WHERE agents live
-   → ai/agents/
-
-2. registry.yml tells system WHAT to load
-   → File: ai-architect.md
-   → Context: [business-advanced, technical-advanced, ...]
-
-3. Combined workflow:
-   → Read routes.yml → ai/agents/
-   → Read registry.yml → ai-architect.md → Load context
-   → Load full agent prompt with context
-```
+1. Create skill directory in `framework/modules/<module>/skills/<skill-id>/`
+2. Create `SKILL.md` with `capabilities-provided` in YAML frontmatter
+3. Register in `skills.json` with same capabilities-provided
+4. Map each capability in `discovery-map.json`
+5. Run `agentic-framework build` to validate
 
 ---
 
 ## See Also
 
-### Deep Dives (Supporting Files)
+### Supporting Files
 
-- **[ROUTES-REGISTRY-DESIGN.md](ROUTES-REGISTRY-DESIGN.md)** - Complete design rationale, workflow examples, best practices
-- **[BEST-PRACTICES.md](BEST-PRACTICES.md)** - How to maintain routes and registry effectively
-- **[EXAMPLES.md](EXAMPLES.md)** - Real-world examples, validation patterns, adding new components
+- **[BEST-PRACTICES.md](BEST-PRACTICES.md)** - Maintaining registries, adding components, validation
+- **[EXAMPLES.md](EXAMPLES.md)** - Real-world examples for adding agents, skills, and capabilities
+- **[DISCOVERY-ENGINE-ARCHITECTURE.md](DISCOVERY-ENGINE-ARCHITECTURE.md)** - Deep dive into the discovery engine
 
 ### Related Skills
 
 - **[building-skills](../building-skills/SKILL.md)** - How to build skills with good structure
 - **[building-framework](../building-framework/SKILL.md)** - Governance rules for framework organization
 
-### Reference Files
+### Key Files
 
-- **routes.yml** - Your project's navigation map (implementation)
-- **registry.yml** - Your project's metadata catalog (implementation)
-- **Framework docs** - Architecture decisions for your specific project
+- `.claude/registries/agents.json` — Agent metadata and capability-needs
+- `.claude/registries/skills.json` — Skill metadata and capabilities-provided
+- `.claude/registries/discovery-map.json` — Capability routing (single source of truth)
+- `references.yml` — External doc/codebase pointers
 
 ---
 
 **Type:** knowledge (static reference)
 **Scope:** generic (reusable across projects)
 **Applicable Projects:** any project with framework structure
-**Last Updated:** 2025-12-07
+**Last Updated:** 2025-12-15

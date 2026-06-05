@@ -50,7 +50,6 @@ describe('SDK Executor', () => {
         id: 'test-agent',
         moduleId: 'test',
         capabilityNeeds: [],
-        contextCategoryNeeds: {},
         tokenBudget: 1000,
         sourcePath: '/test/agent.md',
         variant: 'full',

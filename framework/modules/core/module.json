@@ -1,7 +1,7 @@
 {
   "$schema": "./registries/schemas/module.schema.json",
   "id": "core",
-  "version": "1.17.0",
+  "version": "1.0.0",
   "name": "Framework Core",
   "description": "Core framework infrastructure including framework management agents, shared skills, and essential utilities",
   "provides": {
@@ -17,15 +17,15 @@
       "verifying-quality",
       "validating-markdown",
       "using-mcp",
-      "building-context",
       "building-skills",
       "using-framework",
-      "using-context",
       "validating-links",
       "building-framework",
-      "managing-versions",
       "building-agents",
-      "gathering-intelligence"
+      "gathering-intelligence",
+      "knowing-the-codebase",
+      "knowing-the-domain",
+      "knowing-backlog"
     ],
     "capabilities": [
       "framework-governance",
@@ -36,49 +36,28 @@
       "quality-assurance",
       "markdown-formatting",
       "mcp-tool-usage",
-      "context-authoring",
-      "context-validation",
       "skill-creation",
       "framework-architecture-knowledge",
-      "context-loading-knowledge",
       "link-validation",
-      "version-management",
       "agent-design",
       "framework-development",
       "planning-phases",
-      "intelligence-gathering"
+      "intelligence-gathering",
+      "codebase-knowledge",
+      "domain-knowledge",
+      "backlog-knowledge"
     ],
     "scripts": [],
     "guards": [],
     "cli-commands": [
-      {
-        "name": "validate --links",
-        "type": "validate",
-        "skill": "validating-links",
-        "description": "Validate markdown links in documentation"
-      },
-      {
-        "name": "validate --versions",
-        "type": "validate",
-        "skill": "managing-versions",
-        "description": "Validate version consistency across modules"
-      },
-      {
-        "name": "bump-version",
-        "type": "update",
-        "skill": "managing-versions",
-        "description": "Bump framework version"
-      },
       "init",
       "add",
       "remove",
       "list",
       "info",
-      "validate",
       "update",
       "status",
       "sync",
-      "routes",
       {
         "name": "agent list",
         "type": "query",
@@ -98,19 +77,12 @@
   },
   "requires": {},
   "optional-dependencies": [],
-  "context": {
-    "business": [],
-    "technical": [],
-    "process": []
-  },
   "entry-points": {
     "hooks": {
       "pre-commit": [
-        "agentic-framework routes check",
-        "agentic-framework validate --links",
+        "agentic-framework build --quick",
         "agentic-framework sync --skills --check",
-        "agentic-framework sync --agents --check",
-        "agentic-framework validate --versions"
+        "agentic-framework sync --agents --check"
       ]
     },
     "claude-hooks": {
@@ -165,7 +137,6 @@
         {
           "matcher": ".*",
           "scripts": [
-            "subagent-context-loader.sh",
             "skill-reminder.sh"
           ]
         }

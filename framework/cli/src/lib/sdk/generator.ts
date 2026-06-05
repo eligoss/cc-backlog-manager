@@ -106,7 +106,6 @@ export class SDKGenerator {
       id: agent.id,
       moduleId: agent.moduleId,
       capabilityNeeds: agent.capabilityNeeds,
-      contextCategoryNeeds: agent.contextCategoryNeeds,
       tokenBudget: agent.tokenBudget,
       sourcePath: agent.sourcePath,
       variant: "full",
@@ -127,17 +126,12 @@ export class SDKGenerator {
       discoveryResult.discoveredSkills,
     );
 
-    // Load context files
-    const contextFiles = this.engine.getContextFilesForAgent(agent);
-    const contextContent = await this.loadContextContent(contextFiles);
-
     // Build system prompt with tiered skills
     const systemPrompt = this.buildSystemPrompt(
       agentContent,
       essentialSkillsContent,
       discoveredSkillsContent,
       discoveryResult.availableSkills,
-      contextContent,
       frameworkAgent,
     );
 
@@ -169,7 +163,6 @@ export class SDKGenerator {
       essentialSkillsContent,
       discoveredSkillsContent,
       availableSkillIds: discoveryResult.availableSkills,
-      contextContent,
     };
   }
 
@@ -263,28 +256,6 @@ export class SDKGenerator {
   }
 
   /**
-   * Load content from context files
-   */
-  private async loadContextContent(contextFiles: string[]): Promise<string[]> {
-    const content: string[] = [];
-    const contextDir = path.join(this.projectRoot, "ai", "context");
-
-    for (const fileName of contextFiles) {
-      const filePath = path.join(contextDir, fileName);
-      if (await fs.pathExists(filePath)) {
-        try {
-          const fileContent = await fs.readFile(filePath, "utf-8");
-          content.push(`## Context: ${fileName}\n\n${fileContent}`);
-        } catch {
-          // Skip files that can't be read
-        }
-      }
-    }
-
-    return content;
-  }
-
-  /**
    * Build the complete system prompt for the agent with three-tier skill loading
    */
   private buildSystemPrompt(
@@ -292,7 +263,6 @@ export class SDKGenerator {
     essentialSkillsContent: string[],
     discoveredSkillsContent: string[],
     availableSkillIds: string[],
-    contextContent: string[],
     frameworkAgent: FrameworkAgentDefinition,
   ): string {
     const sections: string[] = [];
@@ -308,12 +278,6 @@ export class SDKGenerator {
 
     // Core instructions from agent body
     sections.push(`\n## Instructions\n\n${agentContent.body}`);
-
-    // Inject context if available
-    if (contextContent.length > 0) {
-      sections.push("\n---\n\n# Loaded Context\n");
-      sections.push(contextContent.join("\n\n"));
-    }
 
     // Tier 1: Essential Skills (always loaded)
     if (essentialSkillsContent.length > 0) {

@@ -70,7 +70,6 @@ export interface FrameworkAgentDefinition {
   id: string;
   moduleId: string;
   capabilityNeeds: string[];
-  contextCategoryNeeds: Record<string, string>;
   tokenBudget: number;
   sourcePath: string;
   variant: "full" | "slim";
@@ -133,9 +132,6 @@ export interface GeneratedSDKAgent {
 
   /** Available skill IDs (Tier 3: on-demand reference) */
   availableSkillIds: string[];
-
-  /** Resolved context content */
-  contextContent: string[];
 }
 
 /**

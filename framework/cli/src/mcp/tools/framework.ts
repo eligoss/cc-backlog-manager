@@ -7,10 +7,13 @@
  * @module mcp/tools/framework
  */
 
+import * as path from "path";
 import { z } from "zod";
 import { defineTool } from "../tool-registry.js";
 import { executeAndCapture } from "../result-formatter.js";
 import { successResult, errorResult, ErrorCodes } from "../types.js";
+import { CliContext } from "../../lib/cli-context.js";
+import { BuildEngine, type BuildOptions } from "../../lib/build/build-engine.js";
 
 // Import command handlers
 import { initCommand } from "../../commands/init.js";
@@ -18,15 +21,9 @@ import { addCommand } from "../../commands/add.js";
 import { removeCommand } from "../../commands/remove.js";
 import { listCommand } from "../../commands/list.js";
 import { infoCommand } from "../../commands/info.js";
-import { validateCommand } from "../../commands/validate.js";
 import { updateCommand } from "../../commands/update.js";
 import { statusCommand } from "../../commands/status.js";
 import { syncCommand } from "../../commands/sync.js";
-import {
-  routesCheckCommand,
-  routesSyncCommand,
-} from "../../commands/routes.js";
-import { bumpVersion } from "../../commands/bump-version.js";
 import { devCommand } from "../../commands/dev.js";
 
 // ============================================================================
@@ -201,62 +198,6 @@ export const infoTool = defineTool(
 );
 
 // ============================================================================
-// Validate Command
-// ============================================================================
-
-const ValidateSchema = z.object({
-  path: z.string().default(".").describe("Project path"),
-  strict: z
-    .boolean()
-    .default(false)
-    .describe("Exit with error on validation failures"),
-  json: z.boolean().default(false).describe("Output as JSON"),
-  verbose: z
-    .boolean()
-    .default(false)
-    .describe("Show detailed validation information"),
-  versions: z
-    .boolean()
-    .default(false)
-    .describe("Validate version consistency only"),
-  routes: z.boolean().default(false).describe("Validate routes.yml only"),
-  links: z.boolean().default(false).describe("Validate markdown links only"),
-});
-
-export const validateTool = defineTool(
-  "agentic_validate",
-  "Validate framework integrity including agents, skills, registries, versions, routes, and links",
-  ValidateSchema,
-  async (args) => {
-    const result = await executeAndCapture(() =>
-      validateCommand({
-        path: args.path,
-        strict: args.strict,
-        json: args.json,
-        verbose: args.verbose,
-        versions: args.versions,
-        routes: args.routes,
-        links: args.links,
-      }),
-    );
-
-    if (!result.success) {
-      return errorResult(
-        ErrorCodes.VALIDATION_FAILED,
-        "Validation failed",
-        undefined,
-        result.error?.details as string,
-      );
-    }
-    return successResult(
-      { validated: true },
-      "Validation completed",
-      result.output,
-    );
-  },
-);
-
-// ============================================================================
 // Update Command
 // ============================================================================
 
@@ -388,134 +329,6 @@ export const syncTool = defineTool(
 );
 
 // ============================================================================
-// Routes Check Command
-// ============================================================================
-
-const RoutesCheckSchema = z.object({
-  path: z.string().default(".").describe("Project path"),
-  json: z.boolean().default(false).describe("Output as JSON"),
-  verbose: z
-    .boolean()
-    .default(false)
-    .describe("Show detailed validation information"),
-});
-
-export const routesCheckTool = defineTool(
-  "agentic_routes_check",
-  "Check routes.yml synchronization with filesystem",
-  RoutesCheckSchema,
-  async (args) => {
-    const result = await executeAndCapture(() =>
-      routesCheckCommand({
-        path: args.path,
-        json: args.json,
-        verbose: args.verbose,
-      }),
-    );
-
-    if (!result.success) {
-      return errorResult(
-        ErrorCodes.VALIDATION_FAILED,
-        "Routes check failed",
-        undefined,
-        result.error?.details as string,
-      );
-    }
-    return successResult({ valid: true }, "Routes validated", result.output);
-  },
-);
-
-// ============================================================================
-// Routes Sync Command
-// ============================================================================
-
-const RoutesSyncSchema = z.object({
-  path: z.string().default(".").describe("Project path"),
-  verbose: z.boolean().default(false).describe("Show detailed output"),
-  dryRun: z
-    .boolean()
-    .default(false)
-    .describe("Preview changes without applying"),
-});
-
-export const routesSyncTool = defineTool(
-  "agentic_routes_sync",
-  "Synchronize routes.yml with filesystem structure",
-  RoutesSyncSchema,
-  async (args) => {
-    const result = await executeAndCapture(() =>
-      routesSyncCommand({
-        path: args.path,
-        verbose: args.verbose,
-        dryRun: args.dryRun,
-      }),
-    );
-
-    if (!result.success) {
-      return result;
-    }
-    return successResult(
-      { synced: true },
-      "Routes synchronized",
-      result.output,
-    );
-  },
-);
-
-// ============================================================================
-// Bump Version Command
-// ============================================================================
-
-const BumpVersionSchema = z.object({
-  projectRoot: z.string().default(".").describe("Project root path"),
-  type: z
-    .enum(["major", "minor", "patch"])
-    .optional()
-    .describe("Version bump type"),
-  version: z
-    .string()
-    .optional()
-    .describe("Set specific version (X.Y.Z format)"),
-  dryRun: z
-    .boolean()
-    .default(false)
-    .describe("Show what would change without modifying files"),
-});
-
-export const bumpVersionTool = defineTool(
-  "agentic_bump_version",
-  "Bump framework version across all modules",
-  BumpVersionSchema,
-  async (args) => {
-    try {
-      const result = await bumpVersion({
-        projectRoot: args.projectRoot,
-        type: args.type,
-        version: args.version,
-        dryRun: args.dryRun,
-      });
-
-      return successResult(
-        {
-          currentVersion: result.currentVersion,
-          newVersion: result.newVersion,
-          filesUpdated: result.filesUpdated,
-          updatedFiles: result.updatedFiles,
-        },
-        `Version bumped: ${result.currentVersion} → ${result.newVersion}`,
-        `${result.filesUpdated} files ${result.dryRun ? "would be updated" : "updated"}`,
-      );
-    } catch (error) {
-      return errorResult(
-        ErrorCodes.COMMAND_FAILED,
-        error instanceof Error ? error.message : "Bump version failed",
-        "Check that you are in a framework project and the version format is correct",
-      );
-    }
-  },
-);
-
-// ============================================================================
 // Build Command
 // ============================================================================
 
@@ -553,29 +366,49 @@ export const buildTool = defineTool(
   "Validate framework artifacts with compile-time-like checking (unified validation)",
   BuildSchema,
   async (args) => {
-    // Use validate with strict mode as build equivalent
-    const result = await executeAndCapture(() =>
-      validateCommand({
-        path: args.path,
-        strict: true,
-        json: args.json,
-        verbose: args.verbose,
-      }),
-    );
+    try {
+      const ctx =
+        args.path && args.path !== "."
+          ? await CliContext.create({ path: args.path })
+          : await CliContext.require();
+      const projectPath = ctx.projectRoot;
 
-    if (!result.success) {
+      let frameworkPath: string = projectPath;
+      if (ctx.manifest?.paths?.source) {
+        frameworkPath = path.join(projectPath, ctx.manifest.paths.source);
+      }
+
+      const buildOptions: BuildOptions = {
+        projectPath,
+        frameworkPath,
+        quick: args.quick,
+        externalLinks: args.externalLinks,
+        emitSchemas: args.emitSchemas,
+        schemaOutputDir: args.schemaDir,
+        verbose: args.verbose,
+      };
+
+      const result = await new BuildEngine(buildOptions).build();
+
+      if (!result.success) {
+        return errorResult(
+          ErrorCodes.VALIDATION_FAILED,
+          "Build failed",
+          undefined,
+          `${result.errorCount} error(s), ${result.warningCount} warning(s)`,
+        );
+      }
+      return successResult(
+        { success: true, stats: result.stats },
+        "Build completed successfully",
+      );
+    } catch (error) {
       return errorResult(
-        ErrorCodes.VALIDATION_FAILED,
-        "Build failed",
-        undefined,
-        result.error?.details as string,
+        ErrorCodes.COMMAND_FAILED,
+        error instanceof Error ? error.message : "Build failed",
+        "Check that you are in a framework project",
       );
     }
-    return successResult(
-      { validated: true },
-      "Build completed successfully",
-      result.output,
-    );
   },
 );
 
@@ -638,13 +471,9 @@ export const frameworkTools = [
   removeTool,
   listTool,
   infoTool,
-  validateTool,
   updateTool,
   statusTool,
   syncTool,
-  routesCheckTool,
-  routesSyncTool,
-  bumpVersionTool,
   buildTool,
   devTool,
 ];

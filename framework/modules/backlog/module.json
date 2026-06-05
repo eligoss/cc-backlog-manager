@@ -1,7 +1,7 @@
 {
   "$schema": "../core/registries/schemas/module.schema.json",
   "id": "backlog",
-  "version": "1.17.0",
+  "version": "1.0.0",
   "name": "Backlog Management",
   "description": "Ticket-based backlog management with Jira-like workflow, milestone tracking, and sprint organization",
   "provides": {
@@ -90,11 +90,6 @@
   "optional-dependencies": [
     "core"
   ],
-  "context": {
-    "process": [
-      "backlog-workflow.md"
-    ]
-  },
   "metadata": {
     "category": "workflow",
     "keywords": [

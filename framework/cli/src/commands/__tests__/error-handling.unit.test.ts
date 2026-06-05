@@ -201,7 +201,7 @@ describe('Unit: Error Handling', () => {
     });
 
     it('should use exit code 2 for sync-needed status', () => {
-      // Special case: routes sync --check returns 2 if sync is needed
+      // Special case: sync --check returns 2 if sync is needed
       const syncNeededExitCode = 2;
       expect(syncNeededExitCode).toBe(2);
     });

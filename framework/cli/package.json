@@ -1,6 +1,6 @@
 {
   "name": "cc-agentic-framework",
-  "version": "1.18.0",
+  "version": "1.0.0",
   "description": "CLI for scaffolding and managing Agentic Development Framework projects",
   "type": "module",
   "main": "dist/index.js",

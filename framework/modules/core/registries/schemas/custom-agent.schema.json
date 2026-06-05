@@ -49,10 +49,6 @@
       },
       "description": "Skills this agent can invoke via Skill tool"
     },
-    "context": {
-      "$ref": "#/definitions/ContextNeeds",
-      "description": "Context loading requirements"
-    },
     "sourceAgent": {
       "type": "string",
       "pattern": "^ai-[a-z][a-z0-9-]*$",
@@ -83,26 +79,6 @@
         "Skill"
       ],
       "description": "Claude Code tool name"
-    },
-    "ContextNeeds": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "business": {
-          "$ref": "#/definitions/ContextLevel"
-        },
-        "technical": {
-          "$ref": "#/definitions/ContextLevel"
-        },
-        "process": {
-          "$ref": "#/definitions/ContextLevel"
-        }
-      }
-    },
-    "ContextLevel": {
-      "type": "string",
-      "enum": ["basic", "advanced", "expert"],
-      "description": "Context loading level"
     }
   }
 }

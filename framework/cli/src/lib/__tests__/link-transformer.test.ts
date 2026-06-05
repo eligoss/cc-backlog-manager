@@ -323,16 +323,6 @@ describe('LinkTransformer', () => {
         expect(result).toContain('CLAUDE.md');
       });
 
-      it('should transform routes.yml paths', () => {
-        const content = '[routes](../routes.yml)';
-
-        const result = transformer.transformContent(
-          content,
-          `${frameworkRoot}/agents/agent.md`
-        );
-
-        expect(result).toContain('routes.yml');
-      });
     });
 
     describe('combined links with anchors', () => {

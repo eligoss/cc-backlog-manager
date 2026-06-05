@@ -14,7 +14,6 @@ export interface ExistingProjectInfo {
   hasClaudeMd: boolean;
   hasGitignore: boolean;
   hasReadme: boolean;
-  hasRoutesYml: boolean;
   hasFrameworkManifest: boolean; // .agentic-framework.json
   hasAiDir: boolean;
   hasClaudeDir: boolean;
@@ -31,7 +30,6 @@ export async function detectExistingProject(projectPath: string): Promise<Existi
     hasClaudeMd,
     hasGitignore,
     hasReadme,
-    hasRoutesYml,
     hasFrameworkManifest,
     hasAiDir,
     hasClaudeDir,
@@ -41,7 +39,6 @@ export async function detectExistingProject(projectPath: string): Promise<Existi
     fs.pathExists(path.join(projectPath, 'CLAUDE.md')),
     fs.pathExists(path.join(projectPath, '.gitignore')),
     fs.pathExists(path.join(projectPath, 'README.md')),
-    fs.pathExists(path.join(projectPath, 'routes.yml')),
     fs.pathExists(path.join(projectPath, '.agentic-framework.json')),
     fs.pathExists(path.join(projectPath, 'ai')),
     fs.pathExists(path.join(projectPath, '.claude')),
@@ -61,7 +58,6 @@ export async function detectExistingProject(projectPath: string): Promise<Existi
     hasClaudeMd,
     hasGitignore,
     hasReadme,
-    hasRoutesYml,
     hasFrameworkManifest,
     hasAiDir,
     hasClaudeDir,
@@ -79,7 +75,6 @@ export function hasExistingFiles(info: ExistingProjectInfo): boolean {
     info.hasClaudeMd ||
     info.hasGitignore ||
     info.hasReadme ||
-    info.hasRoutesYml ||
     info.hasAiDir ||
     info.hasClaudeDir
   );
@@ -108,13 +103,6 @@ export function generatePlannedActions(info: ExistingProjectInfo): PlannedAction
   // .agentic-framework.json - always created (error if exists handled separately)
   actions.push({ file: '.agentic-framework.json', action: 'CREATE' });
 
-  // routes.yml
-  if (info.hasRoutesYml) {
-    actions.push({ file: 'routes.yml', action: 'BACKUP', description: 'backup existing, create new' });
-  } else {
-    actions.push({ file: 'routes.yml', action: 'CREATE' });
-  }
-
   // CLAUDE.md
   if (info.hasClaudeMd) {
     actions.push({ file: 'CLAUDE.md', action: 'MERGE', description: 'add framework section' });
@@ -140,7 +128,6 @@ export function generatePlannedActions(info: ExistingProjectInfo): PlannedAction
   actions.push({ file: '.claude/commands/', action: 'CREATE' });
   actions.push({ file: '.claude/skills/', action: 'CREATE' });
   actions.push({ file: '.claude/skills/project/', action: 'CREATE' });
-  actions.push({ file: '.claude/context/', action: 'CREATE', description: 'skip existing files' });
   actions.push({ file: '.claude/registries/', action: 'CREATE' });
 
   // settings.local.json

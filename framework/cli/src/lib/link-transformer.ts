@@ -50,7 +50,6 @@ export class LinkTransformer {
     '.claude/skills/',
     'README.md',
     'CLAUDE.md',
-    'routes.yml',
     'backlog/',
     'confluence/',
     '.claude/plans/',
@@ -286,7 +285,7 @@ export class LinkTransformer {
    * - .claude/commands/**\/*.md
    * - .claude/skills/**\/*.md
    * - .claude/plans/**\/*.md
-   * - README.md, CLAUDE.md, routes.yml
+   * - README.md, CLAUDE.md
    * - backlog/**\/*.md
    * - confluence/**\/*.md
    *

@@ -102,9 +102,6 @@ agent: ai-framework-manager
 capability-needs:
   - git-workflow-management
   - quality-assurance
-context-category-needs:
-  business: basic
-  technical: advanced
 token-budget: 3000
 ---
 # Framework Manager Agent
@@ -157,8 +154,6 @@ capability-needs:
   - plan-creation
   - phase-decomposition
   - git-workflow-management
-context-category-needs:
-  process: advanced
 token-budget: 3500
 ---
 # Planning Manager Agent
@@ -205,8 +200,6 @@ capability-needs:
   - code-implementation
   - quality-assurance
   - git-workflow-management
-context-category-needs:
-  technical: advanced
 token-budget: 2500
 ---
 # App Developer Agent
@@ -357,76 +350,6 @@ agent: simple-agent
     });
   });
 
-  describe('validateContextExistence()', () => {
-    it('should pass when all required context files exist', async () => {
-      const result = await validator.validateContextExistence();
-
-      expect(result.valid).toBe(true);
-      expect(result.issues).toHaveLength(0);
-    });
-
-    it('should fail when context file is missing', async () => {
-      // Delete business-basic.md which is required by ai-framework-manager
-      const contextPath = path.join(testDir, 'ai', 'context', 'business-basic.md');
-      await fs.remove(contextPath);
-
-      const result = await validator.validateContextExistence();
-
-      expect(result.valid).toBe(false);
-      expect(result.issues.length).toBeGreaterThan(0);
-    });
-
-    it('should validate technical context requirements', async () => {
-      // ai-framework-manager requires technical: advanced
-      const result = await validator.validateContextExistence();
-
-      const hasAdvancedTechnical = await fs.pathExists(
-        path.join(testDir, 'ai', 'context', 'technical-advanced.md')
-      );
-
-      if (hasAdvancedTechnical) {
-        expect(result.valid).toBe(true);
-      }
-    });
-
-    it('should handle agents without context needs', async () => {
-      // Add agent with no context-category-needs
-      const agentPath = path.join(testDir, 'modules', 'core', 'agents', 'no-context-agent.md');
-      await fs.writeFile(agentPath, `---
-agent: no-context-agent
----
-# Agent Without Context
-`);
-
-      // Update module.json
-      const coreModulePath = path.join(testDir, 'modules', 'core', 'module.json');
-      const coreModule = await fs.readJson(coreModulePath);
-      coreModule.provides.agents.push('no-context-agent');
-      await fs.writeJson(coreModulePath, coreModule);
-
-      // Recreate engine and validator
-      const freshEngine = new DiscoveryEngine(testDir);
-      await freshEngine.loadModules();
-      await freshEngine.buildCapabilityMap();
-      const freshValidator = new FrameworkValidator(freshEngine, testDir);
-
-      const result = await freshValidator.validateContextExistence();
-
-      expect(result.valid).toBe(true);
-    });
-
-    it('should return correct issue details', async () => {
-      // Delete a required context file
-      const contextPath = path.join(testDir, 'ai', 'context', 'business-basic.md');
-      await fs.remove(contextPath);
-
-      const result = await validator.validateContextExistence();
-
-      expect(result.valid).toBe(false);
-      expect(result.issues[0].message).toContain('business-basic');
-    });
-  });
-
   describe('validateModuleDeclarations()', () => {
     it('should pass when all declared agents exist', async () => {
       const result = await validator.validateModuleDeclarations();
@@ -528,14 +451,12 @@ capabilities-provided:
       if (!report.overall) {
         console.log('Validation failed. Details:');
         console.log('  capabilityResolution.valid:', report.capabilityResolution.valid, report.capabilityResolution.issues);
-        console.log('  contextExistence.valid:', report.contextExistence.valid, report.contextExistence.issues);
         console.log('  moduleDeclarations.valid:', report.moduleDeclarations.valid, report.moduleDeclarations.issues);
         console.log('  skillCapabilities.valid:', report.skillCapabilities.valid, report.skillCapabilities.issues);
       }
 
       expect(report.overall).toBe(true);
       expect(report.capabilityResolution).toBeDefined();
-      expect(report.contextExistence).toBeDefined();
       expect(report.moduleDeclarations).toBeDefined();
       expect(report.skillCapabilities).toBeDefined();
       expect(report.timestamp).toBeDefined();
@@ -570,17 +491,6 @@ capability-needs:
       expect(report.capabilityResolution.valid).toBe(false);
     });
 
-    it('should set overall to false if context validation fails', async () => {
-      // Delete a required context file
-      const contextPath = path.join(testDir, 'ai', 'context', 'business-basic.md');
-      await fs.remove(contextPath);
-
-      const report = await validator.validateAll();
-
-      expect(report.overall).toBe(false);
-      expect(report.contextExistence.valid).toBe(false);
-    });
-
     it('should set overall to false if module declaration fails', async () => {
       // Delete an agent file but keep it in module.json
       const agentPath = path.join(testDir, 'modules', 'core', 'agents', 'ai-framework-manager.md');
@@ -605,7 +515,6 @@ capability-needs:
 
       // Stats are per-validation, not aggregated
       expect(report.capabilityResolution.stats).toBeDefined();
-      expect(report.contextExistence.stats).toBeDefined();
       expect(report.moduleDeclarations.stats).toBeDefined();
       expect(report.skillCapabilities.stats).toBeDefined();
     });
@@ -615,25 +524,6 @@ capability-needs:
 
       expect(report.timestamp).toBeDefined();
       expect(new Date(report.timestamp).getTime()).not.toBeNaN();
-    });
-  });
-
-  describe('validateContextExistence - context category coverage', () => {
-    it('should validate all context category combinations', async () => {
-      const result = await validator.validateContextExistence();
-
-      // Verify that business, technical, and process contexts exist
-      const businessBasic = await fs.pathExists(
-        path.join(testDir, 'ai', 'context', 'business-basic.md')
-      );
-      const technicalAdvanced = await fs.pathExists(
-        path.join(testDir, 'ai', 'context', 'technical-advanced.md')
-      );
-      const processAdvanced = await fs.pathExists(
-        path.join(testDir, 'ai', 'context', 'process-advanced.md')
-      );
-
-      expect(businessBasic && technicalAdvanced && processAdvanced).toBe(true);
     });
   });
 
@@ -696,7 +586,6 @@ capability-needs: invalid-yaml-structure
 
       // With all modules (core, planning, coding), should have comprehensive checks
       const totalChecked = report.capabilityResolution.stats.checked +
-        report.contextExistence.stats.checked +
         report.moduleDeclarations.stats.checked +
         report.skillCapabilities.stats.checked;
       expect(totalChecked).toBeGreaterThan(0);

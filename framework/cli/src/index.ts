@@ -11,12 +11,9 @@ import { addCommand } from "./commands/add.js";
 import { removeCommand } from "./commands/remove.js";
 import { listCommand } from "./commands/list.js";
 import { infoCommand } from "./commands/info.js";
-import { validateCommand } from "./commands/validate.js";
 import { updateCommand } from "./commands/update.js";
 import { statusCommand } from "./commands/status.js";
 import { syncCommand } from "./commands/sync.js";
-import { routesCheckCommand, routesSyncCommand } from "./commands/routes.js";
-import { createBumpVersionCommand } from "./commands/bump-version.js";
 import { createDevCommand } from "./commands/dev.js";
 import { createAgentCommand } from "./commands/agent/index.js";
 import { createImportJiraCommand } from "./commands/backlog/import-jira.js";
@@ -41,18 +38,6 @@ import { createCreateSkillCommand } from "./commands/create-skill.js";
 import { createCreateModuleCommand } from "./commands/create-module.js";
 import { createSkillCommand } from "./commands/skill/index.js";
 import { createBuildCommand } from "./commands/build.js";
-import { createInitCommand } from "./commands/writer/init.js";
-import { createCreatePartCommand } from "./commands/writer/create-part.js";
-import { createCreateChapterCommand } from "./commands/writer/create-chapter.js";
-import { createCreateSceneCommand } from "./commands/writer/create-scene.js";
-import { createCreateCharacterCommand } from "./commands/writer/create-character.js";
-import { createValidateCommand as createValidateWriterCommand } from "./commands/writer/validate.js";
-import { createBuildCommand as createBuildWriterCommand } from "./commands/writer/build.js";
-import { createAnalyzeCommand as createAnalyzeWriterCommand } from "./commands/writer/analyze.js";
-import { createExportCommand as createExportWriterCommand } from "./commands/writer/export.js";
-import { createValidateImmutabilityCommand } from "./commands/writer/validate-immutability.js";
-import { createLockFactCommand } from "./commands/writer/lock-fact.js";
-import { createUnlockFactCommand } from "./commands/writer/unlock-fact.js";
 import { createGenerateCommandsCommand } from "./commands/generate-commands.js";
 import { createGenerateAgentsCommand } from "./commands/generate-agents.js";
 import { createTestCommand } from "./commands/test.js";
@@ -134,18 +119,6 @@ program
   .description("Show detailed information about a module")
   .action(infoCommand);
 
-program
-  .command("validate")
-  .description("Validate framework integrity")
-  .option("-p, --path <path>", "Project path", ".")
-  .option("--strict", "Exit with error code on validation failures")
-  .option("--json", "Output results as JSON")
-  .option("-v, --verbose", "Show detailed validation information")
-  .option("--versions", "Validate version consistency only")
-  .option("--routes", "Validate routes.yml synchronization only")
-  .option("--links", "Validate markdown links only")
-  .action(validateCommand);
-
 // Build command - unified validation with compile-time-like checking
 program.addCommand(createBuildCommand());
 
@@ -193,31 +166,6 @@ program
   .option("-f, --force", "Continue on errors")
   .action(syncCommand);
 
-// Routes commands
-const routes = program
-  .command("routes")
-  .description("Manage routes.yml synchronization");
-
-routes
-  .command("check")
-  .description("Check if routes.yml is synchronized with filesystem")
-  .option("-p, --path <path>", "Project path", ".")
-  .option("--json", "Output results as JSON")
-  .option("-v, --verbose", "Show detailed information")
-  .action(routesCheckCommand);
-
-routes
-  .command("sync")
-  .description("Synchronize routes.yml with filesystem structure")
-  .option("-p, --path <path>", "Project path", ".")
-  .option("-n, --dry-run", "Preview changes without applying")
-  .option("--json", "Output results as JSON")
-  .option("-v, --verbose", "Show detailed information")
-  .action(routesSyncCommand);
-
-// Bump version command
-program.addCommand(createBumpVersionCommand());
-
 // Dev command
 program.addCommand(createDevCommand());
 
@@ -257,26 +205,6 @@ const planning = program
 
 planning.addCommand(createCreatePlanCommand());
 planning.addCommand(createValidatePlanCommand());
-
-// Writer commands
-const writer = program
-  .command("writer")
-  .description(
-    "Manage fantasy book writing (create parts, chapters, scenes, characters)",
-  );
-
-writer.addCommand(createInitCommand());
-writer.addCommand(createCreatePartCommand());
-writer.addCommand(createCreateChapterCommand());
-writer.addCommand(createCreateSceneCommand());
-writer.addCommand(createCreateCharacterCommand());
-writer.addCommand(createValidateWriterCommand());
-writer.addCommand(createBuildWriterCommand());
-writer.addCommand(createAnalyzeWriterCommand());
-writer.addCommand(createExportWriterCommand());
-writer.addCommand(createValidateImmutabilityCommand());
-writer.addCommand(createLockFactCommand());
-writer.addCommand(createUnlockFactCommand());
 
 // Template commands
 program.addCommand(createTemplateCommandGroup());

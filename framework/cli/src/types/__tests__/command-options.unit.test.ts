@@ -17,11 +17,6 @@ import type {
   BacklogValidateOptions,
   JiraSyncOptions,
   JiraExportOptions,
-  WriterInitOptions,
-  WriterValidateOptions,
-  WriterBuildOptions,
-  WriterAnalyzeOptions,
-  ValidateOptions,
   InitOptions,
   AddOptions,
   RemoveOptions,
@@ -156,33 +151,6 @@ describe('Command Options Interfaces', () => {
     });
   });
 
-  describe('ValidateOptions', () => {
-    it('should handle all validation modes', () => {
-      const fullValidation: ValidateOptions = {
-        strict: true,
-        json: false,
-        verbose: true,
-      };
-
-      const versionValidation: ValidateOptions = {
-        versions: true,
-      };
-
-      const routesValidation: ValidateOptions = {
-        routes: true,
-      };
-
-      const linksValidation: ValidateOptions = {
-        links: true,
-      };
-
-      expect(fullValidation.strict).toBe(true);
-      expect(versionValidation.versions).toBe(true);
-      expect(routesValidation.routes).toBe(true);
-      expect(linksValidation.links).toBe(true);
-    });
-  });
-
   describe('InitOptions', () => {
     it('should have required git and interactive fields', () => {
       const options: InitOptions = {
@@ -203,32 +171,6 @@ describe('Command Options Interfaces', () => {
       // Simulate parsing
       const moduleList = options.modules?.split(',').map(m => m.trim()) ?? ['core'];
       expect(moduleList).toEqual(['core', 'coding', 'backlog']);
-    });
-  });
-
-  describe('WriterBuildOptions', () => {
-    it('should handle all build options', () => {
-      const options: WriterBuildOptions = {
-        watch: true,
-        verbose: true,
-        path: './my-book',
-      };
-
-      expect(options.watch).toBe(true);
-      expect(options.verbose).toBe(true);
-      expect(options.path).toBe('./my-book');
-    });
-
-    it('should handle defaults correctly', () => {
-      const options: WriterBuildOptions = {};
-
-      const watch = options.watch ?? false;
-      const verbose = options.verbose ?? false;
-      const projectPath = options.path ?? '.';
-
-      expect(watch).toBe(false);
-      expect(verbose).toBe(false);
-      expect(projectPath).toBe('.');
     });
   });
 
@@ -383,23 +325,6 @@ describe('Command Options Type Compatibility', () => {
     expect(verbose).toBeUndefined();
   });
 
-  it('should work with object spread for defaults', () => {
-    const defaults: Partial<WriterBuildOptions> = {
-      watch: false,
-      verbose: false,
-      path: '.',
-    };
-
-    const userOptions: WriterBuildOptions = {
-      verbose: true,
-    };
-
-    const merged = { ...defaults, ...userOptions };
-
-    expect(merged.watch).toBe(false);
-    expect(merged.verbose).toBe(true); // User override
-    expect(merged.path).toBe('.');
-  });
 });
 
 describe('Command Options Validation Patterns', () => {
