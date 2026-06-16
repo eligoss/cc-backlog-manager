@@ -513,17 +513,13 @@ framework-relatedLocal: ""
     it('should validate all ticket types', async () => {
       mockedFs.pathExists.mockResolvedValue(true);
       mockedGlob.mockImplementation(async (pattern: any) => {
-        if (pattern.includes('stories')) {
-          return ['/backlog/tickets/stories/STORY-test.md'];
-        }
-        if (pattern.includes('tasks')) {
-          return ['/backlog/tickets/tasks/TASK-test.md'];
-        }
-        if (pattern.includes('bugs')) {
-          return ['/backlog/tickets/bugs/BUG-test.md'];
-        }
-        if (pattern.includes('spikes')) {
-          return ['/backlog/tickets/spikes/SPIKE-test.md'];
+        if (pattern.includes('tickets') && !pattern.includes('epics') && !pattern.includes('_workflow')) {
+          return [
+            '/backlog/tickets/1001-story-test.md',
+            '/backlog/tickets/1002-task-test.md',
+            '/backlog/tickets/1003-bug-test.md',
+            '/backlog/tickets/1004-spike-test.md',
+          ];
         }
         if (pattern.includes('epics')) {
           return ['/backlog/epics/EPIC-test.md'];
@@ -545,17 +541,17 @@ framework-relatedLocal: ""
 
       const report = await validateBacklog('/backlog');
 
-      // Should have validated 5 files (stories, tasks, bugs, spikes, epics)
+      // Should have validated 5 files (4 tickets + 1 epic)
       expect(report.valid).toBe(5);
     });
 
     it('should skip README.md files', async () => {
       mockedFs.pathExists.mockResolvedValue(true);
       mockedGlob.mockImplementation(async (pattern: any) => {
-        if (pattern.includes('stories')) {
+        if (pattern.includes('tickets') && !pattern.includes('epics') && !pattern.includes('_workflow')) {
           return [
-            '/backlog/tickets/stories/STORY-test.md',
-            '/backlog/tickets/stories/README.md',
+            '/backlog/tickets/1001-story-test.md',
+            '/backlog/tickets/README.md',
           ];
         }
         return [];

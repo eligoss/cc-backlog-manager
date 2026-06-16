@@ -263,44 +263,48 @@ async function writeTicketFile(
  * @returns Reconstructed tickets (empty if the directory is missing)
  */
 export async function loadTicketsFromDisk(basePath: string): Promise<CsvTicket[]> {
-  const ticketsDir = path.join(basePath, 'tickets');
-  if (!(await fs.pathExists(ticketsDir))) {
-    return [];
-  }
-
-  const files = (await fs.readdir(ticketsDir)).filter(
-    (f) => f.endsWith('.md') && f !== 'README.md'
-  );
-
   const tickets: CsvTicket[] = [];
-  for (const filename of files) {
-    try {
-      const content = await fs.readFile(path.join(ticketsDir, filename), 'utf-8');
-      const { data } = parseFrontmatter<Record<string, unknown>>(content);
-      const ticketId = (data['jira-ticketId'] as string) || '';
-      if (!ticketId) {
-        continue;
+
+  for (const subdir of ['tickets', 'epics']) {
+    const dir = path.join(basePath, subdir);
+    if (!(await fs.pathExists(dir))) {
+      continue;
+    }
+
+    const files = (await fs.readdir(dir)).filter(
+      (f) => f.endsWith('.md') && f !== 'README.md'
+    );
+
+    for (const filename of files) {
+      try {
+        const content = await fs.readFile(path.join(dir, filename), 'utf-8');
+        const { data } = parseFrontmatter<Record<string, unknown>>(content);
+        const ticketId = (data['jira-ticketId'] as string) || '';
+        if (!ticketId) {
+          continue;
+        }
+        const milestone =
+          (data['jira-fixVersion'] as string) || (data.milestone as string) || undefined;
+        tickets.push({
+          ticketId,
+          summary: (data.title as string) || ticketId,
+          issueType: '',
+          documentType: (data.documentType as CsvTicket['documentType']) || 'task',
+          status: data.status as string | undefined,
+          storyPoints: data.storyPoints as number | undefined,
+          assignee: data.assignee as string | undefined,
+          parentKey: data['jira-parent'] as string | undefined,
+          sprint: data.sprint as string | undefined,
+          fixVersions: milestone,
+          milestone,
+          filename,
+        });
+      } catch (err) {
+        console.warn(`Warning: skipping unreadable ticket ${filename}: ${err instanceof Error ? err.message : String(err)}`);
       }
-      const milestone =
-        (data['jira-fixVersion'] as string) || (data.milestone as string) || undefined;
-      tickets.push({
-        ticketId,
-        summary: (data.title as string) || ticketId,
-        issueType: '',
-        documentType: (data.documentType as CsvTicket['documentType']) || 'task',
-        status: data.status as string | undefined,
-        storyPoints: data.storyPoints as number | undefined,
-        assignee: data.assignee as string | undefined,
-        parentKey: data['jira-parent'] as string | undefined,
-        sprint: data.sprint as string | undefined,
-        fixVersions: milestone,
-        milestone,
-        filename,
-      });
-    } catch {
-      // Skip unreadable/malformed ticket files; index derivation is best-effort.
     }
   }
+
   return tickets;
 }
 

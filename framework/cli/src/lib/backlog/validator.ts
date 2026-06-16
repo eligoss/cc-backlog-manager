@@ -283,23 +283,20 @@ export async function validateBacklog(
     console.log('Validating backlog tickets...\n');
   }
 
-  // Scan all ticket types
-  const ticketTypes = ['stories', 'tasks', 'bugs', 'spikes'];
-  for (const ticketType of ticketTypes) {
-    const pattern = path.join(backlogDir, 'tickets', ticketType, '*.md');
-    const files = await glob(pattern, { absolute: true });
+  // Scan all tickets (flat tickets/ directory)
+  const ticketsPattern = path.join(backlogDir, 'tickets', '*.md');
+  const ticketFiles = await glob(ticketsPattern, { absolute: true });
 
-    for (const filePath of files) {
-      if (filePath.endsWith('README.md')) {
-        continue;
-      }
-
-      if (verbose) {
-        console.log(`  Checking ${path.relative(backlogDir, filePath)}...`);
-      }
-
-      await validateTicket(filePath, report, backlogDir);
+  for (const filePath of ticketFiles) {
+    if (filePath.endsWith('README.md')) {
+      continue;
     }
+
+    if (verbose) {
+      console.log(`  Checking ${path.relative(backlogDir, filePath)}...`);
+    }
+
+    await validateTicket(filePath, report, backlogDir);
   }
 
   // Validate epics

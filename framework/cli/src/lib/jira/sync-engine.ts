@@ -463,8 +463,6 @@ export class SyncEngine {
     const fieldsToCompare = [
       'title',
       'priority',
-      'status',
-      'assignee',
       'labels',
       'jira-component',
     ];

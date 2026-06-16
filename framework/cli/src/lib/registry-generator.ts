@@ -333,7 +333,9 @@ async function loadProjectCustomSkills(
     const skillObj: Record<string, unknown> = {
       id,
       module: 'project',
-      'capabilities-provided': (data['capabilities-provided'] as string[]) || [],
+      'capabilities-provided': Array.isArray(data['capabilities-provided'])
+        ? (data['capabilities-provided'] as string[])
+        : [],
       location: `.claude/skills/project/${entry.name}/`,
     };
     if (data.description) {
