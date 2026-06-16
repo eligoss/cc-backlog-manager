@@ -34,17 +34,16 @@ Use this checklist before marking a ticket "Ready for Development":
   - Related tickets properly linked
 - ✅ **In Order to Support This section:**
   - Formatted as bullet list
-  - 4-6 bullets (not too many, not too few)
+  - 3-5 bullets (outcome/capability — WHAT, not HOW)
   - Each bullet 1-2 sentences
   - Max 2 nesting levels
   - Clear and specific language
-- ✅ **Technical Notes section:**
-  - 3-5 bullets (not too many)
-  - References PATTERNS only (no code snippets)
-  - High-level guidance
-  - Actionable and clear
+- ✅ **Technical Notes section (optional):**
+  - 0-3 bullets (omit the section if there are no real constraints)
+  - Constraints/pointers only (reuse pattern X, integrate with Y) — no code, no prescribed solution
+  - Leaves the implementation approach to the developer
 - ✅ **Acceptance Criteria section:**
-  - 5-10 "Verify" statements (focused, not padded)
+  - 4-8 "Verify" statements (focused, not padded)
   - QA-verifiable: testable through UI, API, or observable behavior
   - No implementation details, code-level checks, or meta items
   - Measurable thresholds where applicable (not "performance is good")
@@ -52,8 +51,8 @@ Use this checklist before marking a ticket "Ready for Development":
 
 ### Document Quality (5 minutes)
 - ✅ Line count appropriate:
-  - Stories/Tasks: 30-100 lines
-  - Epics: 30-50 lines
+  - Stories/Tasks: 25-70 lines
+  - Epics: 25-40 lines
 - ✅ NO code snippets anywhere in ticket body
 - ✅ NO implementation step-by-step instructions
 - ✅ NO Jira wiki markup (h3., h2., etc.) - use native markdown only
@@ -68,15 +67,18 @@ Use this checklist before marking a ticket "Ready for Development":
 
 ### Rule 1: YAML Structure Must Be Flat
 
-**CORRECT:**
+**CORRECT (flat + lean — only fields with values):**
 ```yaml
 ---
 documentType: story
+title: "Dashboard: Configurable Cards"
+createdDate: 2025-12-08
+priority: P1
+sprint: APMR-APP-2026W25
 jira-ticketId: PROJ-100
 jira-url: "https://..."
 jira-related: [PROJ-101, PROJ-102]
-framework-documentation: null
-framework-milestone: "backlog/milestones/Feb2026.md"
+jira-fixVersion: "Pilot"
 ---
 ```
 
@@ -253,31 +255,25 @@ status without modifying page components.
 
 ### Rule 6: "In Order to Support This" Must Reference Requirements, Not Implementation
 
-**CORRECT:**
+**CORRECT — outcomes/capabilities (WHAT):**
 ```markdown
 **In Order to Support This:**
 
-* Expose GraphQL subscription for status events (started/progress/completed/failed)
-* Switch data layer to subscription transport
-* Standardize connection: single active subscription per context, clean unsubscribe
+* Status changes appear in the UI in real time, without a manual refresh
+* Updates keep working after a brief network drop
+* A user only ever sees their own organization's data
 ```
 
-**WRONG - Code snippets or too prescriptive:**
+**WRONG — prescribes the mechanism (HOW):**
 ```markdown
 **In Order to Support This:**
 
-* Implement subscription manager:
-  ```typescript
-  class SubscriptionManager {
-    constructor() { ... }
-    subscribe() { ... }
-  }
-  ```
-* Add retry logic
-* Configure timeouts
+* Expose a GraphQL subscription and switch the data layer to subscription transport
+* Add an Apollo subscription manager with reconnect/backoff
+* Configure WebSocket timeouts
 ```
 
-**Why:** Ticket should describe WHAT, not HOW. Developers figure out implementation details.
+**Why:** The ticket describes WHAT outcome is needed and WHY; the developer chooses HOW. Naming the mechanism (GraphQL subscriptions, Apollo, WebSockets) removes their room to find the right solution — keep those out unless they're a hard constraint (then put them in Technical Notes).
 
 ---
 
@@ -378,22 +374,22 @@ labels: "my-project, frontend, feature"
 ## Line Count Validation
 
 ### Stories & Tasks
-- **Minimum:** 30 lines (too short = incomplete)
-- **Maximum:** 100 lines (too long = verbose)
-- **Target:** 50-80 lines
+- **Minimum:** 25 lines (too short = incomplete)
+- **Maximum:** 70 lines (too long = verbose)
+- **Target:** 40-55 lines
 
-**Why:** Stories >100 lines are too detailed. Developers don't need step-by-step instructions. Stories <30 lines lack sufficient context.
+**Why:** A ticket states the problem and desired outcome, not a step-by-step solution — that's the developer's job. If it's running long, you're probably prescribing HOW. Under 25 lines usually lacks context.
 
 ### Epics
-- **Minimum:** 30 lines
-- **Maximum:** 50 lines
-- **Target:** 35-45 lines
+- **Minimum:** 25 lines
+- **Maximum:** 40 lines
+- **Target:** 30-38 lines
 
-**Why:** Epics should be concise (business value + child stories). Anything >50 lines is too detailed for an epic.
+**Why:** Epics should be concise (business value + child stories). Anything >40 lines is too detailed for an epic.
 
 ### Bugs
-- **Minimum:** 30 lines
-- **Maximum:** 80 lines (may be longer if complex repro steps)
+- **Minimum:** 25 lines
+- **Maximum:** 70 lines (may be longer if complex repro steps)
 
 **How to Check:**
 ```bash
@@ -496,7 +492,7 @@ wc -l file.md  # Count lines
 ### Acceptance Criteria Section (2-3 points)
 | Rating | Criteria |
 |--------|----------|
-| ✅ Excellent | 5-10 QA-verifiable "Verify" statements, testable through UI/API, measurable thresholds |
+| ✅ Excellent | 4-8 QA-verifiable "Verify" statements, testable through UI/API, measurable thresholds |
 | ⚠️ Acceptable | Right format but some criteria require code inspection or lack measurable thresholds |
 | ❌ Needs Work | Padded with filler (docs, tests, console errors), vague, or implementation-focused |
 
@@ -521,7 +517,7 @@ Before running export to Jira, verify:
 - ✅ Exactly 2 H2 sections with --- dividers
 
 ### Content Quality (5 minutes)
-- ✅ Acceptance Criteria QA-verifiable (5-10 focused items, no filler)
+- ✅ Acceptance Criteria QA-verifiable (4-8 focused items, no filler)
 - ✅ Technical Notes don't contain code
 - ✅ Context is paragraphs, not bullets
 - ✅ No vague language ("Make it work", "Improve performance")
@@ -707,18 +703,18 @@ implements push-based subscriptions for real-time updates.
 - ✅ Context explains business need (not implementation)
 - ✅ In Order to Support This: 4-6 specific bullets
 - ✅ Technical Notes reference patterns (no code)
-- ✅ 5-10 QA-verifiable Acceptance Criteria
+- ✅ 4-8 QA-verifiable Acceptance Criteria
 - ✅ Story Points: 1-8 (never >8)
-- ✅ Total lines: 50-100
+- ✅ Total lines: 40-60
 
 ### Task Checklist
 - ✅ **AS/WANT/SO THAT format REQUIRED** (first line after H1 divider)
 - ✅ Context explains what/why
 - ✅ In Order to Support This: 4-6 specific bullets
 - ✅ Technical Notes reference patterns
-- ✅ 5-10 QA-verifiable Acceptance Criteria
+- ✅ 4-8 QA-verifiable Acceptance Criteria
 - ✅ Story Points: 1-8 (never >8)
-- ✅ Total lines: 50-100
+- ✅ Total lines: 40-60
 
 ### Epic Checklist
 - ✅ Business Value section (why this epic matters)
@@ -727,16 +723,16 @@ implements push-based subscriptions for real-time updates.
 - ✅ Each child story has ticket number
 - ✅ Acceptance Criteria (minimal - focuses on completion)
 - ✅ NO Story Points (stories have points, not epic)
-- ✅ Total lines: 30-50
+- ✅ Total lines: 25-40
 
 ### Bug Checklist
 - ✅ Problem described clearly (current broken behavior)
 - ✅ Symptoms or repro steps included
 - ✅ Acceptance Criteria describe fixed behavior
 - ✅ Performance regression reference (if applicable)
-- ✅ 5-10 QA-verifiable Acceptance Criteria
+- ✅ 4-8 QA-verifiable Acceptance Criteria
 - ✅ Priority P0 or P1 (critical bugs)
-- ✅ Total lines: 40-80
+- ✅ Total lines: 25-60
 
 ### Spike Checklist
 - ✅ Research questions clearly stated
@@ -745,7 +741,7 @@ implements push-based subscriptions for real-time updates.
 - ✅ Acceptance Criteria focus on decision deliverables
 - ✅ Output clear (decision doc, recommendation, estimates)
 - ✅ Story Points: 2-5 (research typically smaller)
-- ✅ Total lines: 30-60
+- ✅ Total lines: 25-50
 
 ---
 

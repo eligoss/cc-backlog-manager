@@ -403,11 +403,8 @@ storyPoints: 5
 labels: [my-project, frontend, feature]
 createdDate: 2025-12-08
 
-jira-ticketId: null
-jira-url: null
 jira-parent: PROJ-200
 jira-related: [PROJ-102, PROJ-103]
-jira-blocking: []
 jira-blockedBy: [PROJ-104]
 
 framework-documentation: "@frontend-repo/src/components/Dashboard/README.md"

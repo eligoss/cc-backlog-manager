@@ -16,6 +16,21 @@ All ticket bodies use **native markdown** (NOT Jira wiki markup) with exactly **
 
 ---
 
+## Writing Principles
+
+Keep tickets short and skimmable — a developer should grasp the intent in under a minute.
+
+- **Describe WHAT and WHY, not HOW.** State the problem and the desired outcome; leave the
+  technical solution to the developer. A ticket frames the goal; it does not design the code.
+- **Less is more.** Prefer a few clear points over an exhaustive list. If a detail doesn't
+  change what "done" means, drop it.
+- **Stay outcome-oriented.** Requirements describe observable behavior/capability, not the
+  mechanism (e.g. "status updates appear without refresh", not "switch to GraphQL subscriptions").
+- **Technical Notes are optional** — include only real constraints (existing patterns to
+  reuse, integration points, hard limits), never a prescribed implementation.
+
+---
+
 ## Complete Template
 
 ### Story/Task Template
@@ -41,29 +56,22 @@ Related ticket: [PROJ-100](https://{your-org}.atlassian.net/browse/PROJ-100)
 
 **Requirements:**
 
-* Expose GraphQL subscription for status events (started/progress/completed/failed)
-* Switch data layer to subscription transport
-* Standardize connection: single active subscription per context, clean unsubscribe, reconnect with backoff
-* Enforce tenant isolation via org context from session/claims
+* Status changes appear in the UI in real time, without a manual refresh
+* Updates keep working after a brief network drop (reconnect automatically)
+* A user only ever sees their own organization's data
 
-**Technical Notes:**
+**Technical Notes:** _(optional — constraints only)_
 
-* Use Apollo Client subscriptions pattern (already established in codebase)
-* Performance target: <100ms latency for status updates
-* Coordinate with data team on subscription schema changes
-* Monitor WebSocket connection health
+* Reuse the existing real-time data pattern in the codebase rather than adding a new one
+* Target <100ms update latency; coordinate any schema change with the data team
 
 ---
 
 ## Acceptance Criteria
 
-* **Verify** status updates appear on screen within 2 seconds of a change event
-* **Verify** real-time updates appear without manual page refresh
-* **Verify** only one active connection per context (no duplicate updates)
-* **Verify** no stale data persists after disconnecting and reconnecting
+* **Verify** status updates appear on screen within 2 seconds, without a manual refresh
 * **Verify** updates resume automatically after temporary network loss (disable/enable Wi-Fi)
 * **Verify** user A cannot see user B's organization data (test with 2 accounts)
-* **Verify** update latency stays below 100ms under normal conditions
 * **Verify** connection loss displays a "Reconnecting..." indicator to the user
 * **Verify** responsive layout on mobile (375px), tablet (768px), desktop (1440px)
 ```
@@ -166,11 +174,11 @@ computation for performance.
 
 **Purpose:** Explain WHY this ticket matters (business context and rationale)
 
-**Format:** 2-3 plain language paragraphs (NOT bullet points)
+**Format:** 1-2 short plain-language paragraphs (NOT bullet points)
 
 **Rules:**
 - Write as natural paragraphs, not bullets
-- 3-5 sentences total
+- 2-4 sentences total — just enough to explain the "why"
 - Explain the business problem or opportunity
 - Reference related tickets if relevant
 - Use plain language (not jargon)
@@ -216,7 +224,8 @@ In today's modern web applications, polling has been a longstanding approach...
 **Rules:**
 - Use `*` for bullets (NOT `-` or `+`)
 - Each bullet 1-2 sentences max
-- 4-6 top-level bullets
+- 3-5 top-level bullets
+- Describe the **outcome/capability needed (WHAT)**, not the implementation approach (HOW) — leave the mechanism to the developer
 - Max 2 nesting levels (sub-bullets under requirements)
 - Clear, specific language (not vague)
 
@@ -264,18 +273,18 @@ In today's modern web applications, polling has been a longstanding approach...
 [Not specific enough - be concrete]
 ```
 
-#### 3. **Technical Notes:**
+#### 3. **Technical Notes:** _(optional)_
 
-**Purpose:** Implementation guidance (what patterns to follow, not HOW to implement)
+**Purpose:** Capture only real **constraints** — existing patterns to reuse, integration points, hard limits. NOT a design or a prescribed solution. **Omit this section entirely if there are no genuine constraints** — leave the developer room to choose the approach.
 
-**Format:** Bullet list of high-level guidance
+**Format:** Short bullet list of constraints/pointers
 
 **Rules:**
 - Use `*` for bullets
-- 3-5 bullets maximum
-- Reference PATTERNS, not step-by-step implementation
+- 0-3 bullets (fewer is better; omit the section if none)
+- Note constraints/pointers only (reuse pattern X, integrate with Y, limit Z) — never step-by-step implementation
 - NO code snippets
-- High-level guidance only
+- Don't prescribe the solution — that's the developer's call
 
 **Example:**
 ```markdown
@@ -336,7 +345,7 @@ In today's modern web applications, polling has been a longstanding approach...
 **Rules:**
 - Use `*` for bullets (NOT `-`)
 - Start each with **Verify** (bold)
-- 5-10 focused criteria (quality over quantity — don't pad to hit a number)
+- 4-8 focused criteria (quality over quantity — don't pad to hit a number; cover the core flow, not every edge)
 - Each criterion = one specific test a QA engineer can execute
 - Describe the action and expected result, not implementation details
 - Use measurable thresholds where applicable (e.g., "<2s", "within 100ms")
@@ -455,11 +464,11 @@ Parent epic: [PROJ-200](https://{your-org}.atlassian.net/browse/PROJ-200)
 | Subsection headers | NO `###` headers - use bold labels only |
 | Context format | Plain paragraphs (NOT bullets) |
 | In Order to Support This format | Bullet list (NOT paragraphs) |
-| Technical Notes format | Bullet list (patterns only, no code) |
-| Acceptance Criteria format | 5-10 QA-verifiable **Verify** statements |
+| Technical Notes format | Optional; 0-3 constraint bullets (no code, no prescribed solution) |
+| Acceptance Criteria format | 4-8 QA-verifiable **Verify** statements |
 | Code snippets | ZERO - reference patterns only |
 | Metadata in body | ZERO - all metadata in YAML frontmatter |
-| Line count | 30-100 lines (stories/tasks), 30-50 lines (epics) |
+| Line count | 25-70 lines (stories/tasks), 25-40 lines (epics) |
 
 ---
 
@@ -473,9 +482,9 @@ Before considering a ticket complete:
 - ✅ NO `###` headers (use bold labels only)
 - ✅ Context as plain paragraphs (NOT bullets)
 - ✅ In Order to Support This as bullets (NOT paragraphs)
-- ✅ Technical Notes as bullets (NO code snippets)
-- ✅ 5-10 QA-verifiable Acceptance Criteria starting with "Verify"
+- ✅ Technical Notes optional (0-3 constraint bullets, NO code, no prescribed solution)
+- ✅ 4-8 QA-verifiable Acceptance Criteria starting with "Verify"
 - ✅ NO metadata lines in body (all in YAML)
 - ✅ Proper Jira URL format for cross-references
-- ✅ Total lines: 30-100 (stories/tasks) or 30-50 (epics)
-- ✅ Clear, concise language throughout
+- ✅ Total lines: 25-70 (stories/tasks) or 25-40 (epics)
+- ✅ Clear, concise language throughout; WHAT/WHY, not HOW
