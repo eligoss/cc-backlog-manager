@@ -148,6 +148,7 @@ async function pushSingleTicket(
   const wikiBody = convertMarkdownToJiraWiki(body, {
     removeTitle: true,
     removeHorizontalRules: true,
+    removeDescriptionHeading: true,
     removeAcceptanceCriteria: true,
   });
   const criteria = extractAcceptanceCriteria(body);
