@@ -1,39 +1,39 @@
-# YAML Frontmatter Structure (v10.1.1)
+# YAML Frontmatter Structure
 
 ## Complete Field Reference
 
 ### Core Fields (All Ticket Types)
 
 ```yaml
-documentType: story|task|bug|spike|epic    # REQUIRED: Type of ticket
-title: "Descriptive title"                 # REQUIRED: Ticket title
-createdDate: 2025-12-08                    # REQUIRED (if known): Creation date (ISO 8601)
+documentType: story|task|bug|spike|epic # REQUIRED: Type of ticket
+title: "Descriptive title" # REQUIRED: Ticket title
+createdDate: 2025-12-08 # REQUIRED (if known): Creation date (ISO 8601)
 ```
 
 ### Common Optional Fields
 
 ```yaml
-description: "One-line summary"            # OPTIONAL: Executive summary (agent-added)
-component: "Your Jira component name"      # OPTIONAL: Jira component (must match Jira exactly)
-priority: P0|P1|P2                         # OPTIONAL: Priority level
-storyPoints: 5                             # OPTIONAL: Story points (1,2,3,5,8) — stories/tasks only
-labels: [my-project, frontend, feature]    # OPTIONAL: Jira labels array
-assignee: "Display Name"                   # OPTIONAL: Assignee display name (from import/pull)
-updatedDate: 2025-12-10                    # OPTIONAL: Last update date (from import/pull)
-sprint: APMR-APP-2026W25                   # OPTIONAL: Sprint membership (from import/pull) — drives sprint index derivation
-status: "In Progress"                      # OPTIONAL: Workflow status snapshot (from import/pull)
+description: "One-line summary" # OPTIONAL: Executive summary (agent-added)
+component: "Your Jira component name" # OPTIONAL: Jira component (must match Jira exactly)
+priority: P0|P1|P2 # OPTIONAL: Priority level
+storyPoints: 5 # OPTIONAL: Story points (1,2,3,5,8) — stories/tasks only
+labels: [my-project, frontend, feature] # OPTIONAL: Jira labels array
+assignee: "Display Name" # OPTIONAL: Assignee display name (from import/pull)
+updatedDate: 2025-12-10 # OPTIONAL: Last update date (from import/pull)
+sprint: APMR-APP-2026W25 # OPTIONAL: Sprint membership (from import/pull) — drives sprint index derivation
+status: "In Progress" # OPTIONAL: Workflow status snapshot (from import/pull)
 ```
 
 ### Jira Integration Fields
 
 ```yaml
-jira-ticketId: PROJ-100                   # Auto-filled: Jira ticket ID (null for new tickets)
-jira-url: "https://..."                   # Auto-filled: Full Jira URL
-jira-parent: PROJ-200                     # OPTIONAL: Parent epic ID (if subtask/child)
-jira-related: [PROJ-100, PROJ-101]        # OPTIONAL: Array of related ticket IDs
-jira-blocking: [PROJ-300]                 # OPTIONAL: Array of tickets this blocks
-jira-blockedBy: [PROJ-301]                # OPTIONAL: Array of tickets blocking this
-jira-fixVersion: "Pilot"                  # OPTIONAL: Jira fix version = milestone (from import/pull)
+jira-ticketId: PROJ-100 # Auto-filled: Jira ticket ID (null for new tickets)
+jira-url: "https://..." # Auto-filled: Full Jira URL
+jira-parent: PROJ-200 # OPTIONAL: Parent epic ID (if subtask/child)
+jira-related: [PROJ-100, PROJ-101] # OPTIONAL: Array of related ticket IDs
+jira-blocking: [PROJ-300] # OPTIONAL: Array of tickets this blocks
+jira-blockedBy: [PROJ-301] # OPTIONAL: Array of tickets blocking this
+jira-fixVersion: "Pilot" # OPTIONAL: Jira fix version = milestone (from import/pull)
 ```
 
 > **Field-name convention (canonical):** sprint membership, status, and assignee use
@@ -41,13 +41,13 @@ jira-fixVersion: "Pilot"                  # OPTIONAL: Jira fix version = milesto
 > the Jira pull/push field-mapper write, so a ticket has identical metadata whether it was
 > imported or pulled. `sprint` and `jira-fixVersion` drive sprint/milestone index derivation.
 
-### Framework Integration Fields (v10.1.1 - Flat with framework- prefix)
+### Framework Integration Fields (flat, framework- prefix)
 
 ```yaml
-framework-documentation: "@backend-repo/CLAUDE.md"  # OPTIONAL: Cross-repo file ref
-framework-milestone: "backlog/milestones/Feb2026.md"  # OPTIONAL: Local milestone path
-framework-technicalGuides: ["@backend-repo/docs/api.md"]  # OPTIONAL: Array of technical refs
-framework-relatedLocal: ["backlog/epics/EPIC-200.md"]  # OPTIONAL: Array of local refs
+framework-documentation: "@backend-repo/CLAUDE.md" # OPTIONAL: Cross-repo file ref
+framework-milestone: "backlog/milestones/Feb2026.md" # OPTIONAL: Local milestone path
+framework-technicalGuides: ["@backend-repo/docs/api.md"] # OPTIONAL: Array of technical refs
+framework-relatedLocal: ["backlog/epics/EPIC-200.md"] # OPTIONAL: Array of local refs
 ```
 
 ---
@@ -347,8 +347,8 @@ Array of technical guide references.
 **Example:**
 ```yaml
 framework-technicalGuides:
-  - "@backend-repo/docs/api-design.md"
-  - "ai/context/technical-advanced.md"
+ - "@backend-repo/docs/api-design.md"
+ - "ai/context/technical-advanced.md"
 ```
 
 #### framework-relatedLocal
@@ -360,8 +360,8 @@ Array of local file references.
 **Example:**
 ```yaml
 framework-relatedLocal:
-  - "backlog/epics/200-configurable-dashboard.md"
-  - "ai/context/business-advanced.md"
+ - "backlog/epics/200-configurable-dashboard.md"
+ - "ai/context/business-advanced.md"
 ```
 
 ---
@@ -410,9 +410,9 @@ jira-blockedBy: [PROJ-104]
 framework-documentation: "@frontend-repo/src/components/Dashboard/README.md"
 framework-milestone: "backlog/milestones/Feb2026.md"
 framework-technicalGuides:
-  - "@backend-repo/docs/api-design.md"
+ - "@backend-repo/docs/api-design.md"
 framework-relatedLocal:
-  - "backlog/epics/200-configurable-dashboard.md"
+ - "backlog/epics/200-configurable-dashboard.md"
 ---
 ```
 

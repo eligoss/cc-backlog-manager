@@ -1,4 +1,4 @@
-# Ticket Examples (v10.1.1)
+# Ticket Examples
 
 ## Example 1: Frontend Story (Recommended)
 
@@ -122,11 +122,11 @@ jira-fixVersion: "Feb2026"
 framework-documentation: "@backend-repo/src/data-layer/README.md"
 framework-milestone: "backlog/milestones/Feb2026.md"
 framework-technicalGuides:
-  - "@backend-repo/docs/transaction-tracing.md"
-  - "@backend-repo/docs/data-layer-v2.md"
+ - "@backend-repo/docs/transaction-tracing.md"
+ - "@backend-repo/docs/data-layer-v2.md"
 framework-relatedLocal:
-  - "backlog/epics/201-centralized-data-layer.md"
-  - "backlog/tickets/tasks/301-add-sentry-transactions.md"
+ - "backlog/epics/201-centralized-data-layer.md"
+ - "backlog/tickets/tasks/301-add-sentry-transactions.md"
 ---
 
 # Backend: Data Layer: Convert Methods to Promise-Based
@@ -214,8 +214,8 @@ jira-fixVersion: "Feb2026"
 framework-milestone: "backlog/milestones/Feb2026.md"
 framework-technicalGuides: ["@frontend-repo/docs/dashboard-architecture.md"]
 framework-relatedLocal:
-  - "backlog/milestones/Feb2026.md"
-  - "ai/context/business-advanced.md"
+ - "backlog/milestones/Feb2026.md"
+ - "ai/context/business-advanced.md"
 ---
 
 # Analytics: Configurable Dashboard
@@ -368,8 +368,8 @@ jira-internalNotes: "Output: Decision doc on subscription pattern"
 framework-documentation: "@backend-repo/docs/architecture-decisions.md"
 framework-milestone: "backlog/milestones/Jan2026.md"
 framework-technicalGuides:
-  - "@backend-repo/docs/graphql-api.md"
-  - "@backend-repo/docs/authentication.md"
+ - "@backend-repo/docs/graphql-api.md"
+ - "@backend-repo/docs/authentication.md"
 framework-relatedLocal: ["ai/context/technical-advanced.md"]
 ---
 

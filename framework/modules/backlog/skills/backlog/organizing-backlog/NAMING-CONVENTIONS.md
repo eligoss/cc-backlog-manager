@@ -42,11 +42,11 @@ CORRECT:
 942-observability-improvements-unified-logging-tracing.md
 
 WRONG:
-Feb2026-1164-forecast-180d-lr-marker-and-timestamps.md  # No milestone prefix
-STORY-1164-forecast-180d.md                              # No type prefix
-PROJ-1164-forecast-180d.md                               # No project prefix
-1164_forecast_180d_lr_marker.md                          # Use hyphens, not underscores
-1164-My-Project-App-Forecast-180d.md                     # Remove redundant prefixes
+Feb2026-1164-forecast-180d-lr-marker-and-timestamps.md # No milestone prefix
+STORY-1164-forecast-180d.md # No type prefix
+PROJ-1164-forecast-180d.md # No project prefix
+1164_forecast_180d_lr_marker.md # Use hyphens, not underscores
+1164-My-Project-App-Forecast-180d.md # Remove redundant prefixes
 ```
 
 **Tasks:**
@@ -57,8 +57,8 @@ CORRECT:
 932-observability-improvements-unified-logging-strategy.md
 
 WRONG:
-TASK-1032-migrate-to-api-v2.md                           # No type prefix
-1032-My-Project-BE-Migrate-to-API-v2.md                  # Remove redundant prefixes
+TASK-1032-migrate-to-api-v2.md # No type prefix
+1032-My-Project-BE-Migrate-to-API-v2.md # Remove redundant prefixes
 ```
 
 **Bugs:**
@@ -67,8 +67,8 @@ CORRECT:
 1315-fix-shimmer-loading-when-changing-analysis-hours.md
 
 WRONG:
-BUG-1315-fix-shimmer-loading.md                          # No type prefix
-1315-Bug-Fix-Shimmer-Loading.md                          # Use lowercase
+BUG-1315-fix-shimmer-loading.md # No type prefix
+1315-Bug-Fix-Shimmer-Loading.md # Use lowercase
 ```
 
 ---
@@ -79,7 +79,7 @@ BUG-1315-fix-shimmer-loading.md                          # No type prefix
 
 ```yaml
 ---
-framework-type: story  # story, task, bug, epic, spike
+framework-type: story # story, task, bug, epic, spike
 ---
 ```
 
@@ -87,8 +87,8 @@ framework-type: story  # story, task, bug, epic, spike
 
 ```yaml
 ---
-framework-milestone: Feb2026  # example milestone code
-jira-milestone: "My Project - February 2026 - W3 W5 W7"  # example Jira milestone name
+framework-milestone: Feb2026 # example milestone code
+jira-milestone: "My Project - February 2026 - W3 W5 W7" # example Jira milestone name
 ---
 ```
 
@@ -102,7 +102,7 @@ jira-milestone: "My Project - February 2026 - W3 W5 W7"  # example Jira mileston
 ```text
 Jira Title: "MyProject: App: Asset Component Hours grid: Forecast (+180d)"
 Filename: 1164-forecast-180d-lr-marker-and-timestamps.md
-          Remove project-specific prefixes and component qualifiers
+ Remove project-specific prefixes and component qualifiers
 ```
 
 **Common Prefixes to Remove:**
@@ -119,12 +119,12 @@ Filename: 1164-forecast-180d-lr-marker-and-timestamps.md
 **Keep meaningful qualifiers:**
 ```text
 GOOD:
-1172-be-data-platform-snowflake-introduce-sub-components.md  # "be" clarifies backend
-1537-fe-make-cache-stale-times-configurable.md               # "fe" clarifies frontend
+1172-be-data-platform-snowflake-introduce-sub-components.md # "be" clarifies backend
+1537-fe-make-cache-stale-times-configurable.md # "fe" clarifies frontend
 
 BAD:
-1172-data-platform-snowflake-introduce-sub-components.md     # Lost backend context
-1537-make-cache-stale-times-configurable.md                  # Lost frontend context
+1172-data-platform-snowflake-introduce-sub-components.md # Lost backend context
+1537-make-cache-stale-times-configurable.md # Lost frontend context
 ```
 
 ---
@@ -135,12 +135,12 @@ BAD:
 
 ```text
 CORRECT:
-1164-forecast-180d-lr-marker-and-timestamps.md           # "180d" treated as one word
-1032-migrate-to-api-v2-via-centralized-data-layer.md     # "api-v2" treated as one concept
+1164-forecast-180d-lr-marker-and-timestamps.md # "180d" treated as one word
+1032-migrate-to-api-v2-via-centralized-data-layer.md # "api-v2" treated as one concept
 
 WRONG:
-1164-forecast-one-hundred-eighty-d.md                    # Keep numeric format
-1032-migrate-to-api-version-two.md                       # Keep v2 abbreviation
+1164-forecast-one-hundred-eighty-d.md # Keep numeric format
+1032-migrate-to-api-version-two.md # Keep v2 abbreviation
 ```
 
 ### Acronyms and Abbreviations
@@ -151,8 +151,8 @@ CORRECT:
 1406-convert-data-layer-methods-to-promise-based-sentry.md
 
 WRONG:
-932-observability-improvements-u-l-s.md                  # Don't abbreviate unnecessarily
-1406-convert-d-l-methods-to-p-b-sentry.md                # Keep full words
+932-observability-improvements-u-l-s.md # Don't abbreviate unnecessarily
+1406-convert-d-l-methods-to-p-b-sentry.md # Keep full words
 ```
 
 ---
@@ -204,8 +204,8 @@ Feb2026-1164-asset-component-hours-grid-forecast.md
 
 With YAML:
 ---
-framework-milestone: Feb2026  # example milestone code
-jira-milestone: "My Project - February 2026 - W3 W5 W7"  # example Jira milestone name
+framework-milestone: Feb2026 # example milestone code
+jira-milestone: "My Project - February 2026 - W3 W5 W7" # example Jira milestone name
 ---
 ```
 
@@ -221,7 +221,7 @@ agentic-framework backlog validate
 
 ## See Also
 
-- **Ticket Format:** [building-tickets](../building-tickets/SKILL.md) - v10.1.1 YAML frontmatter structure
+- **Ticket Format:** [building-tickets](../building-tickets/SKILL.md) - YAML frontmatter structure
 - **Jira Integration:** [JIRA-SOURCE-OF-TRUTH.md](JIRA-SOURCE-OF-TRUTH.md) - "Jira is source of truth" principle
 - **CLI Commands:** Backlog module TypeScript CLI for validation and import
 

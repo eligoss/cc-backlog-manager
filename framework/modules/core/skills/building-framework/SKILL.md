@@ -6,18 +6,18 @@ scope: project-specific
 applicable-projects: apmr
 module: core
 capabilities-provided:
-  - framework-governance
-  - framework-development
-  - planning-phases
+ - framework-governance
+ - framework-development
+ - planning-phases
 # Claude Code v2.1 features
 context: fork
 tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
-  - Bash
+ - Read
+ - Write
+ - Edit
+ - Glob
+ - Grep
+ - Bash
 ---
 
 # Building Framework
@@ -45,7 +45,7 @@ This skill uses **NO MCPs** - works with built-in tools only.
 
 ---
 
-## Quick Reference: APM-R v11.2 Governance Rules
+## Quick Reference: APM-R Governance Rules
 
 ### Rule 1: Pure Agent Pattern
 **All generic project knowledge lives in context files, not agents.**
@@ -204,6 +204,6 @@ Use `building-skills` for:
 ---
 
 **Skill Version:** 1.1
-**Last Updated:** 2025-12-07 (v11.2 refactor - reduced from 397 to ~180 lines)
+**Last Updated:** 2025-12-07 (refactor — reduced from 397 to ~180 lines)
 **Pair with:** building-skills (how to build), quality-standards (validation)
 **Used by:** ai-framework-manager, ai-framework-developer

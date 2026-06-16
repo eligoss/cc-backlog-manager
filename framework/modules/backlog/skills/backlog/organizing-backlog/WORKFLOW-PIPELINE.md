@@ -30,36 +30,36 @@ Creation → Validation → Export to Jira → Import from Jira → Pull/Diff/Pu
 ### Steps
 
 1. **Create ticket with YAML frontmatter**
-   ```yaml
-   ---
-   # Framework metadata (framework- prefix)
-   framework-type: story  # story, task, bug, epic, spike
-   framework-status: draft
-   framework-priority: high
-   framework-milestone: Feb2026  # example milestone code
+ ```yaml
+ ---
+ # Framework metadata (framework- prefix)
+ framework-type: story # story, task, bug, epic, spike
+ framework-status: draft
+ framework-priority: high
+ framework-milestone: Feb2026 # example milestone code
 
-   # Jira metadata (jira- prefix, null until export)
-   jira-ticketId: null
-   jira-url: null
-   jira-component: "Team: Frontend"
-   jira-parent: null
+ # Jira metadata (jira- prefix, null until export)
+ jira-ticketId: null
+ jira-url: null
+ jira-component: "Team: Frontend"
+ jira-parent: null
 
-   # Content metadata (no prefix)
-   title: "Auth0 SSO Configuration"
-   labels: [auth, frontend, feature]
-   assignee: unassigned
-   ---
-   ```
+ # Content metadata (no prefix)
+ title: "Auth0 SSO Configuration"
+ labels: [auth, frontend, feature]
+ assignee: unassigned
+ ---
+ ```
 
 2. **Write ticket content**
-   - Use native markdown (NOT Jira markup)
-   - Follow v10.1.1 format (see `building-tickets` skill)
-   - Include all required sections
+ - Use native markdown (NOT Jira markup)
+ - Follow the ticket format (see `building-tickets` skill)
+ - Include all required sections
 
 3. **Self-verification**
-   - Check against Definition of Ready
-   - Validate YAML frontmatter
-   - Ensure completeness
+ - Check against Definition of Ready
+ - Validate YAML frontmatter
+ - Ensure completeness
 
 ---
 
@@ -80,10 +80,10 @@ agentic-framework backlog validate
 **Example Output:**
 ```text
 Validating tickets...
-  1164-forecast-180d-lr-marker-and-timestamps.md
-  1234-invalid-ticket.md
-   - Missing framework-type field
-   - Invalid jira-component name
+ 1164-forecast-180d-lr-marker-and-timestamps.md
+ 1234-invalid-ticket.md
+ - Missing framework-type field
+ - Invalid jira-component name
 
 1 valid, 1 invalid
 ```
@@ -113,24 +113,24 @@ agentic-framework backlog push --ticket PROJ-100 --dry-run
 ### Steps
 
 1. **Read ticket**
-   - Parse YAML frontmatter
-   - Parse markdown content
+ - Parse YAML frontmatter
+ - Parse markdown content
 
 2. **Convert markdown → Jira wiki markup**
-   - Native markdown → Jira syntax
-   - Preserve formatting and structure
+ - Native markdown → Jira syntax
+ - Preserve formatting and structure
 
 3. **Call Jira REST API**
-   - CREATE new issue OR UPDATE existing issue (auto-detected)
-   - Set fields from YAML metadata
-   - Receive Jira ticket ID (PROJ-XXX)
+ - CREATE new issue OR UPDATE existing issue (auto-detected)
+ - Set fields from YAML metadata
+ - Receive Jira ticket ID (PROJ-XXX)
 
 4. **Update YAML metadata**
-   ```yaml
-   jira-ticketId: PROJ-1234
-   jira-url: "https://your-instance.atlassian.net/browse/PROJ-1234"
-   exportedDate: 2025-12-22
-   ```
+ ```yaml
+ jira-ticketId: PROJ-1234
+ jira-url: "https://your-instance.atlassian.net/browse/PROJ-1234"
+ exportedDate: 2025-12-22
+ ```
 
 **Example:**
 ```bash
@@ -154,18 +154,18 @@ agentic-framework backlog import --csv <file>
 ### Steps
 
 1. **Export from Jira**
-   - Use Jira CSV export feature
-   - Save CSV file
+ - Use Jira CSV export feature
+ - Save CSV file
 
 2. **Run import CLI**
-   - Parses CSV (columns: Issue key, Summary, Issue Type, Status, etc.)
-   - Converts Jira wiki markup → markdown
-   - Generates YAML frontmatter with Jira metadata
-   - Creates ticket files with Jira ticket number in filename
+ - Parses CSV (columns: Issue key, Summary, Issue Type, Status, etc.)
+ - Converts Jira wiki markup → markdown
+ - Generates YAML frontmatter with Jira metadata
+ - Creates ticket files with Jira ticket number in filename
 
 3. **Output:**
-   - Ticket files created with YAML metadata
-   - Jira IDs, names, and metadata preserved exactly
+ - Ticket files created with YAML metadata
+ - Jira IDs, names, and metadata preserved exactly
 
 **Example CSV → YAML:**
 ```csv
@@ -178,7 +178,7 @@ PROJ-1234,"Implement SSO","Team: Frontend",PROJ-1171
 ---
 jira-ticketId: PROJ-1234
 title: "Implement SSO"
-jira-component: "Team: Frontend"  # Exact match
+jira-component: "Team: Frontend" # Exact match
 jira-parent: PROJ-1171
 framework-type: story
 ---
@@ -197,18 +197,18 @@ agentic-framework backlog migrate-milestones
 ### Steps
 
 1. **Scan tickets**
-   - Read `framework-milestone:` field from all ticket YAML
-   - Group tickets by milestone code
+ - Read `framework-milestone:` field from all ticket YAML
+ - Group tickets by milestone code
 
 2. **Generate milestone files**
-   - Create overview with ticket list
-   - Include statistics (ticket counts, story points)
+ - Create overview with ticket list
+ - Include statistics (ticket counts, story points)
 
 **Example Output:**
 ```text
 Generating milestones...
-  Feb2026.md (4 tickets, 15 story points)
-  Mar2026.md (2 tickets, 8 story points)
+ Feb2026.md (4 tickets, 15 story points)
+ Mar2026.md (2 tickets, 8 story points)
 
 2 milestones generated
 ```
@@ -226,25 +226,25 @@ agentic-framework backlog pull --sprint "Sprint 2026-W12"
 ### Steps
 
 1. **Query Jira REST API**
-   - Fetch tickets matching the sprint filter
-   - Retrieve all fields, relationships, and descriptions
+ - Fetch tickets matching the sprint filter
+ - Retrieve all fields, relationships, and descriptions
 
 2. **Create/update local files**
-   - Convert Jira wiki markup → markdown
-   - Generate YAML frontmatter with exact Jira values
-   - Create new files or update existing ones (matched by `jira-ticketId`)
+ - Convert Jira wiki markup → markdown
+ - Generate YAML frontmatter with exact Jira values
+ - Create new files or update existing ones (matched by `jira-ticketId`)
 
 3. **Output:**
-   - New tickets created as markdown files
-   - Existing tickets updated with Jira changes
-   - Summary of created/updated/unchanged tickets
+ - New tickets created as markdown files
+ - Existing tickets updated with Jira changes
+ - Summary of created/updated/unchanged tickets
 
 **Example Output:**
 ```text
 Pulling from Jira...
-  Created: 1400-new-feature-from-jira.md
-  Updated: 1234-auth0-sso-configuration.md (status changed)
-  Unchanged: 1235-implement-caching.md
+ Created: 1400-new-feature-from-jira.md
+ Updated: 1234-auth0-sso-configuration.md (status changed)
+ Unchanged: 1235-implement-caching.md
 
 3 tickets synced (1 created, 1 updated, 1 unchanged)
 ```
@@ -262,30 +262,30 @@ agentic-framework backlog diff
 ### Steps
 
 1. **Read local ticket state**
-   - Parse YAML frontmatter and markdown content
-   - Build local state snapshot
+ - Parse YAML frontmatter and markdown content
+ - Build local state snapshot
 
 2. **Fetch Jira state**
-   - Query Jira REST API for matching tickets
-   - Build Jira state snapshot
+ - Query Jira REST API for matching tickets
+ - Build Jira state snapshot
 
 3. **Compare and report**
-   - Identify local-only changes
-   - Identify Jira-only changes
-   - Detect conflicts (both sides changed)
+ - Identify local-only changes
+ - Identify Jira-only changes
+ - Detect conflicts (both sides changed)
 
 **Example Output:**
 ```text
 Comparing local vs Jira...
 
 Modified locally:
-  PROJ-1234  auth0-sso-configuration
-    ~ framework-status: draft → in-progress
-    ~ description: acceptance criteria updated
+ PROJ-1234 auth0-sso-configuration
+ ~ framework-status: draft → in-progress
+ ~ description: acceptance criteria updated
 
 Modified in Jira:
-  PROJ-1235  implement-caching
-    ~ assignee: unassigned → john.doe
+ PROJ-1235 implement-caching
+ ~ assignee: unassigned → john.doe
 
 No conflicts detected.
 1 ticket modified locally, 1 modified in Jira
@@ -307,24 +307,24 @@ agentic-framework backlog push --all
 ### Steps
 
 1. **Read local ticket**
-   - Parse YAML frontmatter and markdown content
+ - Parse YAML frontmatter and markdown content
 
 2. **Convert markdown → Jira wiki markup**
-   - Native markdown → Jira syntax
-   - Preserve formatting and structure
+ - Native markdown → Jira syntax
+ - Preserve formatting and structure
 
 3. **Update Jira via REST API**
-   - Set fields from YAML metadata
-   - Update description with converted content
-   - Sync status transitions
+ - Set fields from YAML metadata
+ - Update description with converted content
+ - Sync status transitions
 
 4. **Update local YAML metadata**
-   - Update `exportedDate` with push timestamp
+ - Update `exportedDate` with push timestamp
 
 **Example Output:**
 ```text
 Pushing to Jira...
-  PROJ-1234: Updated (status, description)
+ PROJ-1234: Updated (status, description)
 
 1 ticket pushed successfully
 ```
@@ -335,24 +335,24 @@ Pushing to Jira...
 
 ```text
 START
-  │
-  ├─ Creating new ticket?
-  │    └─> Create with YAML metadata, validate with CLI
-  │
-  ├─ Exporting to Jira?
-  │    └─> Run jira export CLI (auto-detects CREATE vs UPDATE)
-  │
-  ├─ Importing from Jira?
-  │    └─> Run backlog import CLI (parses CSV, creates tickets)
-  │
-  ├─ Syncing with Jira (ongoing)?
-  │    └─> Pull → Diff → Push (git-like workflow)
-  │
-  ├─ Generating milestone overview?
-  │    └─> Run backlog migrate-milestones CLI
-  │
-  └─ Validating tickets?
-       └─> Run backlog validate CLI
+ │
+ ├─ Creating new ticket?
+ │ └─> Create with YAML metadata, validate with CLI
+ │
+ ├─ Exporting to Jira?
+ │ └─> Run jira export CLI (auto-detects CREATE vs UPDATE)
+ │
+ ├─ Importing from Jira?
+ │ └─> Run backlog import CLI (parses CSV, creates tickets)
+ │
+ ├─ Syncing with Jira (ongoing)?
+ │ └─> Pull → Diff → Push (git-like workflow)
+ │
+ ├─ Generating milestone overview?
+ │ └─> Run backlog migrate-milestones CLI
+ │
+ └─ Validating tickets?
+ └─> Run backlog validate CLI
 ```
 
 ---
@@ -434,7 +434,7 @@ agentic-framework backlog push --all --dry-run
 
 ## See Also
 
-- **Ticket Format:** [building-tickets](../building-tickets/SKILL.md) - v10.1.1 YAML structure
+- **Ticket Format:** [building-tickets](../building-tickets/SKILL.md) - YAML structure
 - **Jira Integration:** [JIRA-SOURCE-OF-TRUTH.md](JIRA-SOURCE-OF-TRUTH.md) - Jira integration principles
 - **Naming:** [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md) - File naming rules
 - **Module CLI:** Backlog and Jira module TypeScript CLI commands

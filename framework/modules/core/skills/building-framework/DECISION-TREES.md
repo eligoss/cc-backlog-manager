@@ -8,19 +8,19 @@
 Framework improvement needed?
 │
 ├─ Is knowledge scattered in 3+ places?
-│  │
-│  ├─ YES: Create skill to consolidate
-│  │  ├─ Generic (reusable anywhere)?
-│  │  │  ├─ YES: .claude/skills/generic/
-│  │  │  └─ NO: .claude/skills/apmr/
-│  │  └─ Name using gerund: {verb}-ing
-│  │
-│  └─ NO: Update existing context file
-│      └─ No new skill needed
+│ │
+│ ├─ YES: Create skill to consolidate
+│ │ ├─ Generic (reusable anywhere)?
+│ │ │ ├─ YES: .claude/skills/generic/
+│ │ │ └─ NO: .claude/skills/apmr/
+│ │ └─ Name using gerund: {verb}-ing
+│ │
+│ └─ NO: Update existing context file
+│ └─ No new skill needed
 │
 └─ Is it a quality gate (validation)?
-   ├─ YES: Create skill with validation patterns
-   └─ NO: Update documentation/context
+ ├─ YES: Create skill with validation patterns
+ └─ NO: Update documentation/context
 ```
 
 ### Question-Based Decision Framework
@@ -61,13 +61,13 @@ NO → Create project-specific skill in .claude/skills/apmr/
 Could you use this in apm-r-app (different codebase)?
 │
 ├─ YES → GENERIC
-│   Examples:
-│   - validating-links (any markdown project)
-│   - formatting-markdown (any markdown project)
-│   - parsing-yaml (any project using YAML)
-│   - git-best-practices (any git project)
-│   - enforcing-quality-standards (any project)
-│   - loading-context-pattern (any agent system)
+│ Examples:
+│ - validating-links (any markdown project)
+│ - formatting-markdown (any markdown project)
+│ - parsing-yaml (any project using YAML)
+│ - git-best-practices (any git project)
+│ - enforcing-quality-standards (any project)
+│ - loading-context-pattern (any agent system)
 │
 └─ NO → Continue next question
 ```
@@ -83,12 +83,12 @@ Does it reference APM-R concepts:
 - Confluence space configuration
 │
 ├─ YES → PROJECT-SPECIFIC
-│   Examples:
-│   - ticket-structure-validator (APM-R specific fields)
-│   - adf-expert (Confluence APM-R integration)
-│   - building-framework (framework governance)
-│   - syncing-with-jira (APM-R Jira sync config)
-│   - managing-framework-phases (APM-R workflow)
+│ Examples:
+│ - ticket-structure-validator (APM-R specific fields)
+│ - adf-expert (Confluence APM-R integration)
+│ - building-framework (framework governance)
+│ - syncing-with-jira (APM-R Jira sync config)
+│ - managing-framework-phases (APM-R workflow)
 │
 └─ NO → GENERIC (no project references)
 ```
@@ -103,24 +103,24 @@ Does it reference APM-R concepts:
 Analyzing framework improvement?
 │
 ├─ Count knowledge locations
-│  │
-│  ├─ 1-2 locations
-│  │  └─ NO CONSOLIDATION
-│  │     └─ Update existing file
-│  │
-│  └─ 3+ locations
-│     └─ CONSOLIDATE
-│        │
-│        ├─ All locations generic?
-│        │  └─ Create generic skill
-│        │
-│        ├─ All locations APM-R specific?
-│        │  └─ Create project-specific skill
-│        │
-│        └─ Mixed (generic + APM-R)?
-│           └─ Create hybrid skill
-│              ├─ Generic base in skill
-│              └─ APM-R config in separate file
+│ │
+│ ├─ 1-2 locations
+│ │ └─ NO CONSOLIDATION
+│ │ └─ Update existing file
+│ │
+│ └─ 3+ locations
+│ └─ CONSOLIDATE
+│ │
+│ ├─ All locations generic?
+│ │ └─ Create generic skill
+│ │
+│ ├─ All locations APM-R specific?
+│ │ └─ Create project-specific skill
+│ │
+│ └─ Mixed (generic + APM-R)?
+│ └─ Create hybrid skill
+│ ├─ Generic base in skill
+│ └─ APM-R config in separate file
 ```
 
 **Examples:**
@@ -138,14 +138,14 @@ Analyzing framework improvement?
 Scope decision made?
 │
 ├─ GENERIC
-│  ├─ Source: ai/skills/{category}/generic-shared-{name}-{capability}/
-│  ├─ Deploy: .claude/skills/generic-shared-{name}-{capability}/
-│  └─ Reuse: Any project
+│ ├─ Source: ai/skills/{category}/generic-shared-{name}-{capability}/
+│ ├─ Deploy: .claude/skills/generic-shared-{name}-{capability}/
+│ └─ Reuse: Any project
 │
 └─ PROJECT-SPECIFIC
-   ├─ Source: ai/skills/{category}/apmr-{name}-{capability}/
-   ├─ Deploy: .claude/skills/apmr-{name}-{capability}/
-   └─ Reuse: APM-R only
+ ├─ Source: ai/skills/{category}/apmr-{name}-{capability}/
+ ├─ Deploy: .claude/skills/apmr-{name}-{capability}/
+ └─ Reuse: APM-R only
 ```
 
 **Auto-sync:** Skills in `ai/skills/` sync to `.claude/skills/` via pre-commit hook
@@ -179,5 +179,5 @@ Use this checklist to quickly decide on skill creation:
 ---
 
 **Version:** 1.0
-**Created:** 2025-12-07 (v11.2 governance refactor)
+**Created:** 2025-12-07 (governance refactor)
 **Related:** SKILL.md, SCOPE-DECISION-TREE.md

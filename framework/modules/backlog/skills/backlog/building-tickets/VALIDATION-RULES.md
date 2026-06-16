@@ -1,4 +1,4 @@
-# Validation Rules & Checklist (v10.1.1)
+# Validation Rules & Checklist
 
 ## Quick Validation Checklist
 
@@ -28,31 +28,31 @@ Use this checklist before marking a ticket "Ready for Development":
 
 ### Content Quality (10-15 minutes)
 - ✅ **Context section:**
-  - Written as 2-3 plain paragraphs (NOT bullet points)
-  - 3-5 sentences total
-  - Explains WHY not WHAT
-  - Related tickets properly linked
+ - Written as 2-3 plain paragraphs (NOT bullet points)
+ - 3-5 sentences total
+ - Explains WHY not WHAT
+ - Related tickets properly linked
 - ✅ **In Order to Support This section:**
-  - Formatted as bullet list
-  - 3-5 bullets (outcome/capability — WHAT, not HOW)
-  - Each bullet 1-2 sentences
-  - Max 2 nesting levels
-  - Clear and specific language
+ - Formatted as bullet list
+ - 3-5 bullets (outcome/capability — WHAT, not HOW)
+ - Each bullet 1-2 sentences
+ - Max 2 nesting levels
+ - Clear and specific language
 - ✅ **Technical Notes section (optional):**
-  - 0-3 bullets (omit the section if there are no real constraints)
-  - Constraints/pointers only (reuse pattern X, integrate with Y) — no code, no prescribed solution
-  - Leaves the implementation approach to the developer
+ - 0-3 bullets (omit the section if there are no real constraints)
+ - Constraints/pointers only (reuse pattern X, integrate with Y) — no code, no prescribed solution
+ - Leaves the implementation approach to the developer
 - ✅ **Acceptance Criteria section:**
-  - 4-8 "Verify" statements (focused, not padded)
-  - QA-verifiable: testable through UI, API, or observable behavior
-  - No implementation details, code-level checks, or meta items
-  - Measurable thresholds where applicable (not "performance is good")
-  - Priority: core flows → edge cases → error recovery → cross-device
+ - 4-8 "Verify" statements (focused, not padded)
+ - QA-verifiable: testable through UI, API, or observable behavior
+ - No implementation details, code-level checks, or meta items
+ - Measurable thresholds where applicable (not "performance is good")
+ - Priority: core flows → edge cases → error recovery → cross-device
 
 ### Document Quality (5 minutes)
 - ✅ Line count appropriate:
-  - Stories/Tasks: 25-70 lines
-  - Epics: 25-40 lines
+ - Stories/Tasks: 25-70 lines
+ - Epics: 25-40 lines
 - ✅ NO code snippets anywhere in ticket body
 - ✅ NO implementation step-by-step instructions
 - ✅ NO Jira wiki markup (h3., h2., etc.) - use native markdown only
@@ -87,11 +87,11 @@ jira-fixVersion: "Pilot"
 ---
 documentType: story
 jiraFields:
-  ticketId: PROJ-100
-  url: "https://..."
-  related: [PROJ-101]
+ ticketId: PROJ-100
+ url: "https://..."
+ related: [PROJ-101]
 frameworkFields:
-  documentation: null
+ documentation: null
 ---
 ```
 
@@ -114,10 +114,10 @@ values. There is no "every jira-*/framework-* field must be present" rule. Optio
 appear only when set:
 
 - Planning/membership: `priority`, `storyPoints`, `labels`, `assignee`, `status`, `sprint`,
-  `jira-fixVersion` (milestone) — **bare names** (no `jira-` prefix on sprint/status/assignee)
+ `jira-fixVersion` (milestone) — **bare names** (no `jira-` prefix on sprint/status/assignee)
 - Identity (after push/import): `jira-ticketId`, `jira-url`, `jira-parent`
 - Relations / framework refs: `jira-related`, `jira-blocking`, `jira-blockedBy`,
-  `framework-*` — only when non-empty
+ `framework-*` — only when non-empty
 
 `sprint` and `jira-fixVersion` drive sprint/milestone index derivation; include them when known.
 
@@ -393,7 +393,7 @@ labels: "my-project, frontend, feature"
 
 **How to Check:**
 ```bash
-wc -l file.md  # Count lines
+wc -l file.md # Count lines
 ```
 
 ---
@@ -638,14 +638,14 @@ focus on metrics that matter to them.
 **Technical Notes:**
 
 * Implement with MUI Drawer:
-  ```typescript
-  const [open, setOpen] = React.useState(false);
-  const drawer = (
-    <Drawer open={open}>
-      ...
-    </Drawer>
-  );
-  ```
+ ```typescript
+ const [open, setOpen] = React.useState(false);
+ const drawer = (
+ <Drawer open={open}>
+ ...
+ </Drawer>
+);
+ ```
 ```
 
 **Fix:**
@@ -746,5 +746,4 @@ implements push-based subscriptions for real-time updates.
 ---
 
 **Last Updated:** 2025-12-08
-**Framework Version:** v11.2
-**Specification:** v10.1.1 Jira Ticket Structure
+**Specification:** Jira Ticket Structure

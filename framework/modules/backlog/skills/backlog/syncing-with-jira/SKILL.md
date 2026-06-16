@@ -5,8 +5,8 @@ name: syncing-with-jira
 description: Sync backlog tickets with Jira using backlog CLI commands (pull/diff/push). Use when syncing tickets to/from Jira, troubleshooting Jira integration, or understanding field mappings.
 scope: generic
 capabilities-provided:
-  - jira-sync
-  - markdown-jira-conversion
+ - jira-sync
+ - markdown-jira-conversion
 ---
 
 # Syncing with Jira
@@ -119,9 +119,9 @@ Requires `backlog.config.json` in the project root and a `.env` file:
 **backlog.config.json:**
 ```json
 {
-  "jiraProject": "PROJ",
-  "jiraBaseUrl": "https://your-instance.atlassian.net",
-  "envFile": ".env"
+ "jiraProject": "PROJ",
+ "jiraBaseUrl": "https://your-instance.atlassian.net",
+ "envFile": ".env"
 }
 ```
 
@@ -143,7 +143,7 @@ See supporting docs:
 
 ## Related Skills
 - [organizing-backlog](../organizing-backlog/SKILL.md) — Backlog module architecture and CLI
-- [building-tickets](../building-tickets/SKILL.md) — v10.1.1 YAML format and validation
+- [building-tickets](../building-tickets/SKILL.md) — YAML format and validation
 
 ---
 

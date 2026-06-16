@@ -1,4 +1,4 @@
-# APM-R Framework Governance Rules (v11.2)
+# APM-R Framework Governance Rules
 
 ## Overview
 
@@ -43,9 +43,9 @@ Six foundational rules that govern the APM-R AI Agentic Framework architecture. 
 **Knowledge Structure:**
 ```
 .claude/skills/
-├── knowing-the-codebase/   (tech stack, architecture, conventions)
-├── knowing-the-domain/     (business domain, users, product context)
-└── knowing-backlog/        (backlog conventions, ticket patterns)
+├── knowing-the-codebase/ (tech stack, architecture, conventions)
+├── knowing-the-domain/ (business domain, users, product context)
+└── knowing-backlog/ (backlog conventions, ticket patterns)
 ```
 
 ### Validation
@@ -194,7 +194,7 @@ applicable-projects: apmr
 
 **Layer 2: User Level (Optional)**
 ```
-~/.claude/skills/ → ~/{project}/.claude/skills/  (or directly to framework)
+~/.claude/skills/ → ~/{project}/.claude/skills/ (or directly to framework)
 ```
 
 ### Single Source of Truth
@@ -215,7 +215,7 @@ apm-r-ai-agentic-framework/
 **Deployment (Auto-Synced):**
 ```
 .claude/
-├── skills/{skill-name}/  (flattened, no category)
+├── skills/{skill-name}/ (flattened, no category)
 └── commands/{agent-name}.md
 ```
 
@@ -301,7 +301,7 @@ When needed:
 **Test Token Budget:**
 ```bash
 # Count tokens in SKILL.md
-wc -w SKILL.md  # Approximate: 1 token ≈ 0.75 words
+wc -w SKILL.md # Approximate: 1 token ≈ 0.75 words
 
 # Total skill budget
 wc -w *.md | tail -1
@@ -362,21 +362,21 @@ wc -w *.md | tail -1
 ```
 ✅ PASSED: 12 checks
 ❌ FAILED: 3 checks
-⚠️  WARNINGS: 2 checks
+⚠️ WARNINGS: 2 checks
 
 Errors:
 1. [BROKEN_LINK] ai/agents/ai-architect.md:45
-   - Link: ../context/missing-file.md
-   - Fix: Update to ../context/business-basic.md
+ - Link: ../context/missing-file.md
+ - Fix: Update to ../context/business-basic.md
 
 2. [YAML_MISSING] backlog/tickets/stories/DAPM-123.md
-   - Missing: milestone field
-   - Fix: Add milestone: Jun2025
+ - Missing: milestone field
+ - Fix: Add milestone: Jun2025
 
 Warnings:
 1. [LONG_LINE] ai/framework/governance.md:102
-   - Length: 150 chars (limit: 120)
-   - Fix: Break into multiple lines
+ - Length: 150 chars (limit: 120)
+ - Fix: Break into multiple lines
 ```
 
 ### Integration with Agents
@@ -439,7 +439,7 @@ Before implementing framework changes:
 ---
 
 **Version:** 1.1
-**Last Updated:** 2025-12-07 (v11.2 governance refactor)
+**Last Updated:** 2025-12-07 (governance refactor)
 **Related Files:**
 - SKILL.md (main governance skill)
 - DECISION-TREES.md (when to create skills)

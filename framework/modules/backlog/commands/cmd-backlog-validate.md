@@ -3,7 +3,7 @@ command: cmd-backlog-validate
 cli-command: "agentic-framework backlog validate"
 module: backlog
 type: validate
-description: "Validate ticket files against v10.1.1 standards"
+description: "Validate ticket files against the ticket standards"
 related-skill: building-tickets
 ---
 
@@ -15,7 +15,7 @@ related-skill: building-tickets
 
 ## Description
 
-Validate ticket files against v10.1.1 standards
+Validate ticket files against the ticket standards
 
 ## Usage
 

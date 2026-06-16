@@ -1,4 +1,4 @@
-# Ticket Body Structure (v10.1.1)
+# Ticket Body Structure
 
 ## Overview
 
@@ -21,13 +21,13 @@ All ticket bodies use **native markdown** (NOT Jira wiki markup) with exactly **
 Keep tickets short and skimmable — a developer should grasp the intent in under a minute.
 
 - **Describe WHAT and WHY, not HOW.** State the problem and the desired outcome; leave the
-  technical solution to the developer. A ticket frames the goal; it does not design the code.
+ technical solution to the developer. A ticket frames the goal; it does not design the code.
 - **Less is more.** Prefer a few clear points over an exhaustive list. If a detail doesn't
-  change what "done" means, drop it.
+ change what "done" means, drop it.
 - **Stay outcome-oriented.** Requirements describe observable behavior/capability, not the
-  mechanism (e.g. "status updates appear without refresh", not "switch to GraphQL subscriptions").
+ mechanism (e.g. "status updates appear without refresh", not "switch to GraphQL subscriptions").
 - **Technical Notes are optional** — include only real constraints (existing patterns to
-  reuse, integration points, hard limits), never a prescribed implementation.
+ reuse, integration points, hard limits), never a prescribed implementation.
 
 ---
 
@@ -259,9 +259,9 @@ In today's modern web applications, polling has been a longstanding approach...
 **In Order to Support This:**
 
 * Main requirement
-  * Sub-requirement
-    * Sub-sub-requirement
-      * Sub-sub-sub-requirement
+ * Sub-requirement
+ * Sub-sub-requirement
+ * Sub-sub-sub-requirement
 [Excessive nesting - max 2 levels]
 
 ❌ BAD - Vague language:
@@ -302,12 +302,12 @@ In today's modern web applications, polling has been a longstanding approach...
 **Technical Notes:**
 
 * Create a new class:
-  ```typescript
-  class SubscriptionManager {
-    constructor() { ... }
-    subscribe() { ... }
-  }
-  ```
+ ```typescript
+ class SubscriptionManager {
+ constructor() { ... }
+ subscribe() { ... }
+ }
+ ```
 [Wrong - reference pattern, not code]
 
 ❌ BAD - Step-by-step implementation:
