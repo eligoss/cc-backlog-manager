@@ -7,10 +7,9 @@ Use this checklist before marking a ticket "Ready for Development":
 ### YAML Frontmatter (5 minutes)
 - ✅ `documentType` present and valid (story|task|bug|spike|epic)
 - ✅ `title` present and descriptive (30-80 chars)
-- ✅ `description` present (one-line summary)
 - ✅ `createdDate` present (ISO 8601)
-- ✅ All `jira-*` fields present including `jira-sprint` and `jira-fixVersion` (even if null)
-- ✅ All `framework-*` fields present (even if null)
+- ✅ **Lean frontmatter** — only fields with values are present; no `null` / `[]` placeholders
+- ✅ Membership fields use **bare** names where present: `sprint`, `status`, `assignee` (not `jira-status`/`jira-sprint`/`jira-assignee`); milestone uses `jira-fixVersion`
 - ✅ No nested objects (all fields at root level)
 - ✅ Arrays are YAML arrays `[]` not strings
 - ✅ Strings properly quoted if containing special chars
@@ -98,32 +97,27 @@ frameworkFields:
 
 ---
 
-### Rule 2: All Required Fields Must Be Present
+### Rule 2: Required Fields + Lean Frontmatter
 
-**Required YAML Fields (Every Ticket):**
+**Required fields (every ticket):**
 - documentType
 - title
-- description
 - createdDate
 
-**Required Jira Integration Fields (Every Ticket):**
-- jira-ticketId
-- jira-url
-- jira-parent
-- jira-related
-- jira-blocking
-- jira-blockedBy
-- jira-fixVersion
-- jira-sprint
-- jira-internalNotes
+`description` is **optional** — a one-line summary an agent may add; it is NOT produced by
+CSV import and is NOT required (matches `ticket.schema.json`).
 
-**Required Framework Fields (Every Ticket):**
-- framework-documentation
-- framework-milestone
-- framework-technicalGuides
-- framework-relatedLocal
+**Lean frontmatter — do NOT add `null` / `[]` placeholders.** Only include fields that have
+values. There is no "every jira-*/framework-* field must be present" rule. Optional fields
+appear only when set:
 
-Even if a field is not applicable, it MUST be present (set to `null` or `[]`).
+- Planning/membership: `priority`, `storyPoints`, `labels`, `assignee`, `status`, `sprint`,
+  `jira-fixVersion` (milestone) — **bare names** (no `jira-` prefix on sprint/status/assignee)
+- Identity (after push/import): `jira-ticketId`, `jira-url`, `jira-parent`
+- Relations / framework refs: `jira-related`, `jira-blocking`, `jira-blockedBy`,
+  `framework-*` — only when non-empty
+
+`sprint` and `jira-fixVersion` drive sprint/milestone index derivation; include them when known.
 
 ---
 

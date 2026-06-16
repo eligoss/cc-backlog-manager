@@ -32,11 +32,11 @@ export class TicketValidationError extends Error {
  * Required YAML fields by document type
  */
 const REQUIRED_FIELDS: Record<string, string[]> = {
-  story: ['documentType', 'title', 'description', 'createdDate'],
-  task: ['documentType', 'title', 'description', 'createdDate'],
-  bug: ['documentType', 'title', 'description', 'createdDate'],
-  spike: ['documentType', 'title', 'description', 'createdDate'],
-  epic: ['documentType', 'title', 'description', 'createdDate'],
+  story: ['documentType', 'title', 'createdDate'],
+  task: ['documentType', 'title', 'createdDate'],
+  bug: ['documentType', 'title', 'createdDate'],
+  spike: ['documentType', 'title', 'createdDate'],
+  epic: ['documentType', 'title', 'createdDate'],
 };
 
 /**

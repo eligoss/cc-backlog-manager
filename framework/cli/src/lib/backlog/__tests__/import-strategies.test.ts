@@ -327,6 +327,8 @@ describe('import-strategies', () => {
       });
       mockedGlob.mockResolvedValue(['1001-existing.md'] as any);
       mockedFs.readFile.mockResolvedValue('---\njira-ticketId: DAPM-1001\n---' as any);
+      // No previously-imported tickets on disk for index derivation
+      mockedFs.readdir.mockResolvedValue([] as any);
       mockedParseFrontmatter.mockReturnValue({
         data: { 'jira-ticketId': 'DAPM-1001' },
         content: '',
@@ -373,6 +375,8 @@ describe('import-strategies', () => {
         if (path.endsWith('.md')) return true;
         return false;
       });
+      // No previously-imported tickets on disk for index derivation
+      mockedFs.readdir.mockResolvedValue([] as any);
 
       const tickets = [createTicket({ ticketId: 'DAPM-1001', documentType: 'story' })];
 

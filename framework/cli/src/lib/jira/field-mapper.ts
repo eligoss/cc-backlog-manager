@@ -163,18 +163,21 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
     mode: 'readwrite',
   },
 
-  // Status — requires transitions API, never a direct field update
+  // Status — requires transitions API, never a direct field update.
+  // Bare `status` (canonical), matching the CSV importer's frontmatter.
   {
-    local: 'jira-status',
+    local: 'status',
     jira: 'status.name',
     mode: 'readonly',
   },
 
-  // Assignee (updatable)
+  // Assignee — bare `assignee` holds the human-readable display name, matching the
+  // CSV importer. Read-only: Jira Cloud assignee writes need an accountId, so the
+  // generic push never sets it (a dedicated path would, like push-sprint).
   {
-    local: 'jira-assignee',
-    jira: 'assignee.emailAddress',
-    mode: 'readwrite',
+    local: 'assignee',
+    jira: 'assignee.displayName',
+    mode: 'readonly',
   },
 
   // Reporter — set on create only; Jira Cloud rejects reporter updates for most users
@@ -226,10 +229,11 @@ export const FIELD_MAPPINGS: FieldMapping[] = [
     },
   },
 
-  // Sprint (readonly — Jira Cloud requires the Agile API for sprint assignment;
-  // use `backlog push-sprint` instead of generic push for sprint changes)
+  // Sprint — bare `sprint` (canonical), matching the CSV importer and the
+  // sprint-index derivation. Readonly: Jira Cloud requires the Agile API for sprint
+  // assignment; use `backlog push-sprint` instead of generic push for sprint changes.
   {
-    local: 'jira-sprint',
+    local: 'sprint',
     jira: 'sprint',
     mode: 'readonly',
     reverseTransform: (value: unknown) => {

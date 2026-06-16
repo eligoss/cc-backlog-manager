@@ -605,4 +605,92 @@ documentType: story
       expect(epicContent).toContain('committed: 8');
     });
   });
+
+  describe('regression: sprint/milestone index union across imports', () => {
+    const opts = (basePath: string): ImportStrategyOptions => ({
+      mode: 'auto',
+      duplicateMode: 'skip',
+      basePath,
+    });
+
+    function ticket(overrides: Partial<CsvTicket>): CsvTicket {
+      return {
+        ticketId: 'DAPM-0000',
+        summary: 'Ticket',
+        issueType: 'Story',
+        documentType: 'story',
+        filename: '0000-ticket.md',
+        ...overrides,
+      };
+    }
+
+    it('does not clobber an earlier import\'s sprint members when a later import touches the same sprint', async () => {
+      // First import: two tickets in W25
+      await executeImportStrategy(
+        [
+          ticket({ ticketId: 'DAPM-3019', summary: 'Spike: Data Seed', documentType: 'spike', sprint: 'APMR-APP-2026W25', status: 'To Do', filename: '3019-spike-data-seed.md' }),
+          ticket({ ticketId: 'DAPM-3017', summary: 'Asset Detail Side Panel', sprint: 'APMR-APP-2026W25', status: 'To Do', filename: '3017-asset-detail.md' }),
+        ],
+        opts(backlogDir)
+      );
+
+      // Second import (different CSV): one more ticket in the SAME sprint W25
+      await executeImportStrategy(
+        [
+          ticket({ ticketId: 'DAPM-3037', summary: 'New Down Event Dialog Extended', sprint: 'APMR-APP-2026W25', status: 'To Do', filename: '3037-new-down-event.md' }),
+        ],
+        opts(backlogDir)
+      );
+
+      const sprintFile = await fs.readFile(
+        path.join(backlogDir, 'sprints', 'APMR-APP-2026W25.md'),
+        'utf-8'
+      );
+
+      // Union expected — all three tickets, not just the last import's
+      expect(sprintFile).toContain('DAPM-3019');
+      expect(sprintFile).toContain('DAPM-3017');
+      expect(sprintFile).toContain('DAPM-3037');
+      expect(sprintFile).toContain('ticketCount: 3');
+    });
+
+    it('persists sprint/status/jira-fixVersion on the ticket so membership survives re-derivation', async () => {
+      await executeImportStrategy(
+        [
+          ticket({ ticketId: 'DAPM-3019', summary: 'Spike: Data Seed', documentType: 'spike', sprint: 'APMR-APP-2026W25', status: 'To Do', milestone: 'APM-Track:Pilot', fixVersions: 'APM-Track:Pilot', filename: '3019-spike-data-seed.md' }),
+        ],
+        opts(backlogDir)
+      );
+
+      const ticketFile = await fs.readFile(
+        path.join(backlogDir, 'tickets', '3019-spike-data-seed.md'),
+        'utf-8'
+      );
+
+      expect(ticketFile).toContain('sprint: APMR-APP-2026W25');
+      expect(ticketFile).toContain('status: To Do');
+      expect(ticketFile).toContain('jira-fixVersion: "APM-Track:Pilot"');
+    });
+
+    it('builds the union from on-disk tickets even when a later import does not re-list them', async () => {
+      // Pilot-style import populates W29
+      await executeImportStrategy(
+        [ticket({ ticketId: 'DAPM-2992', summary: 'BE Spike GraphQL', documentType: 'spike', sprint: 'APMR-APP-2026W29', status: 'To Do', filename: '2992-be-spike-graphql.md' })],
+        opts(backlogDir)
+      );
+      // Core-style import adds a different ticket to the same W29
+      await executeImportStrategy(
+        [ticket({ ticketId: 'DAPM-3022', summary: 'BE Asset Query', documentType: 'task', sprint: 'APMR-APP-2026W29', status: 'To Do', filename: '3022-be-asset-query.md' })],
+        opts(backlogDir)
+      );
+
+      const sprintFile = await fs.readFile(
+        path.join(backlogDir, 'sprints', 'APMR-APP-2026W29.md'),
+        'utf-8'
+      );
+      expect(sprintFile).toContain('DAPM-2992');
+      expect(sprintFile).toContain('DAPM-3022');
+      expect(sprintFile).toContain('ticketCount: 2');
+    });
+  });
 });

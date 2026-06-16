@@ -251,6 +251,70 @@ async function writeTicketFile(
 }
 
 /**
+ * Load already-imported tickets from the flat tickets directory.
+ *
+ * Reconstructs the minimal CsvTicket fields needed to regenerate sprint and
+ * milestone index files (membership, status, story points, assignee, parent).
+ * This lets index files be derived from the FULL on-disk backlog rather than
+ * only the tickets in the CSV currently being imported — preventing a later
+ * import from clobbering a sprint/milestone index that an earlier import filled.
+ *
+ * @param basePath - Backlog base path (contains tickets/)
+ * @returns Reconstructed tickets (empty if the directory is missing)
+ */
+export async function loadTicketsFromDisk(basePath: string): Promise<CsvTicket[]> {
+  const ticketsDir = path.join(basePath, 'tickets');
+  if (!(await fs.pathExists(ticketsDir))) {
+    return [];
+  }
+
+  const files = (await fs.readdir(ticketsDir)).filter(
+    (f) => f.endsWith('.md') && f !== 'README.md'
+  );
+
+  const tickets: CsvTicket[] = [];
+  for (const filename of files) {
+    try {
+      const content = await fs.readFile(path.join(ticketsDir, filename), 'utf-8');
+      const { data } = parseFrontmatter<Record<string, unknown>>(content);
+      const ticketId = (data['jira-ticketId'] as string) || '';
+      if (!ticketId) {
+        continue;
+      }
+      const milestone =
+        (data['jira-fixVersion'] as string) || (data.milestone as string) || undefined;
+      tickets.push({
+        ticketId,
+        summary: (data.title as string) || ticketId,
+        issueType: '',
+        documentType: (data.documentType as CsvTicket['documentType']) || 'task',
+        status: data.status as string | undefined,
+        storyPoints: data.storyPoints as number | undefined,
+        assignee: data.assignee as string | undefined,
+        parentKey: data['jira-parent'] as string | undefined,
+        sprint: data.sprint as string | undefined,
+        fixVersions: milestone,
+        milestone,
+        filename,
+      });
+    } catch {
+      // Skip unreadable/malformed ticket files; index derivation is best-effort.
+    }
+  }
+  return tickets;
+}
+
+/**
+ * Combine the current import's tickets (full in-memory data) with previously
+ * imported tickets read from disk, de-duplicated by ticketId (current wins).
+ */
+function unionWithDisk(currentTickets: CsvTicket[], diskTickets: CsvTicket[]): CsvTicket[] {
+  const currentIds = new Set(currentTickets.map((t) => t.ticketId));
+  const prior = diskTickets.filter((t) => !currentIds.has(t.ticketId));
+  return [...currentTickets, ...prior];
+}
+
+/**
  * Execute import strategy based on mode and options.
  *
  * Main entry point for import strategies. Processes all tickets:
@@ -397,21 +461,39 @@ export async function executeImportStrategy(
     }
   }
 
-  // Step 5: Auto-generate sprint index files
-  const sprintGroups = groupTicketsBySprint(regularTickets);
+  // Derive index files from the FULL on-disk backlog (union of the tickets just
+  // imported plus everything previously imported), so a later CSV cannot clobber
+  // a sprint/milestone index that an earlier CSV populated. The summary still
+  // reports only the sprints/milestones present in the CURRENT CSV.
+  const diskTickets = await loadTicketsFromDisk(basePath);
+  const allTickets = unionWithDisk(regularTickets, diskTickets);
+
+  const currentSprints = new Set(
+    regularTickets.map((t) => t.sprint?.trim()).filter((s): s is string => !!s)
+  );
+  const currentMilestones = new Set(
+    regularTickets.map((t) => t.milestone?.trim()).filter((m): m is string => !!m)
+  );
+
+  // Step 5: Auto-generate sprint index files (union membership)
+  const sprintGroups = groupTicketsBySprint(allTickets);
   for (const [sprintId, sprintTickets] of sprintGroups) {
     if (sprintId !== 'unassigned') {
       await generateSprintIndex(sprintTickets, sprintId, basePath, dryRun, verbose);
-      result.sprints.push(sprintId);
+      if (currentSprints.has(sprintId)) {
+        result.sprints.push(sprintId);
+      }
     }
   }
 
-  // Step 6: Auto-generate milestone index files
-  const milestoneGroups = groupTicketsByMilestone(regularTickets);
+  // Step 6: Auto-generate milestone index files (union membership)
+  const milestoneGroups = groupTicketsByMilestone(allTickets);
   for (const [milestoneId, milestoneTickets] of milestoneGroups) {
     if (milestoneId !== 'unassigned') {
       await generateMilestoneIndex(milestoneTickets, milestoneId, basePath, dryRun, verbose);
-      result.milestones.push(milestoneId);
+      if (currentMilestones.has(milestoneId)) {
+        result.milestones.push(milestoneId);
+      }
     }
   }
 

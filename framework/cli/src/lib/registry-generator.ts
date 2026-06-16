@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import type { ModuleManifest } from './module-loader.js';
 import { DiscoveryEngine } from './discovery-engine.js';
+import { parseFrontmatter } from './common/yaml-frontmatter.js';
 
 /**
  * Generate project registries based on installed modules
@@ -17,7 +18,7 @@ export async function generateRegistries(
   await generateAgentsRegistry(registriesPath, modules);
 
   // Generate skills.json
-  await generateSkillsRegistry(registriesPath, modules);
+  await generateSkillsRegistry(registriesPath, modules, projectPath);
 
   // Generate discovery-map.json
   await generateDiscoveryMap(registriesPath, modules);
@@ -243,7 +244,8 @@ async function generateAgentsRegistry(
 
 async function generateSkillsRegistry(
   registriesPath: string,
-  modules: ModuleManifest[]
+  modules: ModuleManifest[],
+  projectPath?: string
 ): Promise<void> {
   // Handle empty modules array
   const frameworkRoot = getFrameworkRoot(modules);
@@ -282,11 +284,65 @@ async function generateSkillsRegistry(
     return skillObj;
   });
 
+  // Also register project-owned custom skills (.claude/skills/project/<id>/SKILL.md).
+  // These belong to no module but must be discoverable by agents. Module skills win
+  // on id collision.
+  if (projectPath) {
+    const moduleSkillIds = new Set(skills.map((s) => s.id as string));
+    const projectSkills = await loadProjectCustomSkills(projectPath);
+    for (const ps of projectSkills) {
+      if (!moduleSkillIds.has(ps.id as string)) {
+        skills.push(ps);
+      }
+    }
+  }
+
   await fs.writeJson(
     path.join(registriesPath, 'skills.json'),
     { version: '1.0.0', skills },
     { spaces: 2 }
   );
+}
+
+/**
+ * Load project-owned custom skills from .claude/skills/project/ for the registry.
+ * Returns registry entries (id, module, capabilities-provided, location, description).
+ */
+async function loadProjectCustomSkills(
+  projectPath: string
+): Promise<Array<Record<string, unknown>>> {
+  const dir = path.join(projectPath, '.claude', 'skills', 'project');
+  if (!(await fs.pathExists(dir))) {
+    return [];
+  }
+
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const result: Array<Record<string, unknown>> = [];
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    const skillPath = path.join(dir, entry.name, 'SKILL.md');
+    if (!(await fs.pathExists(skillPath))) {
+      continue;
+    }
+    const content = await fs.readFile(skillPath, 'utf-8');
+    const { data } = parseFrontmatter<Record<string, unknown>>(content);
+    const id = (data.id as string) || entry.name;
+    const skillObj: Record<string, unknown> = {
+      id,
+      module: 'project',
+      'capabilities-provided': (data['capabilities-provided'] as string[]) || [],
+      location: `.claude/skills/project/${entry.name}/`,
+    };
+    if (data.description) {
+      skillObj.description = data.description;
+    }
+    result.push(skillObj);
+  }
+
+  return result;
 }
 
 async function generateDiscoveryMap(

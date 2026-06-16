@@ -30,6 +30,9 @@ export interface TicketFrontmatter {
   labels?: string[];
   createdDate?: string;
   updatedDate?: string;
+  sprint?: string;
+  status?: string;
+  'jira-fixVersion'?: string;
 }
 
 /**
@@ -66,8 +69,11 @@ export function mapPriority(jiraPriority: string | undefined): string {
  * - Filtering: labels (only if meaningful, not project-wide)
  * - Dates: createdDate, updatedDate (for freshness)
  *
- * Omitted (available in index files or Jira API):
- * - sprint, milestone, fixVersion (in sprint/milestone index files)
+ * Persisted for index derivation:
+ * - sprint, status, milestone (so sprint/milestone indexes are rebuilt from the
+ *   full on-disk ticket set rather than overwritten per-CSV)
+ *
+ * Omitted (available in Jira API):
  * - description (duplicate of title), exportedDate, internalNotes
  * - empty arrays (related, blocking, blockedBy)
  * - framework-* fields (populated later by agents, not import)
@@ -112,6 +118,21 @@ export function generateFrontmatter(ticket: CsvTicket): TicketFrontmatter {
 
   if (ticket.updatedDate) {
     frontmatter.updatedDate = ticket.updatedDate;
+  }
+
+  // Planning membership — persisted per-ticket so sprint/milestone index files
+  // can be derived from the full on-disk ticket set (union across imports),
+  // instead of being overwritten by whichever CSV was imported last.
+  if (ticket.sprint) {
+    frontmatter.sprint = ticket.sprint;
+  }
+
+  if (ticket.status) {
+    frontmatter.status = ticket.status;
+  }
+
+  if (ticket.milestone || ticket.fixVersions) {
+    frontmatter['jira-fixVersion'] = ticket.milestone || ticket.fixVersions;
   }
 
   return frontmatter;
@@ -320,6 +341,18 @@ export function generateTicketContent(ticket: CsvTicket): string {
 
   if (frontmatter.updatedDate) {
     yamlLines.push(`updatedDate: ${formatYamlValue(frontmatter.updatedDate)}`);
+  }
+
+  if (frontmatter.sprint) {
+    yamlLines.push(`sprint: ${formatYamlValue(frontmatter.sprint)}`);
+  }
+
+  if (frontmatter.status) {
+    yamlLines.push(`status: ${formatYamlValue(frontmatter.status)}`);
+  }
+
+  if (frontmatter['jira-fixVersion']) {
+    yamlLines.push(`jira-fixVersion: ${formatYamlValue(frontmatter['jira-fixVersion'])}`);
   }
 
   const yaml = yamlLines.join('\n');

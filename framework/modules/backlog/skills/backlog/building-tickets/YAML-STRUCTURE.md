@@ -18,8 +18,10 @@ component: "Your Jira component name"      # OPTIONAL: Jira component (must matc
 priority: P0|P1|P2                         # OPTIONAL: Priority level
 storyPoints: 5                             # OPTIONAL: Story points (1,2,3,5,8) — stories/tasks only
 labels: [my-project, frontend, feature]    # OPTIONAL: Jira labels array
-assignee: "Display Name"                   # OPTIONAL: Assignee display name (from import)
+assignee: "Display Name"                   # OPTIONAL: Assignee display name (from import/pull)
 updatedDate: 2025-12-10                    # OPTIONAL: Last update date (from import/pull)
+sprint: APMR-APP-2026W25                   # OPTIONAL: Sprint membership (from import/pull) — drives sprint index derivation
+status: "In Progress"                      # OPTIONAL: Workflow status snapshot (from import/pull)
 ```
 
 ### Jira Integration Fields
@@ -31,7 +33,13 @@ jira-parent: PROJ-200                     # OPTIONAL: Parent epic ID (if subtask
 jira-related: [PROJ-100, PROJ-101]        # OPTIONAL: Array of related ticket IDs
 jira-blocking: [PROJ-300]                 # OPTIONAL: Array of tickets this blocks
 jira-blockedBy: [PROJ-301]                # OPTIONAL: Array of tickets blocking this
+jira-fixVersion: "Pilot"                  # OPTIONAL: Jira fix version = milestone (from import/pull)
 ```
+
+> **Field-name convention (canonical):** sprint membership, status, and assignee use
+> **bare** names (`sprint`, `status`, `assignee`) — the same names the CSV importer and
+> the Jira pull/push field-mapper write, so a ticket has identical metadata whether it was
+> imported or pulled. `sprint` and `jira-fixVersion` drive sprint/milestone index derivation.
 
 ### Framework Integration Fields (v10.1.1 - Flat with framework- prefix)
 
@@ -188,11 +196,33 @@ updatedDate: 2025-12-10
 ---
 
 ### assignee
-**Optional.** Assignee display name. Populated by CSV import with the display name from Jira. Note: `jira-assignee` (email) is the push/pull field for the Jira API; `assignee` here is read-only metadata from import.
+**Optional.** Assignee display name — read-only metadata. Populated by both CSV import and Jira pull with the display name from Jira (`assignee.displayName`). Bare name (no `jira-` prefix); the generic push does not write it (Jira Cloud assignee changes need an accountId).
 
 **Example:**
 ```yaml
 assignee: "Jane Smith"
+```
+
+---
+
+### sprint
+**Optional.** Sprint membership — read-only metadata from CSV import and Jira pull. **Drives sprint-index derivation:** index files are rebuilt from the `sprint` value across all on-disk tickets, so omitting it removes the ticket from its sprint index. Changing sprint assignment in Jira uses `backlog push-sprint` (the Agile API), not the generic push.
+
+**Format:** sprint name (e.g., `APMR-APP-2026W25`).
+
+**Example:**
+```yaml
+sprint: APMR-APP-2026W25
+```
+
+---
+
+### status
+**Optional.** Workflow status snapshot — read-only metadata from CSV import and Jira pull (`status.name`). Reflected in sprint index status counts. Status changes in Jira go through the transitions API, not a direct field write.
+
+**Example:**
+```yaml
+status: "In Progress"
 ```
 
 ---
@@ -263,6 +293,17 @@ Array of tickets blocking this ticket.
 **Example:**
 ```yaml
 jira-blockedBy: [PROJ-302, PROJ-303]
+```
+
+#### jira-fixVersion
+Jira fix version — used as the **milestone** in this framework.
+
+**Optional.** Populated by CSV import and Jira pull; drives milestone-index derivation. Pushed via `backlog push-version`, not the generic push.
+**Format:** version name (e.g., `Pilot`, `APM-Track:MVP Core`).
+
+**Example:**
+```yaml
+jira-fixVersion: "Pilot"
 ```
 
 ---
@@ -338,12 +379,15 @@ priority: P1
 storyPoints: 5
 labels: [my-project, frontend, feature]
 assignee: "Jane Smith"
+status: "In Progress"
 createdDate: 2025-12-08
 updatedDate: 2025-12-10
+sprint: APMR-APP-2026W25
 
 jira-ticketId: PROJ-1283
 jira-url: "https://{your-org}.atlassian.net/browse/PROJ-1283"
 jira-parent: PROJ-200
+jira-fixVersion: "Pilot"
 ---
 ```
 

@@ -293,6 +293,40 @@ capabilities-provided:
       const ticketStandards = skillsJson.skills.find((s: { id: string }) => s.id === 'ticket-standards');
       expect(ticketStandards.module).toBe('backlog');
     });
+
+    it('should register project-owned custom skills from .claude/skills/project/', async () => {
+      const modules = await createTestFixture();
+
+      // A custom project skill (not part of any module)
+      const customDir = path.join(projectPath, '.claude/skills/project/knowing-some-repo');
+      await fs.ensureDir(customDir);
+      await fs.writeFile(
+        path.join(customDir, 'SKILL.md'),
+        `---
+id: knowing-some-repo
+module: project
+name: knowing-some-repo
+description: Knowledge of a related repo.
+capabilities-provided:
+  - codebase-knowledge
+---
+# Knowing Some Repo
+`
+      );
+
+      await generateRegistries(projectPath, modules);
+
+      const skillsJson = await fs.readJson(path.join(projectPath, '.claude/registries/skills.json'));
+      const custom = skillsJson.skills.find((s: { id: string }) => s.id === 'knowing-some-repo');
+
+      expect(custom).toBeDefined();
+      expect(custom.module).toBe('project');
+      expect(custom.location).toBe('.claude/skills/project/knowing-some-repo/');
+      expect(custom['capabilities-provided']).toContain('codebase-knowledge');
+      expect(custom.description).toBe('Knowledge of a related repo.');
+      // Module skills still present alongside the project skill
+      expect(skillsJson.skills.length).toBe(4); // 3 module + 1 project
+    });
   });
 
   describe('discovery-map.json generation', () => {

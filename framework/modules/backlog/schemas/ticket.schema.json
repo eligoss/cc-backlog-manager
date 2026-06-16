@@ -3,7 +3,7 @@
   "title": "Backlog Ticket Schema",
   "description": "JSON Schema for validating backlog ticket YAML frontmatter (v10.1.1 specification)",
   "type": "object",
-  "required": ["documentType", "title", "description", "createdDate"],
+  "required": ["documentType", "title", "createdDate"],
   "properties": {
     "documentType": {
       "type": "string",
@@ -26,6 +26,18 @@
       "type": ["string", "null"],
       "pattern": "^(Nov|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Dec)\\d{4}$",
       "description": "Milestone code (e.g., Feb2026)"
+    },
+    "sprint": {
+      "type": ["string", "null"],
+      "description": "Sprint membership (e.g., APMR-APP-2026W25); drives sprint index derivation"
+    },
+    "status": {
+      "type": ["string", "null"],
+      "description": "Workflow status snapshot from Jira (e.g., To Do, In Progress, Done)"
+    },
+    "assignee": {
+      "type": ["string", "null"],
+      "description": "Assignee display name (read-only metadata from import/pull)"
     },
     "priority": {
       "type": ["string", "null"],

@@ -186,7 +186,7 @@ export class DiscoveryEngine {
    * These take priority over framework skills
    */
   async loadProjectSkills(): Promise<SkillDefinition[]> {
-    const projectSkillsDir = path.join(this.frameworkRoot, 'ai', 'skills', 'project');
+    const projectSkillsDir = path.join(this.frameworkRoot, '.claude', 'skills', 'project');
     if (!(await fs.pathExists(projectSkillsDir))) {
       return [];
     }
