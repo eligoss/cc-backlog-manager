@@ -68,6 +68,7 @@ Use this checklist before marking a ticket "Ready for Development":
 ### Rule 1: YAML Structure Must Be Flat
 
 **CORRECT (flat + lean — only fields with values):**
+
 ```yaml
 ---
 documentType: story
@@ -256,6 +257,7 @@ status without modifying page components.
 ### Rule 6: "In Order to Support This" Must Reference Requirements, Not Implementation
 
 **CORRECT — outcomes/capabilities (WHAT):**
+
 ```markdown
 **In Order to Support This:**
 
@@ -265,6 +267,7 @@ status without modifying page components.
 ```
 
 **WRONG — prescribes the mechanism (HOW):**
+
 ```markdown
 **In Order to Support This:**
 
@@ -392,6 +395,7 @@ labels: "my-project, frontend, feature"
 - **Maximum:** 70 lines (may be longer if complex repro steps)
 
 **How to Check:**
+
 ```bash
 wc -l file.md # Count lines
 ```
@@ -701,16 +705,17 @@ implements push-based subscriptions for real-time updates.
 ### Story Checklist
 - ✅ **AS/WANT/SO THAT format REQUIRED** (first line after H1 divider)
 - ✅ Context explains business need (not implementation)
-- ✅ In Order to Support This: 4-6 specific bullets
+- ✅ In Order to Support This: 3-5 specific bullets
 - ✅ Technical Notes reference patterns (no code)
 - ✅ 4-8 QA-verifiable Acceptance Criteria
 - ✅ Story Points: 1-8 (never >8)
 - ✅ Total lines: 40-60
 
 ### Task Checklist
+
 - ✅ **AS/WANT/SO THAT format REQUIRED** (first line after H1 divider)
 - ✅ Context explains what/why
-- ✅ In Order to Support This: 4-6 specific bullets
+- ✅ In Order to Support This: 3-5 specific bullets
 - ✅ Technical Notes reference patterns
 - ✅ 4-8 QA-verifiable Acceptance Criteria
 - ✅ Story Points: 1-8 (never >8)
@@ -726,6 +731,7 @@ implements push-based subscriptions for real-time updates.
 - ✅ Total lines: 25-40
 
 ### Bug Checklist
+
 - ✅ Problem described clearly (current broken behavior)
 - ✅ Symptoms or repro steps included
 - ✅ Acceptance Criteria describe fixed behavior

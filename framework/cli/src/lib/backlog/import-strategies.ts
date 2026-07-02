@@ -285,13 +285,20 @@ export async function loadTicketsFromDisk(basePath: string): Promise<CsvTicket[]
         }
         const milestone =
           (data['jira-fixVersion'] as string) || (data.milestone as string) || undefined;
+        const rawSp = data.storyPoints;
+        const storyPoints =
+          typeof rawSp === 'number'
+            ? rawSp
+            : typeof rawSp === 'string' && !isNaN(Number(rawSp))
+            ? Number(rawSp)
+            : undefined;
         tickets.push({
           ticketId,
           summary: (data.title as string) || ticketId,
           issueType: '',
           documentType: (data.documentType as CsvTicket['documentType']) || 'task',
           status: data.status as string | undefined,
-          storyPoints: data.storyPoints as number | undefined,
+          storyPoints,
           assignee: data.assignee as string | undefined,
           parentKey: data['jira-parent'] as string | undefined,
           sprint: data.sprint as string | undefined,
@@ -372,6 +379,10 @@ export async function executeImportStrategy(
     );
   }
 
+  // IDs of regular tickets skipped in this import (not written to disk).
+  // These must not override on-disk state in the sprint/milestone union.
+  const skippedTicketIds = new Set<string>();
+
   // Step 3: Process regular tickets (to flat tickets directory)
   for (const ticket of regularTickets) {
     try {
@@ -379,6 +390,7 @@ export async function executeImportStrategy(
 
       if (existing && duplicateMode === 'skip') {
         result.skipped.push(ticket.filename);
+        skippedTicketIds.add(ticket.ticketId);
         if (verbose) {
           console.error(`⏭️  Skipped: ${ticket.ticketId} (already exists)`);
         }
@@ -469,14 +481,18 @@ export async function executeImportStrategy(
   // imported plus everything previously imported), so a later CSV cannot clobber
   // a sprint/milestone index that an earlier CSV populated. The summary still
   // reports only the sprints/milestones present in the CURRENT CSV.
+  //
+  // Exclude skipped tickets from the "current batch" side of the union: they
+  // were not written to disk, so the on-disk version must win for those IDs.
+  const effectiveRegularTickets = regularTickets.filter(t => !skippedTicketIds.has(t.ticketId));
   const diskTickets = await loadTicketsFromDisk(basePath);
-  const allTickets = unionWithDisk(regularTickets, diskTickets);
+  const allTickets = unionWithDisk(effectiveRegularTickets, diskTickets);
 
   const currentSprints = new Set(
-    regularTickets.map((t) => t.sprint?.trim()).filter((s): s is string => !!s)
+    effectiveRegularTickets.map((t) => t.sprint?.trim()).filter((s): s is string => !!s)
   );
   const currentMilestones = new Set(
-    regularTickets.map((t) => t.milestone?.trim()).filter((m): m is string => !!m)
+    effectiveRegularTickets.map((t) => t.milestone?.trim()).filter((m): m is string => !!m)
   );
 
   // Step 5: Auto-generate sprint index files (union membership)

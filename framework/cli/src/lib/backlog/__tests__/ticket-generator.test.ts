@@ -138,6 +138,21 @@ describe('ticket-generator', () => {
     });
   });
 
+  describe('generateTicketContent (serialization)', () => {
+    it('should include sprint, status, and jira-fixVersion in YAML output', () => {
+      const ticket = createTicket({
+        sprint: 'APMR-APP-2026W25',
+        status: 'To Do',
+        milestone: 'APM-Track:Pilot',
+      });
+      const content = generateTicketContent(ticket);
+
+      expect(content).toMatch(/^sprint: APMR-APP-2026W25$/m);
+      expect(content).toMatch(/^status: To Do$/m);
+      expect(content).toMatch(/^jira-fixVersion: "APM-Track:Pilot"$/m);
+    });
+  });
+
   describe('generateBodyContent', () => {
     it('should generate H1 title', () => {
       const ticket = createTicket({ summary: 'Add Login Feature' });

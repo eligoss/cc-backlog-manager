@@ -672,6 +672,38 @@ documentType: story
       expect(ticketFile).toContain('jira-fixVersion: "APM-Track:Pilot"');
     });
 
+    it('on-disk sprint survives when the same ticketId is re-imported under duplicateMode:skip', async () => {
+      // First import: ticket DAPM-3019 in sprint W25
+      await executeImportStrategy(
+        [
+          ticket({ ticketId: 'DAPM-3019', summary: 'Spike: Data Seed', documentType: 'spike', sprint: 'APMR-APP-2026W25', status: 'To Do', filename: '3019-spike-data-seed.md' }),
+        ],
+        opts(backlogDir)
+      );
+
+      // Second import (different CSV): same ticketId but references W26 under skip mode
+      await executeImportStrategy(
+        [
+          ticket({ ticketId: 'DAPM-3019', summary: 'Spike: Data Seed (re-listed)', sprint: 'APMR-APP-2026W26', status: 'Done', filename: '3019-spike-data-seed.md' }),
+        ],
+        { ...opts(backlogDir), duplicateMode: 'skip' }
+      );
+
+      // The on-disk sprint (W25) must still be the canonical membership
+      const w25File = await fs.readFile(
+        path.join(backlogDir, 'sprints', 'APMR-APP-2026W25.md'),
+        'utf-8'
+      );
+      expect(w25File).toContain('DAPM-3019');
+      expect(w25File).toContain('ticketCount: 1');
+
+      // W26 index should NOT include the skipped ticket
+      const w26Exists = await fs.pathExists(
+        path.join(backlogDir, 'sprints', 'APMR-APP-2026W26.md')
+      );
+      expect(w26Exists).toBe(false);
+    });
+
     it('builds the union from on-disk tickets even when a later import does not re-list them', async () => {
       // Pilot-style import populates W29
       await executeImportStrategy(

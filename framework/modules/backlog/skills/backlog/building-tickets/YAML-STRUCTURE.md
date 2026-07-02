@@ -206,6 +206,7 @@ assignee: "Jane Smith"
 ---
 
 ### sprint
+
 **Optional.** Sprint membership — read-only metadata from CSV import and Jira pull. **Drives sprint-index derivation:** index files are rebuilt from the `sprint` value across all on-disk tickets, so omitting it removes the ticket from its sprint index. Changing sprint assignment in Jira uses `backlog push-sprint` (the Agile API), not the generic push.
 
 **Format:** sprint name (e.g., `APMR-APP-2026W25`).
@@ -296,12 +297,14 @@ jira-blockedBy: [PROJ-302, PROJ-303]
 ```
 
 #### jira-fixVersion
+
 Jira fix version — used as the **milestone** in this framework.
 
 **Optional.** Populated by CSV import and Jira pull; drives milestone-index derivation. Pushed via `backlog push-version`, not the generic push.
 **Format:** version name (e.g., `Pilot`, `APM-Track:MVP Core`).
 
 **Example:**
+
 ```yaml
 jira-fixVersion: "Pilot"
 ```

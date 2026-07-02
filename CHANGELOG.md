@@ -8,16 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-06-16
 
 ### Added
+
 - **Project-skill discovery** — custom skills under `.claude/skills/project/` are registered in the skills registry and discoverable by agents.
 - **Per-ticket planning metadata** — tickets persist `sprint`, `status`, and `jira-fixVersion`; sprint/milestone index files are derived from the union of all on-disk tickets (a later import no longer clobbers an earlier one's membership).
 
 ### Changed
+
 - **Canonical bare field names** — `sprint`, `status`, `assignee` are used consistently by CSV import and Jira pull/push (pull/push previously emitted `jira-sprint`/`jira-status`/`jira-assignee`). `assignee` is read-only display name. _Field-name change to pull/push output; treated as minor on this young fork since the importer already used bare names._
 - **Leaner tickets** — `building-tickets` skill favors WHAT/WHY over HOW: outcome-oriented requirements (3-5), optional Technical Notes (0-3 constraints, leave the solution to the developer), acceptance criteria 4-8, line targets 25-70 (story/task) / 25-40 (epic).
 - **Lean frontmatter everywhere** — templates and docs drop `null`/`[]` placeholders; `description` is optional, not required.
 - Removed `v10.1.1` / `v11.2` spec-version tags from skill and command docs.
 
 ### Fixed
+
 - `backlog push` no longer sends a redundant "Description" heading in the Jira description (strips the leading `## Description`).
 - Sprint/milestone index derivation no longer overwrites earlier imports.
 - Schema no longer requires `description`; legacy validator required-fields aligned.

@@ -11,28 +11,28 @@ capabilities-provided:
  - jira-formatting
 cli-commands:
  - name: backlog create-ticket
- description: Create a new ticket from template
- usage: agentic-framework backlog create-ticket --type <type> [options]
- options:
- - "-t, --type <type>: Ticket type (story, task, bug, epic, spike)"
- - "-p, --path <path>: Output directory (default: ./backlog)"
- - "-n, --name <name>: Ticket name in kebab-case (auto-generated if not provided)"
- - "-s, --summary <summary>: Ticket summary/title"
- - "--dry-run: Preview template without creating file"
- examples:
- - "agentic-framework backlog create-ticket --type story --summary \"Add user authentication\""
- - "agentic-framework backlog create-ticket --type bug --name BUG-001 --dry-run"
+   description: Create a new ticket from template
+   usage: agentic-framework backlog create-ticket --type <type> [options]
+   options:
+    - "-t, --type <type>: Ticket type (story, task, bug, epic, spike)"
+    - "-p, --path <path>: Output directory (default: ./backlog)"
+    - "-n, --name <name>: Ticket name in kebab-case (auto-generated if not provided)"
+    - "-s, --summary <summary>: Ticket summary/title"
+    - "--dry-run: Preview template without creating file"
+   examples:
+    - "agentic-framework backlog create-ticket --type story --summary \"Add user authentication\""
+    - "agentic-framework backlog create-ticket --type bug --name BUG-001 --dry-run"
  - name: backlog validate
- description: Validate ticket files against the ticket standards
- usage: agentic-framework backlog validate [path] [options]
- options:
- - "-v, --verbose: Show detailed validation progress"
- - "--schema-only: Only run JSON Schema validation"
- - "--rules-only: Only run business rules validation"
- examples:
- - "agentic-framework backlog validate ./backlog"
- - "agentic-framework backlog validate --verbose"
- - "agentic-framework backlog validate --schema-only"
+   description: Validate ticket files against the ticket standards
+   usage: agentic-framework backlog validate [path] [options]
+   options:
+    - "-v, --verbose: Show detailed validation progress"
+    - "--schema-only: Only run JSON Schema validation"
+    - "--rules-only: Only run business rules validation"
+   examples:
+    - "agentic-framework backlog validate ./backlog"
+    - "agentic-framework backlog validate --verbose"
+    - "agentic-framework backlog validate --schema-only"
 ---
 
 # Jira Ticket Writing Standards
@@ -218,9 +218,9 @@ See supporting documentation:
 ### Body Structure
 
 - ✅ **AS/WANT/SO THAT section:** Required for stories/tasks (first line after H1 divider)
- - Format: `**AS** a [role],` / `**I WANT** [capability],` / `**SO THAT** [business value].`
- - Describes user need and business value
- - Epics: Optional (use Business Value subsection instead)
+- Format: `**AS** a [role],` / `**I WANT** [capability],` / `**SO THAT** [business value].`
+- Describes user need and business value
+- Epics: Optional (use Business Value subsection instead)
 - ✅ **Exactly 2 H2 sections:** `## Description` and `## Acceptance Criteria`
 - ✅ **Section dividers:** `---` after H1 title and between H2 sections
 - ✅ **NO ### headers:** Use bold labels instead: `**Context:**`, `**Requirements:**`, `**Technical Notes:**`

@@ -126,7 +126,7 @@ framework-technicalGuides:
  - "@backend-repo/docs/data-layer-v2.md"
 framework-relatedLocal:
  - "backlog/epics/201-centralized-data-layer.md"
- - "backlog/tickets/tasks/301-add-sentry-transactions.md"
+ - "backlog/tickets/301-add-sentry-transactions.md"
 ---
 
 # Backend: Data Layer: Convert Methods to Promise-Based

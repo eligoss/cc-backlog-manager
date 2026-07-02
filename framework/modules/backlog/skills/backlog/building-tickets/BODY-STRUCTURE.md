@@ -308,6 +308,7 @@ In today's modern web applications, polling has been a longstanding approach...
  subscribe() { ... }
  }
  ```
+
 [Wrong - reference pattern, not code]
 
 ❌ BAD - Step-by-step implementation:

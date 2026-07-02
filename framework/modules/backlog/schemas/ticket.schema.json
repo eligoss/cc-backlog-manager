@@ -41,13 +41,13 @@
  },
  "priority": {
  "type": ["string", "null"],
- "enum": ["P0", "P1", "P2", null],
+ "enum": ["P0", "P1", "P2", "P3", null],
  "description": "Priority level"
  },
  "storyPoints": {
  "type": ["integer", "null"],
- "enum": [1, 2, 3, 5, 8, 13, null],
- "description": "Story points (Fibonacci: 1,2,3,5,8,13)"
+ "enum": [1, 2, 3, 5, 8, null],
+ "description": "Story points (Fibonacci: 1,2,3,5,8)"
  },
  "labels": {
  "type": ["array", "null"],

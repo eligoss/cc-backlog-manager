@@ -329,7 +329,7 @@ async function loadProjectCustomSkills(
     }
     const content = await fs.readFile(skillPath, 'utf-8');
     const { data } = parseFrontmatter<Record<string, unknown>>(content);
-    const id = (data.id as string) || entry.name;
+    const id = entry.name;
     const skillObj: Record<string, unknown> = {
       id,
       module: 'project',
