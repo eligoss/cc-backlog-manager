@@ -129,7 +129,7 @@ createdDate: 2025-01-01
       expect(report.errors[0]).toContain('title');
     });
 
-    it('should fail on missing required field description', async () => {
+    it('should pass without description field (description is optional)', async () => {
       const ticketPath = path.join(tempDir, 'STORY-test.md');
       const content = `---
 documentType: story
@@ -144,12 +144,11 @@ createdDate: 2025-01-01
       const report = new ValidationReport();
       await validateTicket(ticketPath, report);
 
-      expect(report.valid).toBe(0);
-      expect(report.errors.length).toBeGreaterThan(0);
-      expect(report.errors[0]).toContain('description');
+      expect(report.valid).toBe(1);
+      expect(report.errors).toHaveLength(0);
     });
 
-    it('should fail on missing required field description', async () => {
+    it('should pass without description and without version (both optional)', async () => {
       const ticketPath = path.join(tempDir, 'STORY-test.md');
       const content = `---
 documentType: story
@@ -163,9 +162,8 @@ createdDate: 2025-01-01
       const report = new ValidationReport();
       await validateTicket(ticketPath, report);
 
-      expect(report.valid).toBe(0);
-      expect(report.errors.length).toBeGreaterThan(0);
-      expect(report.errors[0]).toContain('description');
+      expect(report.valid).toBe(1);
+      expect(report.errors).toHaveLength(0);
     });
 
     it('should fail on missing required field createdDate', async () => {
@@ -510,10 +508,10 @@ invalid yaml here!!!
 
   describe('validateBacklog', () => {
     it('should validate all tickets in backlog directory', async () => {
-      // Create backlog structure
+      // Create backlog structure (flat tickets/ directory)
       const backlogDir = path.join(tempDir, 'backlog');
-      const storiesDir = path.join(backlogDir, 'tickets', 'stories');
-      await fs.mkdirp(storiesDir);
+      const ticketsDir = path.join(backlogDir, 'tickets');
+      await fs.mkdirp(ticketsDir);
 
       // Create valid stories
       const story1 = `---
@@ -533,8 +531,8 @@ createdDate: 2025-01-01
 ---
 Content`;
 
-      await fs.writeFile(path.join(storiesDir, 'STORY-1.md'), story1, 'utf-8');
-      await fs.writeFile(path.join(storiesDir, 'STORY-2.md'), story2, 'utf-8');
+      await fs.writeFile(path.join(ticketsDir, 'STORY-1.md'), story1, 'utf-8');
+      await fs.writeFile(path.join(ticketsDir, 'STORY-2.md'), story2, 'utf-8');
 
       const report = await validateBacklog(backlogDir);
 
@@ -543,49 +541,25 @@ Content`;
     });
 
     it('should validate all ticket types', async () => {
-      // Create backlog structure
+      // Create backlog structure (flat tickets/ directory + epics/)
       const backlogDir = path.join(tempDir, 'backlog');
-      await fs.mkdirp(path.join(backlogDir, 'tickets', 'stories'));
-      await fs.mkdirp(path.join(backlogDir, 'tickets', 'tasks'));
-      await fs.mkdirp(path.join(backlogDir, 'tickets', 'bugs'));
-      await fs.mkdirp(path.join(backlogDir, 'tickets', 'spikes'));
+      await fs.mkdirp(path.join(backlogDir, 'tickets'));
       await fs.mkdirp(path.join(backlogDir, 'epics'));
 
-      // Create one of each type
-      const storyContent = `---
-documentType: story
-title: Test Story
+      const makeContent = (type: string) => `---
+documentType: ${type}
+title: Test ${type}
 description: Description
 version: 1.0.0
 createdDate: 2025-01-01
 ---
 Content`;
 
-      await fs.writeFile(
-        path.join(backlogDir, 'tickets', 'stories', 'STORY-1.md'),
-        storyContent.replace('story', 'story'),
-        'utf-8'
-      );
-      await fs.writeFile(
-        path.join(backlogDir, 'tickets', 'tasks', 'TASK-1.md'),
-        storyContent.replace('story', 'task'),
-        'utf-8'
-      );
-      await fs.writeFile(
-        path.join(backlogDir, 'tickets', 'bugs', 'BUG-1.md'),
-        storyContent.replace('story', 'bug'),
-        'utf-8'
-      );
-      await fs.writeFile(
-        path.join(backlogDir, 'tickets', 'spikes', 'SPIKE-1.md'),
-        storyContent.replace('story', 'spike'),
-        'utf-8'
-      );
-      await fs.writeFile(
-        path.join(backlogDir, 'epics', 'EPIC-1.md'),
-        storyContent.replace('story', 'epic'),
-        'utf-8'
-      );
+      await fs.writeFile(path.join(backlogDir, 'tickets', 'STORY-1.md'), makeContent('story'), 'utf-8');
+      await fs.writeFile(path.join(backlogDir, 'tickets', 'TASK-1.md'), makeContent('task'), 'utf-8');
+      await fs.writeFile(path.join(backlogDir, 'tickets', 'BUG-1.md'), makeContent('bug'), 'utf-8');
+      await fs.writeFile(path.join(backlogDir, 'tickets', 'SPIKE-1.md'), makeContent('spike'), 'utf-8');
+      await fs.writeFile(path.join(backlogDir, 'epics', 'EPIC-1.md'), makeContent('epic'), 'utf-8');
 
       const report = await validateBacklog(backlogDir);
 
@@ -594,10 +568,10 @@ Content`;
 
     it('should skip README files', async () => {
       const backlogDir = path.join(tempDir, 'backlog');
-      const storiesDir = path.join(backlogDir, 'tickets', 'stories');
-      await fs.mkdirp(storiesDir);
+      const ticketsDir = path.join(backlogDir, 'tickets');
+      await fs.mkdirp(ticketsDir);
 
-      await fs.writeFile(path.join(storiesDir, 'README.md'), '# README', 'utf-8');
+      await fs.writeFile(path.join(ticketsDir, 'README.md'), '# README', 'utf-8');
 
       const report = await validateBacklog(backlogDir);
 
@@ -629,8 +603,8 @@ Content`;
 
     it('should report all errors from multiple tickets', async () => {
       const backlogDir = path.join(tempDir, 'backlog');
-      const storiesDir = path.join(backlogDir, 'tickets', 'stories');
-      await fs.mkdirp(storiesDir);
+      const ticketsDir = path.join(backlogDir, 'tickets');
+      await fs.mkdirp(ticketsDir);
 
       // Create invalid story (missing title)
       const invalid1 = `---
@@ -640,16 +614,15 @@ createdDate: 2025-01-01
 ---
 Content`;
 
-      // Create invalid story (missing description)
+      // Create invalid story (missing documentType)
       const invalid2 = `---
-documentType: story
 title: Story 2
 createdDate: 2025-01-01
 ---
 Content`;
 
-      await fs.writeFile(path.join(storiesDir, 'STORY-1.md'), invalid1, 'utf-8');
-      await fs.writeFile(path.join(storiesDir, 'STORY-2.md'), invalid2, 'utf-8');
+      await fs.writeFile(path.join(ticketsDir, 'STORY-1.md'), invalid1, 'utf-8');
+      await fs.writeFile(path.join(ticketsDir, 'STORY-2.md'), invalid2, 'utf-8');
 
       const report = await validateBacklog(backlogDir);
 
