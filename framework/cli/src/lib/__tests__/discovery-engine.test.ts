@@ -398,7 +398,7 @@ describe('DiscoveryEngine - loadProjectSkills()', () => {
     engine = new DiscoveryEngine('/test/framework');
   });
 
-  it('should load skills from ai/skills/project/', async () => {
+  it('should load skills from .claude/skills/project/', async () => {
     mockedFs.pathExists.mockResolvedValue(true);
     mockedFs.readdir.mockResolvedValue([
       { name: 'custom-skill', isDirectory: () => true },
@@ -488,7 +488,7 @@ describe('DiscoveryEngine - buildCapabilityMap()', () => {
     mockedFs.pathExists.mockImplementation(async (p: any) => {
       const pathStr = String(p);
       if (pathStr.includes('modules')) return true;
-      if (pathStr.includes('ai/skills/project')) return true;
+      if (pathStr.includes('.claude/skills/project')) return true;
       if (pathStr.includes('.claude/skills')) return false;
       return false;
     });
@@ -498,7 +498,7 @@ describe('DiscoveryEngine - buildCapabilityMap()', () => {
       if (pathStr.includes('modules')) {
         return [{ name: 'core', isDirectory: () => true }] as any;
       }
-      if (pathStr.includes('ai/skills/project')) {
+      if (pathStr.includes('.claude/skills/project')) {
         return [{ name: 'project-skill', isDirectory: () => true }] as any;
       }
       return [];
@@ -705,7 +705,7 @@ describe('DiscoveryEngine - getCapabilityProviders()', () => {
   it('should return providers for a capability', async () => {
     mockedFs.pathExists.mockImplementation(async (p: any) => {
       const pathStr = String(p);
-      return pathStr.includes('modules') || pathStr.includes('ai/skills/project');
+      return pathStr.includes('modules') || pathStr.includes('.claude/skills/project');
     });
 
     mockedFs.readdir.mockImplementation(async (p: any) => {
@@ -713,7 +713,7 @@ describe('DiscoveryEngine - getCapabilityProviders()', () => {
       if (pathStr.includes('modules')) {
         return [{ name: 'core', isDirectory: () => true }] as any;
       }
-      if (pathStr.includes('ai/skills/project')) {
+      if (pathStr.includes('.claude/skills/project')) {
         return [{ name: 'test-skill', isDirectory: () => true }] as any;
       }
       return [];

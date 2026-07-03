@@ -5,13 +5,13 @@ name: organizing-backlog
 description: Understand the backlog module architecture, CLI commands, and ticket organization workflow. Use when working with backlog module, understanding ticket lifecycle, or organizing work items using the framework's TypeScript CLI.
 scope: generic
 capabilities-provided:
-  - organizing-backlog
-  - epic-breakdown
-  - sprint-planning
-  - milestone-tracking
-  - organizing-backlog-knowledge
-  - backlog-workflow
-  - ticket-lifecycle
+ - organizing-backlog
+ - epic-breakdown
+ - sprint-planning
+ - milestone-tracking
+ - organizing-backlog-knowledge
+ - backlog-workflow
+ - ticket-lifecycle
 ---
 
 # Backlog Organization
@@ -38,22 +38,22 @@ Use this skill when you need to:
 ```text
 framework/modules/backlog/
 ├── ai/
-│   ├── agents/           ← Backlog management agents
-│   ├── skills/          ← This skill + building-tickets
-│   └── context/         ← Backlog domain knowledge
+│ ├── agents/ ← Backlog management agents
+│ ├── skills/ ← This skill + building-tickets
+│ └── context/ ← Backlog domain knowledge
 │
 ├── src/
-│   ├── cli/            ← TypeScript CLI commands
-│   │   ├── import.ts   # Import Jira data
-│   │   ├── validate.ts # Validate ticket format
-│   │   ├── pull.ts     # Fetch tickets from Jira
-│   │   ├── diff.ts     # Compare local vs Jira state
-│   │   ├── push.ts     # Push local changes to Jira
-│   │   └── migrate-milestones.ts  # Generate milestone overviews
-│   ├── models/         ← Ticket, Epic, Milestone models
-│   └── utils/          ← Parsing, validation utilities
+│ ├── cli/ ← TypeScript CLI commands
+│ │ ├── import.ts # Import Jira data
+│ │ ├── validate.ts # Validate ticket format
+│ │ ├── pull.ts # Fetch tickets from Jira
+│ │ ├── diff.ts # Compare local vs Jira state
+│ │ ├── push.ts # Push local changes to Jira
+│ │ └── migrate-milestones.ts # Generate milestone overviews
+│ ├── models/ ← Ticket, Epic, Milestone models
+│ └── utils/ ← Parsing, validation utilities
 │
-└── module.json         ← Module manifest
+└── module.json ← Module manifest
 ```
 
 **Key Principle:** Backlog module uses TypeScript CLI commands (NOT Python scripts) for automation.
@@ -102,7 +102,7 @@ framework/modules/backlog/
 - Bug: `1315-fix-shimmer-loading-when-changing-analysis-hours.md`
 - Epic: `1171-split-final-drive-to-left-right-sub-components.md`
 
-**YAML Frontmatter:** See the `building-tickets` skill for v10.1.1 format details.
+**YAML Frontmatter:** See the `building-tickets` skill for the ticket format details.
 
 ### 3. Use TypeScript CLI for Backlog Operations
 
@@ -180,10 +180,10 @@ jira-parent: PROJ-1171
 jira-component: "Your Component Name"
 
 # Framework metadata (framework- prefix)
-framework-type: story  # story, task, bug, epic
+framework-type: story # story, task, bug, epic
 framework-status: in-progress
 framework-priority: high
-framework-milestone: Feb2026  # example milestone code
+framework-milestone: Feb2026 # example milestone code
 framework-sprint: 2026-W03
 
 # Content metadata (no prefix)
@@ -193,7 +193,7 @@ assignee: unassigned
 ---
 ```
 
-**See Also:** `building-tickets` skill for complete v10.1.1 format specification.
+**See Also:** `building-tickets` skill for complete format specification.
 
 ### 5. Apply "Jira is Source of Truth" Principle
 
@@ -218,7 +218,7 @@ assignee: unassigned
 jira-ticketId: PROJ-1164
 jira-url: "https://your-instance.atlassian.net/browse/PROJ-1164"
 jira-parent: PROJ-1171
-jira-component: "Your Component Name"  # Exact Jira component name
+jira-component: "Your Component Name" # Exact Jira component name
 ```
 
 ---
@@ -369,7 +369,7 @@ agentic-framework backlog push --ticket PROJ-100
 ## See Also
 
 ### Related Skills
-- [building-tickets](../building-tickets/SKILL.md) - v10.1.1 ticket format and YAML schema
+- [building-tickets](../building-tickets/SKILL.md) - ticket format and YAML schema
 - committing-code - Git workflows with Jira auto-detection (core module skill)
 
 ### Module Documentation

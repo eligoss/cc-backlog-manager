@@ -107,9 +107,9 @@ ai/skills/{category}/generic-shared-{name}-{capability}/
 
 **Deployment Locations (auto-synced):**
 ```
-.claude/skills/generic-shared-{name}-{capability}/  (local)
-~/{project}/.claude/skills/generic-shared-{name}-{capability}/  (workspace)
-~/.claude/skills/generic-shared-{name}-{capability}/  (global, optional)
+.claude/skills/generic-shared-{name}-{capability}/ (local)
+~/{project}/.claude/skills/generic-shared-{name}-{capability}/ (workspace)
+~/.claude/skills/generic-shared-{name}-{capability}/ (global, optional)
 ```
 
 **Reusability:**
@@ -130,8 +130,8 @@ ai/skills/{category}/apmr-{name}-{capability}/
 
 **Deployment Locations (auto-synced):**
 ```
-.claude/skills/apmr-{name}-{capability}/  (local)
-~/{project}/.claude/skills/apmr-{name}-{capability}/  (workspace)
+.claude/skills/apmr-{name}-{capability}/ (local)
+~/{project}/.claude/skills/apmr-{name}-{capability}/ (workspace)
 ```
 
 **Reusability:**
@@ -190,8 +190,8 @@ Analysis:
 Decision: PROJECT-SPECIFIC (with hybrid structure)
 Name: syncing-with-jira
 Structure:
-  - CONVERSION-RULES.md (generic, reusable)
-  - APMR-CONFIG.md (APM-R specific)
+ - CONVERSION-RULES.md (generic, reusable)
+ - APMR-CONFIG.md (APM-R specific)
 ```
 
 ---
@@ -275,7 +275,7 @@ Before creating a skill, answer these questions:
 ## Version History
 
 **Version:** 1.0
-**Created:** 2025-12-07 (v11.2 governance refactor)
+**Created:** 2025-12-07 (governance refactor)
 **Purpose:** Extract scope decision knowledge from main SKILL.md
 **Related Files:**
 - SKILL.md (main governance skill)

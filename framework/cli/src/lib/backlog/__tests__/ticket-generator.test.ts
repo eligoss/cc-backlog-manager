@@ -115,13 +115,41 @@ describe('ticket-generator', () => {
       expect(frontmatter.updatedDate).toBe('2025-12-10');
     });
 
-    it('should omit sprint from per-ticket frontmatter (lives in sprint index files)', () => {
-      const ticket = createTicket({ sprint: '2026-W1' });
+    it('should persist sprint, status and jira-fixVersion on per-ticket frontmatter', () => {
+      // Membership is persisted per-ticket so sprint/milestone index files can be
+      // re-derived from the full on-disk backlog instead of overwritten per-CSV.
+      const ticket = createTicket({
+        sprint: '2026-W1',
+        status: 'To Do',
+        milestone: 'APM-Track:Pilot',
+      });
       const frontmatter = generateFrontmatter(ticket);
 
-      // Sprint is intentionally excluded from per-ticket frontmatter (lean format)
-      // Sprint assignment lives in sprint/milestone index files, not individual tickets
-      expect((frontmatter as any).sprint).toBeUndefined();
+      expect(frontmatter.sprint).toBe('2026-W1');
+      expect(frontmatter.status).toBe('To Do');
+      expect(frontmatter['jira-fixVersion']).toBe('APM-Track:Pilot');
+    });
+
+    it('should fall back to fixVersions when milestone is absent', () => {
+      const ticket = createTicket({ fixVersions: 'APM-Track:MVP Core' });
+      const frontmatter = generateFrontmatter(ticket);
+
+      expect(frontmatter['jira-fixVersion']).toBe('APM-Track:MVP Core');
+    });
+  });
+
+  describe('generateTicketContent (serialization)', () => {
+    it('should include sprint, status, and jira-fixVersion in YAML output', () => {
+      const ticket = createTicket({
+        sprint: 'APMR-APP-2026W25',
+        status: 'To Do',
+        milestone: 'APM-Track:Pilot',
+      });
+      const content = generateTicketContent(ticket);
+
+      expect(content).toMatch(/^sprint: APMR-APP-2026W25$/m);
+      expect(content).toMatch(/^status: To Do$/m);
+      expect(content).toMatch(/^jira-fixVersion: "APM-Track:Pilot"$/m);
     });
   });
 

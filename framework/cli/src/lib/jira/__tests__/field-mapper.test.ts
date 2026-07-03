@@ -422,7 +422,7 @@ describe('Field Mapper', () => {
     });
 
     describe('sprint mapping', () => {
-      it('should map sprint to jira-sprint', () => {
+      it('should map sprint to bare sprint', () => {
         const jira = {
           key: 'DAPM-100',
           fields: {
@@ -430,7 +430,7 @@ describe('Field Mapper', () => {
           },
         };
         const local = mapJiraToLocal(jira);
-        expect(local['jira-sprint']).toBe('APMR-APP-2026W17');
+        expect(local['sprint']).toBe('APMR-APP-2026W17');
       });
     });
   });
@@ -578,13 +578,13 @@ describe('Field Mapper', () => {
       'labels': ['label1'],
       'jira-component': 'Backend',
       'jira-parent': 'PROJ-1',
-      'jira-status': 'In Progress',
-      'jira-assignee': 'dev@example.com',
+      'status': 'In Progress',
+      'assignee': 'Dev Example',
       'jira-reporter': 'pm@example.com',
       'jira-created': '2024-01-01',
       'jira-updated': '2024-02-01',
       'jira-fixVersion': 'v1.0',
-      'jira-sprint': 'Sprint 1',
+      'sprint': 'Sprint 1',
     };
 
     describe('readonly fields excluded from CREATE', () => {
@@ -696,14 +696,14 @@ describe('Field Mapper', () => {
         expect(jira.labels).toEqual(['label1']);
       });
 
-      it('should include assignee in create payload', () => {
+      it('should NOT include assignee in create payload (read-only display name)', () => {
         const jira = mapLocalToJira(fullLocalData, 'create');
-        expect((jira.assignee as Record<string, unknown>)?.emailAddress).toBe('dev@example.com');
+        expect(jira.assignee).toBeUndefined();
       });
 
-      it('should include assignee in update payload', () => {
+      it('should NOT include assignee in update payload (read-only display name)', () => {
         const jira = mapLocalToJira(fullLocalData, 'update');
-        expect((jira.assignee as Record<string, unknown>)?.emailAddress).toBe('dev@example.com');
+        expect(jira.assignee).toBeUndefined();
       });
     });
 
@@ -723,9 +723,9 @@ describe('Field Mapper', () => {
         expect(local['jira-ticketId']).toBe('PROJ-99');
       });
 
-      it('should extract status as jira-status', () => {
+      it('should extract status as bare status', () => {
         const local = mapJiraToLocal(jiraIssue);
-        expect(local['jira-status']).toBe('In Progress');
+        expect(local['status']).toBe('In Progress');
       });
 
       it('should extract created as jira-created', () => {

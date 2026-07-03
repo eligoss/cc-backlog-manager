@@ -8,43 +8,43 @@ Complete reference for backlog module organization and architecture.
 
 ```text
 framework/modules/backlog/
-├── agents/               # Backlog management agents
-│   ├── ai-backlog-manager.md
+├── agents/ # Backlog management agents
+│ ├── ai-backlog-manager.md
 │
-├── skills/backlog/       # Skills (this skill + building-tickets)
-│   ├── organizing-backlog/
-│   └── building-tickets/
+├── skills/backlog/ # Skills (this skill + building-tickets)
+│ ├── organizing-backlog/
+│ └── building-tickets/
 │
-├── commands/             # Slash command definitions
-│   ├── cmd-backlog-create-ticket.md
-│   ├── cmd-backlog-validate.md
-│   ├── cmd-backlog-import.md
-│   ├── cmd-backlog-pull.md
-│   ├── cmd-backlog-diff.md
-│   ├── cmd-backlog-push.md
-│   └── cmd-backlog-migrate-milestones.md
+├── commands/ # Slash command definitions
+│ ├── cmd-backlog-create-ticket.md
+│ ├── cmd-backlog-validate.md
+│ ├── cmd-backlog-import.md
+│ ├── cmd-backlog-pull.md
+│ ├── cmd-backlog-diff.md
+│ ├── cmd-backlog-push.md
+│ └── cmd-backlog-migrate-milestones.md
 │
 ├── src/
-│   ├── cli/            # TypeScript CLI commands
-│   │   ├── import.ts   # Import Jira data
-│   │   ├── validate.ts # Validate ticket format
-│   │   ├── pull.ts     # Fetch tickets from Jira
-│   │   ├── diff.ts     # Compare local vs Jira state
-│   │   ├── push.ts     # Push local changes to Jira
-│   │   ├── migrate-milestones.ts  # Generate milestone overviews
-│   │   └── update-fields.ts  # Update ticket metadata
-│   │
-│   ├── models/         # Ticket, Epic, Milestone models
-│   │   ├── Ticket.ts
-│   │   ├── Epic.ts
-│   │   └── Milestone.ts
-│   │
-│   └── utils/          # Parsing, validation utilities
-│       ├── yaml-parser.ts
-│       ├── validator.ts
-│       └── markdown-converter.ts
+│ ├── cli/ # TypeScript CLI commands
+│ │ ├── import.ts # Import Jira data
+│ │ ├── validate.ts # Validate ticket format
+│ │ ├── pull.ts # Fetch tickets from Jira
+│ │ ├── diff.ts # Compare local vs Jira state
+│ │ ├── push.ts # Push local changes to Jira
+│ │ ├── migrate-milestones.ts # Generate milestone overviews
+│ │ └── update-fields.ts # Update ticket metadata
+│ │
+│ ├── models/ # Ticket, Epic, Milestone models
+│ │ ├── Ticket.ts
+│ │ ├── Epic.ts
+│ │ └── Milestone.ts
+│ │
+│ └── utils/ # Parsing, validation utilities
+│ ├── yaml-parser.ts
+│ ├── validator.ts
+│ └── markdown-converter.ts
 │
-└── module.json         # Module manifest
+└── module.json # Module manifest
 ```
 
 ---
@@ -89,10 +89,10 @@ component: "Team: Frontend"
 jira-parent: PROJ-1171
 
 # Framework metadata (framework- prefix)
-documentType: story  # story, task, bug, epic, spike
+documentType: story # story, task, bug, epic, spike
 framework-status: in-progress
 framework-priority: high
-milestone: Feb2026  # example milestone code
+milestone: Feb2026 # example milestone code
 
 # Content metadata (no prefix)
 title: "Ticket title"
@@ -130,8 +130,8 @@ assignee: unassigned
 **Format:**
 ```yaml
 ---
-milestone: Feb2026  # example milestone code
-jira-milestone: "My Project - February 2026 - W3 W5 W7"  # example Jira milestone name
+milestone: Feb2026 # example milestone code
+jira-milestone: "My Project - February 2026 - W3 W5 W7" # example Jira milestone name
 generatedDate: 2025-12-22
 totalTickets: 4
 totalStoryPoints: 15
@@ -212,7 +212,7 @@ agentic-framework backlog push --ticket PROJ-100
 ## See Also
 
 - **Module Manifest:** `framework/modules/backlog/module.json` - Module capabilities and CLI commands
-- **Ticket Format:** [building-tickets](../building-tickets/SKILL.md) - v10.1.1 YAML structure
+- **Ticket Format:** [building-tickets](../building-tickets/SKILL.md) - YAML structure
 - **CLI Source:** `framework/cli/src/commands/backlog/` - TypeScript implementation
 - **Jira Integration:** [syncing-with-jira](../syncing-with-jira/SKILL.md) - Jira sync workflow
 

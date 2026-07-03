@@ -1,30 +1,10 @@
 ---
 documentType: {{type}}
-version: "1.0"
 title: "{{summary}}"
 description: "{{summary}}"
-milestone: null
 priority: P2
-storyPoints: null
-labels: []
 createdDate: "{{date}}"
-exportedDate: null
 
-# Jira Integration Fields (v10.1.1)
-jira-ticketId: null
-jira-url: null
-jira-parent: null
-jira-related: []
-jira-blocking: []
-jira-blockedBy: []
-jira-fixVersion: null
-jira-internalNotes: null
-
-# Framework Integration Fields (v10.1.1)
-framework-documentation: null
-framework-milestone: null
-framework-technicalGuides: []
-framework-relatedLocal: []
 ---
 
 # {{summary}}

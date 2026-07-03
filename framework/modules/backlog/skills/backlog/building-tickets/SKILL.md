@@ -2,40 +2,40 @@
 id: building-tickets
 module: backlog
 name: building-tickets
-description: Write Jira tickets with v10.1.1 native markdown format, flat YAML frontmatter, and cross-repo reference support. Use when creating stories, tasks, epics, and bugs for any project using this framework.
+description: Write Jira tickets with native markdown format, flat YAML frontmatter, and cross-repo reference support. Use when creating stories, tasks, epics, and bugs for any project using this framework.
 scope: generic
 applicable-projects: any
 capabilities-provided:
-  - ticket-decomposition
-  - ticket-writing
-  - jira-formatting
+ - ticket-decomposition
+ - ticket-writing
+ - jira-formatting
 cli-commands:
-  - name: backlog create-ticket
-    description: Create a new ticket from template
-    usage: agentic-framework backlog create-ticket --type <type> [options]
-    options:
-      - "-t, --type <type>: Ticket type (story, task, bug, epic, spike)"
-      - "-p, --path <path>: Output directory (default: ./backlog)"
-      - "-n, --name <name>: Ticket name in kebab-case (auto-generated if not provided)"
-      - "-s, --summary <summary>: Ticket summary/title"
-      - "--dry-run: Preview template without creating file"
-    examples:
-      - "agentic-framework backlog create-ticket --type story --summary \"Add user authentication\""
-      - "agentic-framework backlog create-ticket --type bug --name BUG-001 --dry-run"
-  - name: backlog validate
-    description: Validate ticket files against v10.1.1 standards
-    usage: agentic-framework backlog validate [path] [options]
-    options:
-      - "-v, --verbose: Show detailed validation progress"
-      - "--schema-only: Only run JSON Schema validation"
-      - "--rules-only: Only run business rules validation"
-    examples:
-      - "agentic-framework backlog validate ./backlog"
-      - "agentic-framework backlog validate --verbose"
-      - "agentic-framework backlog validate --schema-only"
+ - name: backlog create-ticket
+   description: Create a new ticket from template
+   usage: agentic-framework backlog create-ticket --type <type> [options]
+   options:
+    - "-t, --type <type>: Ticket type (story, task, bug, epic, spike)"
+    - "-p, --path <path>: Output directory (default: ./backlog)"
+    - "-n, --name <name>: Ticket name in kebab-case (auto-generated if not provided)"
+    - "-s, --summary <summary>: Ticket summary/title"
+    - "--dry-run: Preview template without creating file"
+   examples:
+    - "agentic-framework backlog create-ticket --type story --summary \"Add user authentication\""
+    - "agentic-framework backlog create-ticket --type bug --name BUG-001 --dry-run"
+ - name: backlog validate
+   description: Validate ticket files against the ticket standards
+   usage: agentic-framework backlog validate [path] [options]
+   options:
+    - "-v, --verbose: Show detailed validation progress"
+    - "--schema-only: Only run JSON Schema validation"
+    - "--rules-only: Only run business rules validation"
+   examples:
+    - "agentic-framework backlog validate ./backlog"
+    - "agentic-framework backlog validate --verbose"
+    - "agentic-framework backlog validate --schema-only"
 ---
 
-# Jira Ticket Writing Standards (v10.1.1)
+# Jira Ticket Writing Standards
 
 ## When to Use This Skill
 
@@ -45,9 +45,9 @@ You're creating **Jira tickets** (stories, tasks, epics, bugs) and need to:
 - Use native markdown (NOT Jira wiki markup)
 - Support cross-repo file references (@repo-name/path format)
 - Validate ticket format for Jira import/export
-- Ensure tickets are consistent with v10.1.1 specification
+- Ensure tickets are consistent with the ticket specification
 
-**Example invocation:** "Use building-tickets to create a story with proper v10.1.1 structure including Jira and framework fields"
+**Example invocation:** "Use building-tickets to create a story with proper structure including Jira and framework fields"
 
 ---
 
@@ -101,35 +101,36 @@ agentic-framework backlog validate ./backlog/tickets --verbose
 
 If CLI is not available, follow this checklist:
 
-### Step 1: Create YAML Frontmatter (v10.1.1)
+### Step 1: Create YAML Frontmatter
 
 ```yaml
 ---
 documentType: story|task|bug|spike|epic
 title: "Clear, descriptive ticket title"
-description: "One-sentence summary"
-milestone: Feb2026                     # Optional: milestone code
-priority: P0|P1|P2                     # Optional
-storyPoints: 5                         # Optional: 1,2,3,5,8 (stories/tasks only)
-labels: [my-project, frontend]        # Optional: array of labels
+description: "One-sentence summary" # Optional
+priority: P0|P1|P2 # Optional
+storyPoints: 5 # Optional: 1,2,3,5,8 (stories/tasks only)
+labels: [my-project, frontend] # Optional
 createdDate: 2025-12-08
-exportedDate: null                     # Auto-filled after Jira export
+assignee: "Display Name" # Optional: bare name (not jira-assignee)
+status: "In Progress" # Optional: bare name (not jira-status)
+sprint: APMR-APP-2026W25 # Optional: bare name (not jira-sprint)
 
-# Jira Integration Fields (v10.1.1 - flat structure with jira- prefix)
-jira-ticketId: null                   # PROJ-XXXX (auto-filled)
-jira-url: null                         # https://...
-jira-parent: null                      # Parent epic if applicable
-jira-related: []                       # Array of related ticket IDs
-jira-blocking: []                      # Tickets this blocks
-jira-blockedBy: []                     # Tickets blocking this
-jira-fixVersion: null                  # Release version linking
-jira-internalNotes: null               # Internal process notes
+# Jira Integration Fields — include ONLY when they have a value (no null / [] placeholders)
+jira-ticketId: PROJ-XXXX # Auto-filled after Jira export
+jira-url: "https://{your-org}.atlassian.net/browse/PROJ-XXXX"
+jira-parent: PROJ-200 # Parent epic if applicable
+jira-related: [PROJ-101, PROJ-102] # Array of related ticket IDs
+jira-blocking: [PROJ-303] # Tickets this blocks (omit if empty)
+jira-blockedBy: [PROJ-500] # Tickets blocking this (omit if empty)
+jira-fixVersion: "Feb2026" # Milestone / release version (replaces milestone:)
+jira-internalNotes: "..." # Internal process notes (omit if none)
 
-# Framework Integration Fields (v10.1.1 - flat structure with framework- prefix)
-framework-documentation: null          # @repo-name/path cross-repo references
-framework-milestone: null              # Local milestone file path
-framework-technicalGuides: []          # Technical documentation references
-framework-relatedLocal: []             # Local file references
+# Framework Integration Fields — include ONLY when they have a value
+framework-documentation: "@repo-name/path" # Cross-repo references
+framework-milestone: "backlog/milestones/Feb2026.md"
+framework-technicalGuides: ["@backend-repo/docs/guide.md"]
+framework-relatedLocal: ["backlog/epics/200-epic.md"]
 ---
 ```
 
@@ -172,14 +173,14 @@ Related ticket: [PROJ-100](https://{your-org}.atlassian.net/browse/PROJ-100)
 * **Verify** [QA-testable user behavior or outcome 2]
 * **Verify** [edge case or error recovery from user's perspective]
 
-[5-10 QA-verifiable criteria — focus on what a tester can observe, not implementation]
+[4-8 QA-verifiable criteria — focus on what a tester can observe, not implementation]
 ```
 
 ### Step 3: Validate Structure
 
 - ✅ If component is provided, it matches a valid Jira component name
 - ✅ Only one component (not multiple/array)
-- ✅ YAML frontmatter present with all jira-* and framework-* fields
+- ✅ YAML frontmatter present — lean (no `null` or `[]` values), bare names for sprint/status/assignee, milestone via jira-fixVersion
 - ✅ Exactly 2 H2 sections: `## Description` and `## Acceptance Criteria`
 - ✅ `---` dividers after title and between sections
 - ✅ NO metadata lines in body
@@ -199,25 +200,27 @@ See supporting documentation:
 
 ---
 
-## Key Rules (v10.1.1)
+## Key Rules
 
 ### YAML Frontmatter
 
 - ✅ **Flat structure:** All fields at root level (no nested objects)
 - ✅ **Jira prefix:** All Jira-specific fields use `jira-` prefix
 - ✅ **Framework prefix:** All framework-specific fields use `framework-` prefix
-- ✅ **Arrays:** Use YAML arrays `[]` for jira-related, jira-blocking, etc.
-- ✅ **Required fields:** documentType, title, description, createdDate
+- ✅ **Lean frontmatter:** Include ONLY fields that have a value — delete every `key: null` and `key: []` line
+- ✅ **Bare names:** Use `sprint`, `status`, `assignee` (NOT `jira-sprint`, `jira-status`, `jira-assignee`)
+- ✅ **Milestone via jira-fixVersion:** Use `jira-fixVersion: "Feb2026"` — do NOT use `milestone:` or `version:` fields
+- ✅ **Required fields:** documentType, title, createdDate
 - ✅ **Component field (optional):** If provided, must match a valid Jira component name. If `backlog.config.json` defines `components`, the value must be in that list.
 - ✅ **Single component:** Only one component per ticket (not multiple)
-- ✅ **Optional fields:** milestone, priority, storyPoints, labels, exportedDate
+- ✅ **Optional fields:** description, priority, storyPoints, labels, assignee, status, sprint, updatedDate
 
 ### Body Structure
 
 - ✅ **AS/WANT/SO THAT section:** Required for stories/tasks (first line after H1 divider)
-  - Format: `**AS** a [role],` / `**I WANT** [capability],` / `**SO THAT** [business value].`
-  - Describes user need and business value
-  - Epics: Optional (use Business Value subsection instead)
+- Format: `**AS** a [role],` / `**I WANT** [capability],` / `**SO THAT** [business value].`
+- Describes user need and business value
+- Epics: Optional (use Business Value subsection instead)
 - ✅ **Exactly 2 H2 sections:** `## Description` and `## Acceptance Criteria`
 - ✅ **Section dividers:** `---` after H1 title and between H2 sections
 - ✅ **NO ### headers:** Use bold labels instead: `**Context:**`, `**Requirements:**`, `**Technical Notes:**`
@@ -240,11 +243,11 @@ See supporting documentation:
 
 ---
 
-## Comparison: Old vs. v10.1.1
+## Comparison: Old vs. New
 
 ### YAML Frontmatter Changes
 
-| Field | Old | New (v10.1.1) |
+| Field | Old | New |
 |-------|-----|---|
 | Jira ID | `ticketId` | `jira-ticketId` |
 | Jira URL | `jiraLink` | `jira-url` |
@@ -257,7 +260,7 @@ See supporting documentation:
 
 ### Body Structure Changes
 
-| Aspect | Old | New (v10.1.1) |
+| Aspect | Old | New |
 |--------|-----|---|
 | Main sections | `### Context`, `### Requirements` | `## Description`, `## Acceptance Criteria` |
 | Subsection labels | Bold: `**Context:**` | Bold: `**Context:**` |
@@ -272,22 +275,21 @@ See supporting documentation:
 Your ticket is properly formatted when:
 - ✅ If component is provided, it matches a valid Jira component name
 - ✅ Only one component (not multiple)
-- ✅ YAML frontmatter includes all jira-* and framework-* fields
+- ✅ YAML frontmatter is lean: no `null`/`[]` values, bare names (sprint/status/assignee), milestone via jira-fixVersion
 - ✅ AS/WANT/SO THAT section present (stories/tasks) or Business Value subsection (epics)
 - ✅ Exactly 2 H2 sections (## Description, ## Acceptance Criteria)
 - ✅ NO metadata lines in the body
 - ✅ Context written as plain language paragraphs (not bullets)
 - ✅ Requirements/Technical Notes as concise bullets
-- ✅ 5-10 QA-verifiable "Verify" acceptance criteria (no implementation details or filler)
+- ✅ 4-8 QA-verifiable "Verify" acceptance criteria (no implementation details or filler)
 - ✅ Proper Jira URL format for cross-references
-- ✅ Ticket length 30-100 lines (story/task)
-- ✅ Ticket length 30-50 lines (epic)
+- ✅ Ticket length 25-70 lines (story/task)
+- ✅ Ticket length 25-40 lines (epic)
 - ✅ NO code snippets
 
 ---
 
-**Version:** 1.0 (v10.1.1 specification)
+**Version:** 1.0 (the ticket specification)
 **Last Updated:** 2025-12-08
-**Framework Version:** v11.2
 **Scope:** Generic (framework-level, applicable to any project)
 **Mandatory For:** ai-backlog-manager agents

@@ -462,9 +462,9 @@ capability-needs:
 
   describe('Multi-Source Skill Discovery', () => {
     describe('loadProjectSkills()', () => {
-      it('should load skills from ai/skills/project/', async () => {
+      it('should load skills from .claude/skills/project/', async () => {
         // Create project skills directory
-        const projectSkillsDir = path.join(testDir, 'ai', 'skills', 'project', 'custom-validation');
+        const projectSkillsDir = path.join(testDir, '.claude', 'skills', 'project', 'custom-validation');
         await fs.ensureDir(projectSkillsDir);
         await fs.writeFile(path.join(projectSkillsDir, 'SKILL.md'), `---
 skill: custom-validation
@@ -494,7 +494,7 @@ capabilities-provided:
 
       it('should cache loaded project skills', async () => {
         // Create project skills directory
-        const projectSkillsDir = path.join(testDir, 'ai', 'skills', 'project', 'custom-skill');
+        const projectSkillsDir = path.join(testDir, '.claude', 'skills', 'project', 'custom-skill');
         await fs.ensureDir(projectSkillsDir);
         await fs.writeFile(path.join(projectSkillsDir, 'SKILL.md'), `---
 skill: custom-skill
@@ -549,7 +549,7 @@ capabilities-provided:
     describe('buildCapabilityMap() with multi-source skills', () => {
       it('should prioritize project skills over module skills', async () => {
         // Create project skill that provides same capability as module skill
-        const projectSkillsDir = path.join(testDir, 'ai', 'skills', 'project', 'project-git-workflow');
+        const projectSkillsDir = path.join(testDir, '.claude', 'skills', 'project', 'project-git-workflow');
         await fs.ensureDir(projectSkillsDir);
         await fs.writeFile(path.join(projectSkillsDir, 'SKILL.md'), `---
 skill: project-git-workflow
@@ -583,7 +583,7 @@ capabilities-provided:
 `);
 
         // Create project skill
-        const projectSkillsDir = path.join(testDir, 'ai', 'skills', 'project', 'project-qa');
+        const projectSkillsDir = path.join(testDir, '.claude', 'skills', 'project', 'project-qa');
         await fs.ensureDir(projectSkillsDir);
         await fs.writeFile(path.join(projectSkillsDir, 'SKILL.md'), `---
 skill: project-qa
@@ -607,7 +607,7 @@ capabilities-provided:
 
       it('should include all sources without duplication', async () => {
         // Create project skill with unique capability
-        const projectSkillsDir = path.join(testDir, 'ai', 'skills', 'project', 'project-only');
+        const projectSkillsDir = path.join(testDir, '.claude', 'skills', 'project', 'project-only');
         await fs.ensureDir(projectSkillsDir);
         await fs.writeFile(path.join(projectSkillsDir, 'SKILL.md'), `---
 skill: project-only
@@ -629,7 +629,7 @@ capabilities-provided:
     describe('getAllSkillsFromAllSources()', () => {
       it('should return skills categorized by source', async () => {
         // Create project skill
-        const projectSkillsDir = path.join(testDir, 'ai', 'skills', 'project', 'test-project-skill');
+        const projectSkillsDir = path.join(testDir, '.claude', 'skills', 'project', 'test-project-skill');
         await fs.ensureDir(projectSkillsDir);
         await fs.writeFile(path.join(projectSkillsDir, 'SKILL.md'), `---
 skill: test-project-skill
@@ -689,7 +689,7 @@ capabilities-provided:
     describe('Integration: Multi-source skill discovery with agents', () => {
       it('should discover project skill for agent when available', async () => {
         // Create project skill that provides git-workflow-management
-        const projectSkillsDir = path.join(testDir, 'ai', 'skills', 'project', 'project-git');
+        const projectSkillsDir = path.join(testDir, '.claude', 'skills', 'project', 'project-git');
         await fs.ensureDir(projectSkillsDir);
         await fs.writeFile(path.join(projectSkillsDir, 'SKILL.md'), `---
 skill: project-git

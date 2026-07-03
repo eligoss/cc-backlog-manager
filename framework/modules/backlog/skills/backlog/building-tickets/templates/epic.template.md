@@ -3,20 +3,8 @@ documentType: epic
 title: "{{summary}}"
 description: "One-sentence summary of the epic"
 priority: P1
-labels: []
 createdDate: "{{date}}"
 
-jira-ticketId: null
-jira-url: null
-jira-parent: null
-jira-related: []
-jira-blocking: []
-jira-blockedBy: []
-
-framework-documentation: null
-framework-milestone: null
-framework-technicalGuides: []
-framework-relatedLocal: []
 ---
 
 # Epic: {{summary}}

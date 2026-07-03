@@ -6,17 +6,6 @@ priority: P0
 labels: [bug]
 createdDate: "{{date}}"
 
-jira-ticketId: null
-jira-url: null
-jira-parent: null
-jira-related: []
-jira-blocking: []
-jira-blockedBy: []
-
-framework-documentation: null
-framework-milestone: null
-framework-technicalGuides: []
-framework-relatedLocal: []
 ---
 
 # Bug: {{summary}}

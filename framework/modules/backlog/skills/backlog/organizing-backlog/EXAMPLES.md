@@ -65,10 +65,10 @@ agentic-framework backlog validate
 **Output:**
 ```text
 Validating tickets...
-  auth0-sso-configuration.md
-   - framework-type: story
-   - jira-component: valid
-   - YAML structure: valid
+ auth0-sso-configuration.md
+ - framework-type: story
+ - jira-component: valid
+ - YAML structure: valid
 
 1 ticket validated, 0 errors
 ```
@@ -111,7 +111,7 @@ exportedDate: 2025-12-22
 
 ```yaml
 ---
-jira-ticketId: PROJ-1234  # Existing Jira ID
+jira-ticketId: PROJ-1234 # Existing Jira ID
 jira-url: "https://your-instance.atlassian.net/browse/PROJ-1234"
 ---
 
@@ -180,10 +180,10 @@ agentic-framework backlog import --csv sprint-2026-W01.csv
 ---
 framework-type: story
 jira-ticketId: PROJ-1234
-jira-component: "Team: Frontend"  # Exact from Jira
+jira-component: "Team: Frontend" # Exact from Jira
 jira-parent: PROJ-1171
 jira-sprint: "Sprint W01"
-framework-milestone: Feb2026  # Derived or set via CLI (example)
+framework-milestone: Feb2026 # Derived or set via CLI (example)
 storyPoints: 5
 ---
 ```
@@ -233,7 +233,7 @@ agentic-framework backlog migrate-milestones
 ```yaml
 ---
 framework-milestone: Feb2026
-jira-milestone: "My Project - February 2026 - W3 W5 W7"  # example format
+jira-milestone: "My Project - February 2026 - W3 W5 W7" # example format
 generatedDate: 2025-12-22
 totalTickets: 4
 totalStoryPoints: 15
@@ -279,20 +279,20 @@ agentic-framework backlog validate
 ```text
 Validating tickets...
 
-  1234-auth0-sso-configuration.md
-   - framework-type: story
-   - jira-component: valid
-   - YAML structure: valid
+ 1234-auth0-sso-configuration.md
+ - framework-type: story
+ - jira-component: valid
+ - YAML structure: valid
 
-  1235-incomplete-ticket.md
-   - ERROR: Missing framework-type field
-   - ERROR: Invalid jira-component value (must match Jira exactly)
-   - WARNING: Missing storyPoints field
+ 1235-incomplete-ticket.md
+ - ERROR: Missing framework-type field
+ - ERROR: Invalid jira-component value (must match Jira exactly)
+ - WARNING: Missing storyPoints field
 
-  1166-final-drive-support.md
-   - framework-type: story
-   - jira-component: valid
-   - YAML structure: valid
+ 1166-final-drive-support.md
+ - framework-type: story
+ - jira-component: valid
+ - YAML structure: valid
 
 Summary: 2 valid, 1 invalid
 ```
@@ -303,9 +303,9 @@ Summary: 2 valid, 1 invalid
 
 ```yaml
 ---
-framework-type: task  # Added
-jira-component: "Team: Backend"  # Fixed to match Jira exactly
-storyPoints: 3  # Added
+framework-type: task # Added
+jira-component: "Team: Backend" # Fixed to match Jira exactly
+storyPoints: 3 # Added
 ---
 ```
 
@@ -319,7 +319,7 @@ agentic-framework backlog validate
 **Output:**
 ```text
 Validating tickets...
-  All 3 tickets valid
+ All 3 tickets valid
 ```
 
 ---
@@ -339,9 +339,9 @@ agentic-framework backlog pull --sprint "Sprint 2026-W12"
 **Output:**
 ```text
 Pulling from Jira...
-  Created: 1400-new-feature-from-jira.md
-  Updated: 1234-auth0-sso-configuration.md (status changed)
-  Unchanged: 1235-implement-caching.md
+ Created: 1400-new-feature-from-jira.md
+ Updated: 1234-auth0-sso-configuration.md (status changed)
+ Unchanged: 1235-implement-caching.md
 
 3 tickets synced (1 created, 1 updated, 1 unchanged)
 ```
@@ -364,13 +364,13 @@ agentic-framework backlog diff
 Comparing local vs Jira...
 
 Modified locally:
-  PROJ-1234  auth0-sso-configuration
-    ~ framework-status: draft → in-progress
-    ~ description: acceptance criteria updated
+ PROJ-1234 auth0-sso-configuration
+ ~ framework-status: draft → in-progress
+ ~ description: acceptance criteria updated
 
 Modified in Jira:
-  PROJ-1235  implement-caching
-    ~ assignee: unassigned → john.doe
+ PROJ-1235 implement-caching
+ ~ assignee: unassigned → john.doe
 
 No conflicts detected.
 1 ticket modified locally, 1 modified in Jira
@@ -390,7 +390,7 @@ agentic-framework backlog push --all
 **Output:**
 ```text
 Pushing to Jira...
-  PROJ-1234: Updated (status, description)
+ PROJ-1234: Updated (status, description)
 
 1 ticket pushed successfully
 ```
@@ -457,7 +457,7 @@ agentic-framework backlog pull --sprint "Sprint 2026-W12"
 
 - **CLI Commands:** [WORKFLOW-PIPELINE.md](WORKFLOW-PIPELINE.md) - Detailed CLI workflow
 - **Jira Integration:** [JIRA-SOURCE-OF-TRUTH.md](JIRA-SOURCE-OF-TRUTH.md) - Jira integration principles
-- **Validation Rules:** [building-tickets](../building-tickets/SKILL.md) - v10.1.1 format specification
+- **Validation Rules:** [building-tickets](../building-tickets/SKILL.md) - format specification
 - **Naming:** [NAMING-CONVENTIONS.md](NAMING-CONVENTIONS.md) - File naming rules
 
 ---

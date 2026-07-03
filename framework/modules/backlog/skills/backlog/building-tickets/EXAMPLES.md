@@ -1,4 +1,4 @@
-# Ticket Examples (v10.1.1)
+# Ticket Examples
 
 ## Example 1: Frontend Story (Recommended)
 
@@ -9,21 +9,19 @@
 documentType: story
 title: "Frontend: Dashboard: Configurable Cards"
 description: "Allow users to select which cards appear on their dashboard and persist preferences"
-milestone: Feb2026
 priority: P1
 storyPoints: 5
 labels: [my-project, frontend, feature, ux]
 createdDate: 2025-12-08
-exportedDate: 2025-12-09
+assignee: "Jane Smith"
+status: "In Progress"
+sprint: APMR-APP-2026W25
 
 jira-ticketId: PROJ-1283
 jira-url: "https://{your-org}.atlassian.net/browse/PROJ-1283"
 jira-parent: PROJ-200
 jira-related: [PROJ-101, PROJ-102]
-jira-blocking: []
-jira-blockedBy: []
-jira-fixVersion: null
-jira-sprint: null
+jira-fixVersion: "Feb2026"
 jira-internalNotes: "Coordinate with UX team on card catalog design"
 
 framework-documentation: "@frontend-repo/src/components/Dashboard/README.md"
@@ -74,10 +72,11 @@ The UX team has designed a simple card selector (side panel with checkboxes). Th
 
 ### Key Annotations
 
-✅ **YAML Structure:** All v10.1.1 fields present:
-- Generic fields: documentType, version, title, description, milestone, etc.
-- Jira fields: jira-ticketId, jira-url, jira-parent, jira-related, etc.
-- Framework fields: framework-documentation, framework-milestone, etc.
+✅ **YAML Structure:** Lean frontmatter — only fields with values present:
+- Generic fields: documentType, title, description, priority, storyPoints, labels, createdDate
+- Workflow fields: assignee, status, sprint
+- Jira fields: jira-ticketId, jira-url, jira-parent, jira-related, jira-fixVersion, jira-internalNotes
+- Framework fields: framework-documentation, framework-milestone, framework-technicalGuides, framework-relatedLocal
 
 ✅ **Body Structure:**
 - H1 title matches YAML title
@@ -86,7 +85,7 @@ The UX team has designed a simple card selector (side panel with checkboxes). Th
 - Context as plain paragraphs (not bullets)
 - Requirements as bullets
 - Technical Notes as bullets (no code snippets)
-- 7 QA-verifiable Acceptance Criteria (within 5-10 range, no filler)
+- 7 QA-verifiable Acceptance Criteria (within 4-8 range, no filler)
 
 ✅ **Content Quality:**
 - Context explains WHY (user need, business value)
@@ -105,31 +104,29 @@ The UX team has designed a simple card selector (side panel with checkboxes). Th
 documentType: task
 title: "Backend: Data Layer: Convert Methods to Promise-Based"
 description: "Convert all synchronous data layer methods to async/Promise-based for Sentry transaction support"
-milestone: Feb2026
 priority: P0
 storyPoints: 5
 labels: [my-project, backend, infrastructure]
 createdDate: 2025-12-04
-exportedDate: 2025-12-05
+assignee: "Alex Johnson"
+status: "In Progress"
+sprint: APMR-APP-2026W25
 
 jira-ticketId: PROJ-1406
 jira-url: "https://{your-org}.atlassian.net/browse/PROJ-1406"
 jira-parent: PROJ-201
 jira-related: [PROJ-301, PROJ-302]
 jira-blocking: [PROJ-303, PROJ-304]
-jira-blockedBy: []
-jira-fixVersion: null
-jira-sprint: null
-jira-internalNotes: null
+jira-fixVersion: "Feb2026"
 
 framework-documentation: "@backend-repo/src/data-layer/README.md"
 framework-milestone: "backlog/milestones/Feb2026.md"
 framework-technicalGuides:
-  - "@backend-repo/docs/transaction-tracing.md"
-  - "@backend-repo/docs/data-layer-v2.md"
+ - "@backend-repo/docs/transaction-tracing.md"
+ - "@backend-repo/docs/data-layer-v2.md"
 framework-relatedLocal:
-  - "backlog/epics/201-centralized-data-layer.md"
-  - "backlog/tickets/tasks/301-add-sentry-transactions.md"
+ - "backlog/epics/201-centralized-data-layer.md"
+ - "backlog/tickets/301-add-sentry-transactions.md"
 ---
 
 # Backend: Data Layer: Convert Methods to Promise-Based
@@ -178,8 +175,8 @@ Without Promises, Sentry transactions may close before data fetching completes, 
 ✅ **Task vs. Story:** No "AS/WANT/SO THAT" - it's a technical task
 
 ✅ **Dependencies:**
-- `jira-blockedBy: []` - This task has no blockers
-- `jira-blocking: [PROJ-303, PROJ-304]` - This blocks follow-up Sentry tasks
+- `jira-blocking: [PROJ-303, PROJ-304]` - This blocks follow-up Sentry tasks (field present because non-empty)
+- `jira-blockedBy` omitted — no blockers, so field is excluded (lean model)
 - Context references related tasks (PROJ-305, PROJ-301)
 
 ✅ **Technical Specificity:**
@@ -202,28 +199,23 @@ Without Promises, Sentry transactions may close before data fetching completes, 
 documentType: epic
 title: "Analytics: Configurable Dashboard"
 description: "Enable users to customize dashboards to see metrics that matter to their role and workflow"
-milestone: Feb2026
 priority: P1
 labels: [my-project, frontend, epic, feature]
 createdDate: 2025-12-01
-exportedDate: 2025-12-02
+assignee: "Sarah Lee"
+status: "In Progress"
+sprint: APMR-APP-2026W25
 
 jira-ticketId: PROJ-1171
 jira-url: "https://{your-org}.atlassian.net/browse/PROJ-1171"
-jira-parent: null
 jira-related: [PROJ-202, PROJ-203]
-jira-blocking: []
-jira-blockedBy: []
-jira-fixVersion: null
-jira-sprint: null
-jira-internalNotes: null
+jira-fixVersion: "Feb2026"
 
-framework-documentation: null
 framework-milestone: "backlog/milestones/Feb2026.md"
 framework-technicalGuides: ["@frontend-repo/docs/dashboard-architecture.md"]
 framework-relatedLocal:
-  - "backlog/milestones/Feb2026.md"
-  - "ai/context/business-advanced.md"
+ - "backlog/milestones/Feb2026.md"
+ - "ai/context/business-advanced.md"
 ---
 
 # Analytics: Configurable Dashboard
@@ -274,10 +266,11 @@ Implement flexible dashboard builder with card selection and layout persistence.
 ✅ **NO story points:** Epics don't have story points (child stories do)
 
 ✅ **Parent/Related:**
-- No jira-parent (this is a top-level epic)
-- jira-related references other initiatives
+- `jira-parent` omitted — top-level epic has no parent (lean: omit null fields)
+- `jira-related` present because it has values
+- `jira-blocking`/`jira-blockedBy` omitted — no dependencies (lean model)
 
-✅ **Concise (39 lines):** Within 30-50 line target for epics
+✅ **Concise (34 lines):** Within 25-40 line target for epics
 
 ---
 
@@ -290,27 +283,16 @@ Implement flexible dashboard builder with card selection and layout persistence.
 documentType: bug
 title: "Frontend: Assets: Fix Shimmer Loading State When Changing Analysis Hours"
 description: "Loading shimmer appears for 5+ seconds when users change analysis hours, indicating performance regression"
-milestone: Feb2026
 priority: P0
 storyPoints: 3
 labels: [my-project, frontend, bug, performance]
 createdDate: 2025-12-07
-exportedDate: null
 
-jira-ticketId: null
-jira-url: null
-jira-parent: null
 jira-related: [PROJ-302]
-jira-blocking: []
-jira-blockedBy: []
-jira-fixVersion: null
-jira-sprint: null
+jira-fixVersion: "Feb2026"
 jira-internalNotes: "Regression from PROJ-302 commit a3f2b1c"
 
-framework-documentation: null
 framework-milestone: "backlog/milestones/Feb2026.md"
-framework-technicalGuides: []
-framework-relatedLocal: []
 ---
 
 # Frontend: Assets: Fix Shimmer Loading State When Changing Analysis Hours
@@ -373,28 +355,21 @@ Root cause: Recent refactor in PROJ-302 likely introduced inefficient re-computa
 documentType: spike
 title: "Backend: Data Layer: GraphQL Subscription Architecture Spike"
 description: "Investigate GraphQL subscription patterns and recommend architecture for real-time data updates"
-milestone: Jan2026
 priority: P1
 storyPoints: 3
 labels: [my-project, backend, spike, architecture]
 createdDate: 2025-12-06
-exportedDate: null
 
-jira-ticketId: null
-jira-url: null
-jira-parent: null
 jira-related: [PROJ-201]
 jira-blocking: [PROJ-400]
-jira-blockedBy: []
-jira-fixVersion: null
-jira-sprint: null
+jira-fixVersion: "Jan2026"
 jira-internalNotes: "Output: Decision doc on subscription pattern"
 
 framework-documentation: "@backend-repo/docs/architecture-decisions.md"
 framework-milestone: "backlog/milestones/Jan2026.md"
 framework-technicalGuides:
-  - "@backend-repo/docs/graphql-api.md"
-  - "@backend-repo/docs/authentication.md"
+ - "@backend-repo/docs/graphql-api.md"
+ - "@backend-repo/docs/authentication.md"
 framework-relatedLocal: ["ai/context/technical-advanced.md"]
 ---
 
@@ -542,7 +517,7 @@ We should use best practices and ensure the implementation is robust and well-te
 4. ❌ **Bullet points in Context:** Write as paragraphs
 5. ❌ **Vague criteria:** "Make it work" vs. "Verify response time <100ms"
 6. ❌ **Step-by-step instructions:** Trust developers to figure out HOW
-7. ❌ **Missing YAML fields:** All jira-* and framework-* fields required
+7. ❌ **Bloated YAML:** Include only fields that have a value — omit `key: null` and `key: []`
 8. ❌ **Nested YAML objects:** Flat structure only (jira-field, not jira.field)
 9. ❌ **Local file links in body:** Put them in framework-relatedLocal YAML field
 10. ❌ **Jira URL shortcuts:** Use full URL, not just PROJ-500

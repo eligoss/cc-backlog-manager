@@ -1,143 +1,155 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Backlog Ticket Schema",
-  "description": "JSON Schema for validating backlog ticket YAML frontmatter (v10.1.1 specification)",
-  "type": "object",
-  "required": ["documentType", "title", "description", "createdDate"],
-  "properties": {
-    "documentType": {
-      "type": "string",
-      "enum": ["story", "task", "bug", "spike", "epic"],
-      "description": "Type of the ticket"
-    },
-    "title": {
-      "type": "string",
-      "minLength": 10,
-      "maxLength": 255,
-      "description": "Clear, descriptive ticket title"
-    },
-    "description": {
-      "type": "string",
-      "minLength": 10,
-      "maxLength": 500,
-      "description": "One-sentence summary"
-    },
-    "milestone": {
-      "type": ["string", "null"],
-      "pattern": "^(Nov|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Dec)\\d{4}$",
-      "description": "Milestone code (e.g., Feb2026)"
-    },
-    "priority": {
-      "type": ["string", "null"],
-      "enum": ["P0", "P1", "P2", null],
-      "description": "Priority level"
-    },
-    "storyPoints": {
-      "type": ["integer", "null"],
-      "enum": [1, 2, 3, 5, 8, 13, null],
-      "description": "Story points (Fibonacci: 1,2,3,5,8,13)"
-    },
-    "labels": {
-      "type": ["array", "null"],
-      "items": {
-        "type": "string",
-        "pattern": "^[a-z0-9-]+$"
-      },
-      "description": "Array of labels (lowercase kebab-case)"
-    },
-    "createdDate": {
-      "type": "string",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-      "description": "Creation date (YYYY-MM-DD)"
-    },
-    "exportedDate": {
-      "type": ["string", "null"],
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-      "description": "Date when exported to Jira (YYYY-MM-DD)"
-    },
-    "jira-ticketId": {
-      "oneOf": [
-        {
-          "type": "string",
-          "pattern": "^[A-Z]+-\\d+$"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "description": "Jira ticket ID (e.g., DAPM-1234)"
-    },
-    "jira-url": {
-      "type": ["string", "null"],
-      "format": "uri",
-      "description": "Jira ticket URL"
-    },
-    "jira-parent": {
-      "oneOf": [
-        {
-          "type": "string",
-          "pattern": "^[A-Z]+-\\d+$"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "description": "Parent epic ticket ID"
-    },
-    "jira-related": {
-      "type": ["array", "null"],
-      "items": {
-        "type": "string",
-        "pattern": "^[A-Z]+-\\d+$"
-      },
-      "description": "Array of related ticket IDs"
-    },
-    "jira-blocking": {
-      "type": ["array", "null"],
-      "items": {
-        "type": "string",
-        "pattern": "^[A-Z]+-\\d+$"
-      },
-      "description": "Array of tickets this blocks"
-    },
-    "jira-blockedBy": {
-      "type": ["array", "null"],
-      "items": {
-        "type": "string",
-        "pattern": "^[A-Z]+-\\d+$"
-      },
-      "description": "Array of tickets blocking this"
-    },
-    "jira-fixVersion": {
-      "type": ["string", "null"],
-      "description": "Release version linking"
-    },
-    "jira-internalNotes": {
-      "type": ["string", "null"],
-      "description": "Internal process notes"
-    },
-    "framework-documentation": {
-      "type": ["string", "null"],
-      "description": "Cross-repo documentation references (@repo-name/path)"
-    },
-    "framework-milestone": {
-      "type": ["string", "null"],
-      "description": "Local milestone file path"
-    },
-    "framework-technicalGuides": {
-      "type": ["array", "null"],
-      "items": {
-        "type": "string"
-      },
-      "description": "Technical documentation references"
-    },
-    "framework-relatedLocal": {
-      "type": ["array", "null"],
-      "items": {
-        "type": "string"
-      },
-      "description": "Local file references"
-    }
-  },
-  "additionalProperties": true
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "title": "Backlog Ticket Schema",
+ "description": "JSON Schema for validating backlog ticket YAML frontmatter (the ticket specification)",
+ "type": "object",
+ "required": ["documentType", "title", "createdDate"],
+ "properties": {
+ "documentType": {
+ "type": "string",
+ "enum": ["story", "task", "bug", "spike", "epic"],
+ "description": "Type of the ticket"
+ },
+ "title": {
+ "type": "string",
+ "minLength": 10,
+ "maxLength": 255,
+ "description": "Clear, descriptive ticket title"
+ },
+ "description": {
+ "type": "string",
+ "minLength": 10,
+ "maxLength": 500,
+ "description": "One-sentence summary"
+ },
+ "milestone": {
+ "type": ["string", "null"],
+ "pattern": "^(Nov|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Dec)\\d{4}$",
+ "description": "Milestone code (e.g., Feb2026)"
+ },
+ "sprint": {
+ "type": ["string", "null"],
+ "description": "Sprint membership (e.g., APMR-APP-2026W25); drives sprint index derivation"
+ },
+ "status": {
+ "type": ["string", "null"],
+ "description": "Workflow status snapshot from Jira (e.g., To Do, In Progress, Done)"
+ },
+ "assignee": {
+ "type": ["string", "null"],
+ "description": "Assignee display name (read-only metadata from import/pull)"
+ },
+ "priority": {
+ "type": ["string", "null"],
+ "enum": ["P0", "P1", "P2", "P3", null],
+ "description": "Priority level"
+ },
+ "storyPoints": {
+ "type": ["integer", "null"],
+ "enum": [1, 2, 3, 5, 8, null],
+ "description": "Story points (Fibonacci: 1,2,3,5,8)"
+ },
+ "labels": {
+ "type": ["array", "null"],
+ "items": {
+ "type": "string",
+ "pattern": "^[a-z0-9-]+$"
+ },
+ "description": "Array of labels (lowercase kebab-case)"
+ },
+ "createdDate": {
+ "type": "string",
+ "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+ "description": "Creation date (YYYY-MM-DD)"
+ },
+ "exportedDate": {
+ "type": ["string", "null"],
+ "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+ "description": "Date when exported to Jira (YYYY-MM-DD)"
+ },
+ "jira-ticketId": {
+ "oneOf": [
+ {
+ "type": "string",
+ "pattern": "^[A-Z]+-\\d+$"
+ },
+ {
+ "type": "null"
+ }
+ ],
+ "description": "Jira ticket ID (e.g., DAPM-1234)"
+ },
+ "jira-url": {
+ "type": ["string", "null"],
+ "format": "uri",
+ "description": "Jira ticket URL"
+ },
+ "jira-parent": {
+ "oneOf": [
+ {
+ "type": "string",
+ "pattern": "^[A-Z]+-\\d+$"
+ },
+ {
+ "type": "null"
+ }
+ ],
+ "description": "Parent epic ticket ID"
+ },
+ "jira-related": {
+ "type": ["array", "null"],
+ "items": {
+ "type": "string",
+ "pattern": "^[A-Z]+-\\d+$"
+ },
+ "description": "Array of related ticket IDs"
+ },
+ "jira-blocking": {
+ "type": ["array", "null"],
+ "items": {
+ "type": "string",
+ "pattern": "^[A-Z]+-\\d+$"
+ },
+ "description": "Array of tickets this blocks"
+ },
+ "jira-blockedBy": {
+ "type": ["array", "null"],
+ "items": {
+ "type": "string",
+ "pattern": "^[A-Z]+-\\d+$"
+ },
+ "description": "Array of tickets blocking this"
+ },
+ "jira-fixVersion": {
+ "type": ["string", "null"],
+ "description": "Release version linking"
+ },
+ "jira-internalNotes": {
+ "type": ["string", "null"],
+ "description": "Internal process notes"
+ },
+ "framework-documentation": {
+ "type": ["string", "null"],
+ "description": "Cross-repo documentation references (@repo-name/path)"
+ },
+ "framework-milestone": {
+ "type": ["string", "null"],
+ "description": "Local milestone file path"
+ },
+ "framework-technicalGuides": {
+ "type": ["array", "null"],
+ "items": {
+ "type": "string"
+ },
+ "description": "Technical documentation references"
+ },
+ "framework-relatedLocal": {
+ "type": ["array", "null"],
+ "items": {
+ "type": "string"
+ },
+ "description": "Local file references"
+ }
+ },
+ "additionalProperties": true
 }
